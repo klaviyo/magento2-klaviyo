@@ -1,0 +1,13 @@
+<?php if ( $this->isKlaviyoEnabled() && $this->getPublicApiKey() ): ?>
+    <script>
+        require([
+           'jquery'
+        ], function (jQuery) {
+          jQuery.ajax({
+              url: window.location.protocol + '//' + window.location.hostname + '/reclaim/checkout/reload',
+              method: 'POST',
+              data: {}
+          });
+        });
+    </script>
+<?php endif; ?>

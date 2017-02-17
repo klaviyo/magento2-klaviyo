@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="klaviyo" translate="label" sortOrder="10">
+            <label>Klaviyo</label>
+        </tab>
+
+        <section id="klaviyo_reclaim_general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>General</label>
+            <tab>klaviyo</tab>
+            <resource>Klaviyo_Reclaim::klaviyo_reclaim_general</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Settings</label>
+                <field id="enable" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Klaviyo Extension</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="public_api_key" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Public Klaviyo API Key</label>
+                </field>
+                <field id="private_api_key" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Private Klaviyo API Key</label>
+                </field>
+            </group>
+        </section>
+
+        <section id="klaviyo_reclaim_newsletter" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Newsletter</label>
+            <tab>klaviyo</tab>
+            <resource>Klaviyo_Reclaim::klaviyo_reclaim</resource>
+            <group id="newsletter" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Newsletter</label>
+                <field id="newsletter" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>List to Sync Subscribers</label>
+                    <source_model>Klaviyo\Reclaim\Helper\ListOptions</source_model>
+                    <frontend_model>Klaviyo\Reclaim\Block\System\Config\Form\Field\Newsletter</frontend_model>
+                </field>
+            </group>
+        </section>
+
+    </system>
+</config>

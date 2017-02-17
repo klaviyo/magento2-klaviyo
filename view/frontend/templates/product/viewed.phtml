@@ -1,0 +1,46 @@
+<?php if ( $this->isKlaviyoEnabled() && $this->getPublicApiKey() ): ?>
+    <?php
+        $_product = $this->getProduct();
+        $_product_image_url = null;
+        // Check to see if we have an image for this product.
+        foreach ($_product->getMediaGalleryImages() as $_product_image) {
+            if (!$_product_image->getDisabled()) {
+                $_product_image_url = $_product_image->getUrl();
+                break;
+            }
+        }
+
+        $price = $_product->getPrice();
+
+        if ($_product->getTypeId() == "configurable") {
+            $_children = $_product->getTypeInstance()->getUsedProducts($_product);
+            foreach ($_children as $child){
+                $price = $child->getPrice();
+                if ($price) {
+                    break;
+                }
+            }
+        }
+    ?>
+
+    <script text="text/javascript">
+        var item = {
+            ProductID: "<?php echo $_product->getId(); ?>",
+            Name: "<?php echo $_product->getName(); ?>",
+            SKU: "<?php echo $_product->getSku(); ?>",
+            URL: "<?php echo $_product->getProductUrl(); ?>",
+            Price: <?php echo number_format($price, 2); ?>,
+            <?php if ($_product_image_url) { ?>ImageURL: "<?php echo $_product_image_url; ?>", <?php } ?>
+            Categories: <?php echo $this->getProductCategoriesAsJson(); ?>
+        };
+        _learnq.push(['track', 'Viewed Product', item]);
+        _learnq.push(['trackViewedItem', {
+            Title: item.Name,
+            ItemId: item.ProductID,
+            Categories: item.Categories,
+            <?php if ($_product_image_url) { ?>ImageUrl: item.ImageURL,<?php } ?>
+            Url: item.URL
+        }]);
+    </script>
+
+<?php endif; ?>

@@ -1,0 +1,38 @@
+<?php
+
+namespace Klaviyo\Reclaim\Observer;
+
+use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Event\Observer;
+
+class PrivateApiKeyObserver implements ObserverInterface
+{
+    protected $messageManager;
+    protected $data_helper;
+
+    public function __construct(
+        \Magento\Framework\Message\ManagerInterface $messageManager,
+        \Klaviyo\Reclaim\Helper\Data $data_helper
+    ) {
+        $this->messageManager = $messageManager;
+        $this->data_helper = $data_helper;
+    }
+
+    public function execute(\Magento\Framework\Event\Observer $observer)
+    {
+        $field = $observer->getEvent()['config_data']->getData();
+
+        if ($field['field'] !== 'private_api_key') return;
+
+        $api_key = $field['value'];
+        if (!$api_key) return;
+
+        $result = $this->data_helper->getKlaviyoLists($api_key);
+
+        if ($result['success']) {
+            $this->messageManager->addSuccessMessage('Your Private Klaviyo API Key was successfully validated.');
+        } else {
+            $this->messageManager->addErrorMessage($result['reason']);
+        }
+    }
+}

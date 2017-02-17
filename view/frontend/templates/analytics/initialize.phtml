@@ -1,0 +1,16 @@
+<?php if ( $this->isKlaviyoEnabled() && $this->getPublicApiKey() ): ?>
+    <script text="text/javascript">
+        var _learnq = _learnq || [];
+        _learnq.push(['account', '<?php echo $this->getPublicApiKey(); ?>']);
+        (function () { var b = document.createElement('script'); b.type = 'text/javascript'; b.async = true; b.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'a.klaviyo.com/media/js/analytics/analytics.js'; var a = document.getElementsByTagName('script')[0]; a.parentNode.insertBefore(b, a); })();
+
+        <?php if ( $this->isLoggedIn() ): ?>
+            _learnq.push(['identify', {
+                $email: "<?php echo $this->getCustomerEmail() ?>",
+                $first_name: "<?php echo $this->getCustomerFirstname(); ?>",
+                $last_name: "<?php echo $this->getCustomerLastname(); ?>"
+            }]);
+        <?php endif; ?>
+
+    </script>
+<?php endif; ?>
