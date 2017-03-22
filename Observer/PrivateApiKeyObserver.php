@@ -22,7 +22,7 @@ class PrivateApiKeyObserver implements ObserverInterface
     {
         $field = $observer->getEvent()['config_data']->getData();
 
-        if ($field['field'] !== 'private_api_key') return;
+        if (!array_key_exists('field', $field) || $field['field'] !== 'private_api_key') return;
 
         $api_key = $field['value'];
         if (!$api_key) return;
