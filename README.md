@@ -26,6 +26,7 @@ Klaviyo extension for Magento 2. Allows pushing newsletters to Klaviyo's platfor
     - Box at the bottom of every page
     - On account creation
     - Through their account settings
+    - Through Customer Newsletter settings on the admin side
 
 - **Abandoned Cart**
   - Given a quote ID, a URL can be crafted that will load a Customer's cart with a quote

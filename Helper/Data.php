@@ -38,9 +38,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getKlaviyoLists($api_key=null){
         if (!$api_key) $api_key = $this->getPrivateApiKey();
 
-        $ch = curl_init(); 
+        $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'https://a.klaviyo.com/api/v1/lists?api_key=' . $api_key);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
         $output = json_decode(curl_exec($ch));
         curl_close($ch);
@@ -54,7 +54,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             } else {
                 $reason = 'Unable to verify Klaviyo Private API Key.';
             }
-            
+
             $result = [
                 'success' => false,
                 'reason' => $reason
