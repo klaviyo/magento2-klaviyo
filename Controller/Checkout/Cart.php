@@ -27,7 +27,7 @@ class Cart extends \Magento\Framework\App\Action\Action
      * quote into the current Customer's cart and redirect the Customer to checkout/cart
      * If no quote is found it will not do anything to the Customer's cart
      *
-     * @return JSON
+     * @return \Magento\Framework\Controller\Result\Redirect
      */
     public function execute()
     {
