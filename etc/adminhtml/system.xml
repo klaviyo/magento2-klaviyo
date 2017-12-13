@@ -9,7 +9,7 @@
             <label>General</label>
             <tab>klaviyo</tab>
             <resource>Klaviyo_Reclaim::klaviyo_reclaim_general</resource>
-            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Settings</label>
                 <field id="enable" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Klaviyo Extension</label>
@@ -28,7 +28,7 @@
             <label>Newsletter</label>
             <tab>klaviyo</tab>
             <resource>Klaviyo_Reclaim::klaviyo_reclaim</resource>
-            <group id="newsletter" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+            <group id="newsletter" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Newsletter</label>
                 <field id="newsletter" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>List to Sync Subscribers</label>

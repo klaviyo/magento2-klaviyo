@@ -11,6 +11,7 @@
         }
 
         $price = $_product->getPrice();
+        $final_price = $_product->getPriceInfo()->getPrice('final_price')->getValue();
 
         if ($_product->getTypeId() == "configurable") {
             $_children = $_product->getTypeInstance()->getUsedProducts($_product);
@@ -30,6 +31,7 @@
             SKU: "<?php echo $_product->getSku(); ?>",
             URL: "<?php echo $_product->getProductUrl(); ?>",
             Price: <?php echo number_format($price, 2); ?>,
+            FinalPrice: <?php echo number_format($final_price, 2); ?>,
             <?php if ($_product_image_url) { ?>ImageURL: "<?php echo $_product_image_url; ?>", <?php } ?>
             Categories: <?php echo $this->getProductCategoriesAsJson(); ?>
         };

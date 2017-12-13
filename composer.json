@@ -2,7 +2,7 @@
     "name": "klaviyo/magento2-extension",
     "description": "Klaviyo extension for Magento 2. Allows pushing newsletters to Klaviyo's platform and more.",
     "type": "magento2-module",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "autoload": {
         "files": [
             "registration.php"

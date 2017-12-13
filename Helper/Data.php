@@ -6,6 +6,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
 
     protected $_scopeConfig;
+    protected $_request;
+    protected $_state;
 
     const ENABLE = 'klaviyo_reclaim_general/general/enable';
     const PUBLIC_API_KEY = 'klaviyo_reclaim_general/general/public_api_key';
@@ -13,26 +15,58 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     const NEWSLETTER = 'klaviyo_reclaim_newsletter/newsletter/newsletter';
 
     public function __construct(
-        \Magento\Framework\App\Helper\Context $context
+        \Magento\Framework\App\Helper\Context $context,
+        \Magento\Framework\App\State $state,
+        \Magento\Framework\ObjectManagerInterface $objectManager
     ) {
         parent::__construct($context);
         $this->_scopeConfig = $context->getScopeConfig();
+        $this->_request = $context->getRequest();
+        $this->_state = $state;
+        $this->_storeId = $objectManager->get('Magento\Store\Model\StoreManagerInterface')->getStore()->getId();
     }
 
-    public function getEnabled(){
-        return $this->_scopeConfig->getValue(self::ENABLE);
+    protected function getScopeSetting($path){
+
+        if ($this->_state->getAreaCode() == \Magento\Framework\App\Area::AREA_ADMINHTML) {
+            $storeId = $this->_request->getParam('store');
+            $websiteId = $this->_request->getParam('website');
+        } else {
+            // In frontend area. Only concerned with store for frontend.
+            $storeId = $this->_storeId;
+        }
+
+        if (isset($storeId)) {
+            $scope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+            $value = $storeId;
+            return $this->_scopeConfig->getValue($path, $scope, $value);
+        } elseif (isset($websiteId)) {
+            $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE;
+            $value = $websiteId;
+            return $this->_scopeConfig->getValue($path, $scope, $value);
+        } else {
+            return $this->_scopeConfig->getValue($path);
+        };
     }
 
-    public function getPublicApiKey(){
-        return $this->_scopeConfig->getValue(self::PUBLIC_API_KEY);
+    public function getEnabled()
+    {
+        return $this->getScopeSetting(self::ENABLE);
     }
 
-    public function getPrivateApiKey(){
-        return $this->_scopeConfig->getValue(self::PRIVATE_API_KEY);
+    public function getPublicApiKey()
+    {
+        return $this->getScopeSetting(self::PUBLIC_API_KEY);
     }
 
-    public function getNewsletter(){
-        return $this->_scopeConfig->getValue(self::NEWSLETTER);
+    public function getPrivateApiKey()
+    {
+        return $this->getScopeSetting(self::PRIVATE_API_KEY);
+    }
+
+    public function getNewsletter()
+    {
+        return $this->getScopeSetting(self::NEWSLETTER);
     }
 
     public function getKlaviyoLists($api_key=null){
