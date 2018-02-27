@@ -31,7 +31,7 @@ Klaviyo extension for Magento 2. Allows pushing newsletters to Klaviyo's platfor
 - **Abandoned Cart**
   - Given a quote ID, a URL can be crafted that will load a Customer's cart with a quote
 
-## Prerequisities
+## Prerequisites
 
 Magento 2
 
