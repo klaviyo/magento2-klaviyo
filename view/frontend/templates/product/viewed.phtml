@@ -1,3 +1,8 @@
+<?php
+
+/** @var \Magento\Catalog\Helper\Image $_imagehelper */
+$_imagehelper = $this->helper('Magento\Catalog\Helper\Image');
+?>
 <?php if ( $this->isKlaviyoEnabled() && $this->getPublicApiKey() ): ?>
     <?php
         $_product = $this->getProduct();
@@ -5,7 +10,10 @@
         // Check to see if we have an image for this product.
         foreach ($_product->getMediaGalleryImages() as $_product_image) {
             if (!$_product_image->getDisabled()) {
-                $_product_image_url = $_product_image->getUrl();
+                $_product_image_url = $_imagehelper
+                    ->init($_product, 'product_base_image')
+                    ->setImageFile($_product_image->getFile())
+                    ->getUrl();
                 break;
             }
         }
