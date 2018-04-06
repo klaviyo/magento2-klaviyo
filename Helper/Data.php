@@ -111,13 +111,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $result;
     }
 
-    public function subscribeEmailToKlaviyoList($email, $first_name=null, $last_name=null) {
+    public function subscribeEmailToKlaviyoList($email, $first_name=null, $last_name=null, $source=null) {
         $list_id = $this->getNewsletter();
         $api_key = $this->getPrivateApiKey();
 
         $properties = [];
         if ($first_name) $properties['$first_name'] = $first_name;
         if ($last_name) $properties['$last_name'] = $last_name;
+        if ($source) $properties['$source'] = $source;
         $properties_val = count($properties) ? urlencode(json_encode($properties)) : '{}';
 
         $fields = [
