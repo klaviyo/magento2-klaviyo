@@ -73,4 +73,51 @@ class ViewedProduct extends \Magento\Framework\View\Element\Template
         }
         return json_encode($categories);
     }
+
+    /**
+     * Get Price
+     *
+     * @return double
+     */
+    public function getPrice()
+    {
+        $_product = $this->getProduct();
+        $price = $_product->getPrice();
+
+        if ($_product->getTypeId() == "configurable") {
+            $_children = $_product->getTypeInstance()->getUsedProducts($_product);
+            foreach ($_children as $child){
+                $price = $child->getPrice();
+                if ($price) {
+                    break;
+                }
+            }
+        }
+
+        return number_format($price, 2);
+    }
+
+    /**
+     * Get Final Price
+     *
+     * @return double
+     */
+    public function getFinalPrice()
+    {
+        return  number_format($this->getProduct()->getPriceInfo()->getPrice('final_price')->getValue(), 2);
+    }
+
+    /**
+     * Render block HTML
+     *
+     * @return string
+     */
+    protected function _toHtml()
+    {
+        if (!($this->isKlaviyoEnabled() && $this->getPublicApiKey())) {
+            return '';
+        }
+
+        return parent::_toHtml();
+    }
 }
