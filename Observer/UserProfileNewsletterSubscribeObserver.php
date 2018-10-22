@@ -26,18 +26,39 @@ class UserProfileNewsletterSubscribeObserver implements ObserverInterface
 
         $subscriber = $observer->getDataObject();
 
-        if ($subscriber->isStatusChanged()) {
-          $customer = $this->customer_repository_interface->getById($subscriber->getCustomerId());
+        if (!$subscriber->isStatusChanged()) return;
 
-          if ($subscriber->isSubscribed()) {
+        try {
+            $customer = $this->customer_repository_interface->getById($subscriber->getCustomerId());
+            $this->handleActionForCustomer($subscriber, $customer);
+        } catch (NoSuchEntityException $ex) {
+            $this->handleActionForSubscriber($subscriber);
+        }
+    }
+
+    private function handleActionForCustomer($subscriber, $customer)
+    {
+        if ($subscriber->isSubscribed()) {
             $this->data_helper->subscribeEmailToKlaviyoList(
                 $customer->getEmail(),
                 $customer->getFirstname(),
                 $customer->getLastname()
             );
-          } else {
+        } else {
             $this->data_helper->unsubscribeEmailFromKlaviyoList($customer->getEmail());
-          }
+        }
+    }
+
+    private function handleActionForSubscriber($subscriber)
+    {
+        if ($subscriber->isSubscribed()) {
+            $this->data_helper->subscribeEmailToKlaviyoList(
+                $subscriber->getSubscriberEmail(),
+                '',
+                ''
+            );
+        } else {
+            $this->data_helper->unsubscribeEmailFromKlaviyoList($subscriber->getSubscriberEmail());
         }
     }
 }
