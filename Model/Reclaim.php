@@ -8,7 +8,7 @@ class Reclaim implements ReclaimInterface
      * Returns all stores with extended descriptions
      *
      * @api
-     * @return JSON
+     * @return mixed
      */
     public function stores()
     {

@@ -7,7 +7,7 @@ interface ReclaimInterface
      * Returns a list of stores with extended information
      *
      * @api
-     * @return JSON
+     * @return mixed
      */
     public function stores();
 }
