@@ -82,10 +82,11 @@ class Reclaim implements ReclaimInterface
 
         $image_array = $this->_getImages($product);
         
-        $response['$body'] = [
+        $response = array(
             'id' => $item->getProductId(),
-            'images' => $image_array,
-        ];
+            'images' => $image_array
+        );
+
         return $response;
     }
 
@@ -93,6 +94,12 @@ class Reclaim implements ReclaimInterface
     public function productinspector($filter){
         $start = $filter['1'];
         $end = $filter['2'];
+
+        if (($end - $start) > 100){
+            return array('error' => '100 is the max batch');
+        } elseif (!$start || !$end) {
+            return array('error' => 'provide a start and end filter');
+        }
 
         $response = array();
         foreach (range($start, $end) as $number) {
@@ -103,13 +110,12 @@ class Reclaim implements ReclaimInterface
             if (!$product){
                 continue;
             }
-            $data = array(
-                'id' => $product->getProductId(),
+            $response[] = array(
+                'id' => $product->getId(),
                 'sku' => $product->getSku(),
                 'type_id' => $product->getTypeId(),
-                'price' => $product->getPrice(),
+                'price' => $product->getPrice()
             );
-            array_push($response, $data);
         }
 
         return $response;
@@ -121,7 +127,7 @@ class Reclaim implements ReclaimInterface
         foreach($images as $image) {
             $image_url = $image->getUrl();
             if ($image_url){
-                array_push($image_array, $image_url);
+                $image_array[] = $image_url;
             }
         }
         return $image_array;

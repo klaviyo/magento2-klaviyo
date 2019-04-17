@@ -5,6 +5,7 @@ namespace Klaviyo\Reclaim\Helper;
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const MODULE_NAME = 'Klaviyo_Reclaim';
+    const USER_AGENT = 'Klaviyo/1.0';
 
     protected $_scopeConfig;
     protected $_request;
@@ -126,26 +127,34 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $api_key = $this->getPrivateApiKey();
 
         $properties = [];
+        $properties['email'] = $email;
         if ($first_name) $properties['$first_name'] = $first_name;
         if ($last_name) $properties['$last_name'] = $last_name;
         if ($source) $properties['$source'] = $source;
-        $properties_val = count($properties) ? urlencode(json_encode($properties)) : '{}';
 
-        $fields = [
-            'api_key=' . $api_key,
-            'email=' . urlencode($email),
-            'confirm_optin=false',
-            'properties=' . $properties_val,
-        ];
+        $properties_val = count($properties) ? json_encode(array('profiles' => $properties)) : '{}';
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://a.klaviyo.com/api/v1/list/' . $list_id . '/members');
-        curl_setopt($ch, CURLOPT_POST, count($fields));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, join('&', $fields));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-        curl_exec($ch);
-        curl_close($ch);
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://a.klaviyo.com/api/v2/list/" . $list_id . "/members?api_key=" .$api_key,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => $properties_val,
+            CURLOPT_USERAGENT => self::USER_AGENT,
+            CURLOPT_HTTPHEADER => array(
+              "Content-Type: application/json",
+              'Content-Length: ' . strlen($properties_val)
+            ),
+        ));
+        // Submit the POST request
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        // Close cURL session handle
+        curl_close($curl);
+        
+        if ($err) {
+            echo "cURL Error #:" . $err;
+        }
     }
 
     public function unsubscribeEmailFromKlaviyoList($email) {
