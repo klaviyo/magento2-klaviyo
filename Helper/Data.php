@@ -4,10 +4,12 @@ namespace Klaviyo\Reclaim\Helper;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
+    const MODULE_NAME = 'Klaviyo_Reclaim';
 
     protected $_scopeConfig;
     protected $_request;
     protected $_state;
+    protected $_moduleList;
 
     const ENABLE = 'klaviyo_reclaim_general/general/enable';
     const PUBLIC_API_KEY = 'klaviyo_reclaim_general/general/public_api_key';
@@ -17,13 +19,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Framework\App\State $state,
-        \Magento\Framework\ObjectManagerInterface $objectManager
+        \Magento\Framework\ObjectManagerInterface $objectManager,
+        \Magento\Framework\Module\ModuleListInterface $moduleList
     ) {
         parent::__construct($context);
         $this->_scopeConfig = $context->getScopeConfig();
         $this->_request = $context->getRequest();
         $this->_state = $state;
         $this->_storeId = $objectManager->get('Magento\Store\Model\StoreManagerInterface')->getStore()->getId();
+        $this->_moduleList = $moduleList;
     }
 
     protected function getScopeSetting($path){
@@ -47,6 +51,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         } else {
             return $this->_scopeConfig->getValue($path);
         };
+    }
+
+    public function getVersion()
+    {
+        return $this->_moduleList
+            ->getOne(self::MODULE_NAME)['setup_version'];
     }
 
     public function getEnabled()

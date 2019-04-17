@@ -1,24 +1,14 @@
 <?php if ( $this->isKlaviyoEnabled() && $this->getPublicApiKey() ): ?>
+<script type="application/javascript" async 
+ src="https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=<?php echo $this->getPublicApiKey(); ?>"></script>
     <script text="text/javascript">
         var _learnq = _learnq || [];
-        _learnq.push(['account', '<?php echo $this->getPublicApiKey(); ?>']);
-        window.addEventListener('load', function(event) {
-            (function () {
-                var b = document.createElement('script');
-                b.type = 'text/javascript';
-                b.async = true;
-                b.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'a.klaviyo.com/media/js/analytics/analytics.js';
-                var a = document.getElementsByTagName('script')[0];
-                a.parentNode.insertBefore(b, a);
-            })();
-
-            <?php if ( $this->isLoggedIn() ): ?>
+        <?php if ( $this->isLoggedIn() ): ?>
             _learnq.push(['identify', {
                 $email: "<?php echo $this->getCustomerEmail() ?>",
                 $first_name: "<?php echo $this->getCustomerFirstname(); ?>",
                 $last_name: "<?php echo $this->getCustomerLastname(); ?>"
             }]);
-            <?php endif; ?>
-        });
+        <?php endif; ?>
     </script>
 <?php endif; ?>

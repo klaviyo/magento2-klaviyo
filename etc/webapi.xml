@@ -6,4 +6,22 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
+    <route url="/V1/klaviyo/reclaim/product" method="GET">
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="product"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/klaviyo/reclaim/product-inspector" method="GET">
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="productinspector"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/klaviyo/reclaim/" method="GET">
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="reclaim"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
 </routes>
