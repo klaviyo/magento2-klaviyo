@@ -1,4 +1,4 @@
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/Event/etc/events.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../../lib/internal/Magento/Framework/App/etc/events.xsd">
     <event name="config_data_save_before">
         <observer name="klaviyo_reclaim" instance="Klaviyo\Reclaim\Observer\PrivateApiKeyObserver" />
     </event>

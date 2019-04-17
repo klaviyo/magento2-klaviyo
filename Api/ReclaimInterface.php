@@ -20,7 +20,7 @@ interface ReclaimInterface
     public function reclaim();
 
     /**
-     * Returns greeting message to user
+     * Returns product information
      *
      * @api
      * @param mixed $filter
@@ -29,6 +29,8 @@ interface ReclaimInterface
     public function product($filter);
 
      /**
+     * Returns product by id range
+     * @api 
      * @param mixed $filter
      * @return mixed
      */
