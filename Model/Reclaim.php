@@ -72,12 +72,17 @@ class Reclaim implements ReclaimInterface
     public function product($filter) {
         $quote_id = $filter['1'];
         $item_id = $filter['2'];
+
         $quote = $this->quoteFactory->create()->load($quote_id);
-        
         if (!$quote){
-            return array('error' => 'not found');
+            return array('error' => 'quote not found');
         }
+
         $item = $quote->getItemById($item_id);
+        if (!$item){
+            return array('error' => 'item not found');
+        }
+
         $product = $this->_objectManager->get('Magento\Catalog\Model\Product')->load($item->getProductId());
 
         $image_array = $this->_getImages($product);
