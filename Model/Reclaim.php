@@ -1,6 +1,7 @@
 <?php
 namespace Klaviyo\Reclaim\Model;
 use Klaviyo\Reclaim\Api\ReclaimInterface;
+use \Magento\Framework\Exception\NotFoundException;
 
 
 class Reclaim implements ReclaimInterface
@@ -75,12 +76,12 @@ class Reclaim implements ReclaimInterface
 
         $quote = $this->quoteFactory->create()->load($quote_id);
         if (!$quote){
-            return array('error' => 'quote not found');
+            throw new NotFoundException(__('quote not found'));
         }
 
         $item = $quote->getItemById($item_id);
         if (!$item){
-            return array('error' => 'item not found');
+            throw new NotFoundException(__('item not found'));
         }
 
         $product = $this->_objectManager->get('Magento\Catalog\Model\Product')->load($item->getProductId());
@@ -101,9 +102,9 @@ class Reclaim implements ReclaimInterface
         $end = $filter['2'];
 
         if (($end - $start) > 100){
-            return array('error' => '100 is the max batch');
+            throw new NotFoundException(__('100 is the max batch'));
         } elseif (!$start || !$end) {
-            return array('error' => 'provide a start and end filter');
+            throw new NotFoundException(__('provide a start and end filter'));
         }
 
         $response = array();
