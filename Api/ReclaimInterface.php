@@ -23,17 +23,19 @@ interface ReclaimInterface
      * Returns product information
      *
      * @api
-     * @param mixed $filter
+     * @param mixed $quote_id
+     * @param mixed $item_id
      * @return mixed
      */
-    public function product($filter);
+    public function product($quote_id, $item_id);
 
      /**
      * Returns product by id range
      * @api 
-     * @param mixed $filter
+     * @param mixed $start_id
+     * @param mixed $end_id
      * @return mixed
      */
-    public function productinspector($filter);
+    public function productinspector($start_id, $end_id);
 
 }

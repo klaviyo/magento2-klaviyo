@@ -70,9 +70,11 @@ class Reclaim implements ReclaimInterface
 
         return $hydrated_stores;
     }
-    public function product($filter) {
-        $quote_id = $filter['1'];
-        $item_id = $filter['2'];
+    public function product($quote_id, $item_id) {
+
+        if (!$quote_id || !$item_id){
+            throw new NotFoundException(__('quote id or item id not found'));
+        }
 
         $quote = $this->quoteFactory->create()->load($quote_id);
         if (!$quote){
@@ -97,18 +99,16 @@ class Reclaim implements ReclaimInterface
     }
 
     // handle inspector tasks to return products by id
-    public function productinspector($filter){
-        $start = $filter['1'];
-        $end = $filter['2'];
+    public function productinspector($start_id, $end_id){
 
-        if (($end - $start) > 100){
+        if (($end_id - $start_id) > 100){
             throw new NotFoundException(__('100 is the max batch'));
-        } elseif (!$start || !$end) {
+        } elseif (!$start_id || !$end_id) {
             throw new NotFoundException(__('provide a start and end filter'));
         }
 
         $response = array();
-        foreach (range($start, $end) as $number) {
+        foreach (range($start_id, $end_id) as $number) {
             $product = $this->_objectManager
                 ->create('Magento\Catalog\Model\Product')
                 ->load($number);
