@@ -87,8 +87,8 @@ class Reclaim implements ReclaimInterface
         $product = $this->_objectManager->get('Magento\Catalog\Model\Product')->load($item->getProductId());
 
         $image_array = $this->_getImages($product);
-        
-        $response = array(
+
+        $response['$body'] = array(
             'id' => $item->getProductId(),
             'images' => $image_array
         );

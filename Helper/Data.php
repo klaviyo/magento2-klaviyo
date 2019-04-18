@@ -6,6 +6,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const MODULE_NAME = 'Klaviyo_Reclaim';
     const USER_AGENT = 'Klaviyo/1.0';
+    const KLAVIYO_HOST =  'https://a.klaviyo.com/';
 
     protected $_scopeConfig;
     protected $_request;
@@ -151,13 +152,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $err = curl_error($curl);
         // Close cURL session handle
         curl_close($curl);
-        
-        if ($err) {
-            echo "cURL Error #:" . $err;
-        }
+
+        return $response;
     }
 
-    public function unsubscribeEmailFromKlaviyoList($email) {
+    public function unsubscribeEmailFromKlaviyoList($email) 
+    {
         $list_id = $this->getNewsletter();
         $api_key = $this->getPrivateApiKey();
 
@@ -174,5 +174,36 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         curl_exec($ch);
         curl_close($ch);
+    }
+
+    public function klaviyoTrackEvent($event, $customer_properties=array(), $properties=array(), $timestamp=NULL)
+    {
+        if ((!array_key_exists('$email', $customer_properties) || empty($customer_properties['$email']))
+            && (!array_key_exists('$id', $customer_properties) || empty($customer_properties['$id']))) {
+
+            return 'You must identify a user by email or ID.';
+        }
+        $params = array(
+            'token' => $this->getPublicApiKey(),
+            'event' => $event,
+            'properties' => $properties,
+            'customer_properties' => $customer_properties
+        );
+
+        if (!is_null($timestamp)) {
+            $params['time'] = $timestamp;
+        }
+        $encoded_params = $this->build_params($params);
+        return $this->make_request('api/track', $encoded_params);
+
+    }
+    protected function build_params($params) {
+        return 'data=' . urlencode(base64_encode(json_encode($params)));
+    }
+
+    protected function make_request($path, $params) {
+        $url = self::KLAVIYO_HOST . $path . '?' . $params;
+        $response = file_get_contents($url);
+        return $response == '1';
     }
 }
