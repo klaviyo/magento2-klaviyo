@@ -1,6 +1,7 @@
-<?php if ( $this->isKlaviyoEnabled() && $this->getPublicApiKey() ): ?>
+<?php $klaviyoKey = $this->getPublicApiKey(); ?>
+<?php if ( $this->isKlaviyoEnabled() && $klaviyoKey ): ?>
 <script type="application/javascript" async 
- src="https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=<?php echo $this->getPublicApiKey(); ?>"></script>
+ src="https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=<?php echo $klaviyoKey; ?>"></script>
     <script text="text/javascript">
         var _learnq = _learnq || [];
         <?php if ( $this->isLoggedIn() ): ?>
