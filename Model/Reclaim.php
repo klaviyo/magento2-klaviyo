@@ -137,11 +137,14 @@ class Reclaim implements ReclaimInterface
 
     }
 
-    public function historicalcustomersubscription($start_id, $end_id, $storeId=null)
+    public function getSubscribersById($start_id, $end_id, $storeId=null)
     {
-
         if (!$start_id || !$end_id ){ 
             throw new NotFoundException(__('Please provide start_id and end_id'));
+        }
+
+        if ($start_id > $end_id){
+            throw new NotFoundException(__('end_id should be larger than start_id'));
         }
 
         $storeIdFilter = $this->_storeFilter($storeId);
@@ -151,20 +154,16 @@ class Reclaim implements ReclaimInterface
             ->addFieldToFilter('subscriber_id', ['lteq' => (int)$end_id])
             ->addFieldToFilter('store_id', [$storeIdFilter => $storeId]);
 
-        $subscriberCollection =$this->subscriberCollection->create()
-            ->addFieldToFilter('subscriber_id', ['gt' => 1]);
-
         $response = $this->_packageSubscribers($subscriberCollection);
 
         return $response;
     }
 
-    public function customersubscription($start, $until, $storeId=null)
+    public function getSubscribersByDateRange($start, $until, $storeId=null)
     {
         
         if (!$start || !$until ){ 
-            throw new NotFoundException(__('Please provide start_id and end_id'));
-            return array('error' => 'Please provide start and until');
+            throw new NotFoundException(__('Please provide start and until param'));
         }
         // start and until date formats
         // $until = '2019-04-25 18:00:00';
@@ -173,13 +172,11 @@ class Reclaim implements ReclaimInterface
         // don't want any big queries, we limit to 10 days
         $until_date = strtotime($until);
         $start_date = strtotime($start);
-        $datediff = $now - $start_date;
+        $datediff = $until_date - $start_date;
 
         if (abs(round($datediff / (60 * 60 * 24))) > self::MAX_QUERY_DAYS){
             throw new NotFoundException(__('Please don\'t query for more than 10 days'));
         }
-
-        
 
         $storeIdFilter = $this->_storeFilter($storeId);
         

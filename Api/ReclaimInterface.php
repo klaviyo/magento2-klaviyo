@@ -35,10 +35,10 @@ interface ReclaimInterface
      * @api
      * @param mixed $start
      * @param mixed $until
-     * @param mixed $storeId
+     * @param mixed $store_id
      * @return mixed
      */
-    public function customersubscription($start, $until, $storeId=null);
+    public function getSubscribersByDateRange($start, $until, $store_id=null);
 
     /**
      * Returns subscirbers by id
@@ -46,18 +46,9 @@ interface ReclaimInterface
      * @api
      * @param mixed $start_id
      * @param mixed $end_id
-     * @param mixed $storeId
+     * @param mixed $store_id
      * @return mixed
      */
-    public function historicalcustomersubscription($start_id, $end_id, $storeId=null);
-
-     /**
-     * Returns product by id range
-     * @api 
-     * @param mixed $start_id
-     * @param mixed $end_id
-     * @return mixed
-     */
-    public function productinspector($start_id, $end_id);
+    public function getSubscribersById($start_id, $end_id, $store_id=null);
 
 }

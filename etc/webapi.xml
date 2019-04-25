@@ -19,13 +19,13 @@
         </resources>
     </route>
     <route url="/V1/klaviyo/reclaim/customers/subscriptions/periodic" method="GET">
-        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="customersubscription"/>
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="getSubscribersByDateRange"/>
         <resources>
             <resource ref="anonymous"/>
         </resources>
     </route>
     <route url="/V1/klaviyo/reclaim/customers/subscriptions/historical" method="GET">
-        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="historicalcustomersubscription"/>
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="getSubscribersById"/>
         <resources>
             <resource ref="anonymous"/>
         </resources>
