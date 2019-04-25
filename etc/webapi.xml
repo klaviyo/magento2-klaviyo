@@ -18,6 +18,18 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
+    <route url="/V1/klaviyo/reclaim/customers/subscriptions/periodic" method="GET">
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="customersubscription"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/klaviyo/reclaim/customers/subscriptions/historical" method="GET">
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="historicalcustomersubscription"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
     <route url="/V1/klaviyo/reclaim/" method="GET">
         <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="reclaim"/>
         <resources>

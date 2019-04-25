@@ -12,19 +12,28 @@ class Reclaim implements ReclaimInterface
      * @var \Magento\Framework\ObjectManagerInterface
      */
     protected $_objectManager = null;
+    protected $_subscriber;
+    protected $subscriberCollection;
     public $response;
+
+    const MAX_QUERY_DAYS = 10;
 
     public function __construct(
         \Magento\Framework\ObjectManagerInterface $objectManager, 
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
+        \Magento\Newsletter\Model\Subscriber $subscriber,
+        \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection,
         \Klaviyo\Reclaim\Helper\Data $klaviyoHelper
         )
     {
         $this->quoteFactory = $quoteFactory;
         $this->_objectManager = $objectManager;
+        $this->_subscriber= $subscriber;
+        $this->subscriberCollection = $subscriberCollection;
         $this->_klaviyoHelper = $klaviyoHelper;
 
     }
+
 
     /**
      * Returns extension version
@@ -127,6 +136,84 @@ class Reclaim implements ReclaimInterface
         return $response;
 
     }
+
+    public function historicalcustomersubscription($start_id, $end_id, $storeId=null)
+    {
+
+        if (!$start_id || !$end_id ){ 
+            throw new NotFoundException(__('Please provide start_id and end_id'));
+        }
+
+        $storeIdFilter = $this->_storeFilter($storeId);
+
+        $subscriberCollection =$this->subscriberCollection->create()
+            ->addFieldToFilter('subscriber_id', ['gteq' => (int)$start_id])
+            ->addFieldToFilter('subscriber_id', ['lteq' => (int)$end_id])
+            ->addFieldToFilter('store_id', [$storeIdFilter => $storeId]);
+
+        $subscriberCollection =$this->subscriberCollection->create()
+            ->addFieldToFilter('subscriber_id', ['gt' => 1]);
+
+        $response = $this->_packageSubscribers($subscriberCollection);
+
+        return $response;
+    }
+
+    public function customersubscription($start, $until, $storeId=null)
+    {
+        
+        if (!$start || !$until ){ 
+            throw new NotFoundException(__('Please provide start_id and end_id'));
+            return array('error' => 'Please provide start and until');
+        }
+        // start and until date formats
+        // $until = '2019-04-25 18:00:00';
+        // $start = '2019-04-25 00:00:00';
+
+        // don't want any big queries, we limit to 10 days
+        $until_date = strtotime($until);
+        $start_date = strtotime($start);
+        $datediff = $now - $start_date;
+
+        if (abs(round($datediff / (60 * 60 * 24))) > self::MAX_QUERY_DAYS){
+            throw new NotFoundException(__('Please don\'t query for more than 10 days'));
+        }
+
+        
+
+        $storeIdFilter = $this->_storeFilter($storeId);
+        
+        $subscriberCollection =$this->subscriberCollection->create()
+            ->addFieldToFilter('change_status_at', ['gteq' => $start])
+            ->addFieldToFilter('change_status_at', ['lteq' => $until])
+            ->addFieldToFilter('store_id', [$storeIdFilter => $storeId]);
+
+        $response = $this->_packageSubscribers($subscriberCollection);
+
+        return $response;
+
+    }
+    public function _packageSubscribers($subscriberCollection)
+    {
+        $response = array();
+        foreach ($subscriberCollection as $subscriber){
+            $response[]= array(
+                'email' => $subscriber->getEmail(),
+                'subscribe_status' => $subscriber->getSubscriberStatus()
+            );
+        }
+        return $response;
+    }
+
+    public function _storeFilter($storeId)
+    {
+        $storeIdFilter = 'eq';
+        if (!$storeId){
+            $storeIdFilter = 'nlike';
+        }
+        return $storeIdFilter;
+    }
+
     public function _getImages($product){
         $images = $product->getMediaGalleryImages();
         $image_array = array();

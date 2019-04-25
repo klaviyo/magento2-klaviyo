@@ -29,6 +29,28 @@ interface ReclaimInterface
      */
     public function product($quote_id, $item_id);
 
+    /**
+     * Returns subscribers by date filter
+     *
+     * @api
+     * @param mixed $start
+     * @param mixed $until
+     * @param mixed $storeId
+     * @return mixed
+     */
+    public function customersubscription($start, $until, $storeId=null);
+
+    /**
+     * Returns subscirbers by id
+     *
+     * @api
+     * @param mixed $start_id
+     * @param mixed $end_id
+     * @param mixed $storeId
+     * @return mixed
+     */
+    public function historicalcustomersubscription($start_id, $end_id, $storeId=null);
+
      /**
      * Returns product by id range
      * @api 
