@@ -30,6 +30,16 @@ interface ReclaimInterface
     public function product($quote_id, $item_id);
 
     /**
+     * Returns product by id range
+     *
+     * @api
+     * @param mixed $quote_id
+     * @param mixed $item_id
+     * @return mixed
+     */
+    public function productinspector($start_id, $end_id);
+
+    /**
      * Returns subscribers by date filter
      *
      * @api
