@@ -33,6 +33,15 @@ interface ReclaimInterface
      * Returns subscribers by date filter
      *
      * @api
+     * @return mixed
+     */
+
+    public function getSubscribersCount();
+
+    /**
+     * Returns subscribers by date filter
+     *
+     * @api
      * @param mixed $start
      * @param mixed $until
      * @param mixed $store_id
