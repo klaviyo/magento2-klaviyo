@@ -13,6 +13,7 @@ class Reclaim implements ReclaimInterface
      */
     protected $_objectManager = null;
     protected $_subscriber;
+    protected $_stockItemRepository;
     protected $subscriberCollection;
     public $response;
 
@@ -22,6 +23,8 @@ class Reclaim implements ReclaimInterface
     public function __construct(
         \Magento\Framework\ObjectManagerInterface $objectManager, 
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
+        \Magento\CatalogInventory\Api\StockStateInterface $stockItem,
+        \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository,
         \Magento\Newsletter\Model\Subscriber $subscriber,
         \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection,
         \Klaviyo\Reclaim\Helper\Data $klaviyoHelper
@@ -29,6 +32,8 @@ class Reclaim implements ReclaimInterface
     {
         $this->quoteFactory = $quoteFactory;
         $this->_objectManager = $objectManager;
+        $this->_stockItem = $stockItem;
+        $this->_stockItemRepository = $stockItemRepository;
         $this->_subscriber= $subscriber;
         $this->_subscriberCollection = $subscriberCollection;
         $this->_klaviyoHelper = $klaviyoHelper;
@@ -104,6 +109,52 @@ class Reclaim implements ReclaimInterface
         );
 
         return $response;
+    }
+
+    /**
+    * @return mixed
+    */
+    public function backinstock($product_id)
+    {
+        if (!$product_id){
+            throw new NotFoundException(_('A product id is required'));
+        }
+        $product = $this->_objectManager->create('Magento\Catalog\Model\Product')->load($product_id);
+
+        if (!$product){
+            throw new NotFoundException(_('A product was not found'));
+        }
+
+        $productId = $product->getId();
+
+        $response = array(array(
+            'id' => $productId,
+            'title' => $product->getName(),
+            'price' => $product->getPrice(),
+            'available' => true,
+            'inventory_quantity' => $this->_stockItem->getStockQty($productId),
+            'inventory_policy' => $this->_getStockItem($productId)
+        ));
+        // check to see if the product has variants, if it doesn't just return the product information
+        try {
+            $_children = $product->getTypeInstance()->getUsedProducts($product);
+            // throws a fatal error, so catch it generically and return
+        } catch (\Error $e) {
+            return $response;
+        }
+        
+        foreach ($_children as $child){
+            $response['variants'][] = array(
+                'id' => $child->getId(),
+                'title' => $child->getName(),
+                'available' => $child->isAvailable(),
+                'inventory_quantity' => $this->_stockItem->getStockQty($child->getId()),
+                'inventory_policy' => $this->_getStockItem($child->getId()),
+            );
+        }
+
+        return $response;
+
     }
 
     // handle inspector tasks to return products by id
@@ -234,5 +285,10 @@ class Reclaim implements ReclaimInterface
             }
         }
         return $image_array;
+    }
+    public function _getStockItem($productId)
+    {
+        $stock = $this->_stockItemRepository->get($productId);
+        return $stock->getManageStock();
     }
 }

@@ -30,6 +30,15 @@ interface ReclaimInterface
     public function product($quote_id, $item_id);
 
     /**
+     * Returns product information with its variants
+     *
+     * @api
+     * @param int $product_id
+     * @return mixed
+     */
+    public function backinstock($product_id);
+
+    /**
      * Returns product by id range
      *
      * @api
