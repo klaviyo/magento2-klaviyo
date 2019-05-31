@@ -23,6 +23,7 @@ class Reclaim implements ReclaimInterface
     public function __construct(
         \Magento\Framework\ObjectManagerInterface $objectManager, 
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
+        \Magento\Catalog\Model\ProductFactory $productFactory,
         \Magento\CatalogInventory\Api\StockStateInterface $stockItem,
         \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository,
         \Magento\Newsletter\Model\Subscriber $subscriber,
@@ -31,6 +32,7 @@ class Reclaim implements ReclaimInterface
         )
     {
         $this->quoteFactory = $quoteFactory;
+        $this->_productFactory = $productFactory;
         $this->_objectManager = $objectManager;
         $this->_stockItem = $stockItem;
         $this->_stockItemRepository = $stockItemRepository;
@@ -114,21 +116,27 @@ class Reclaim implements ReclaimInterface
     /**
     * @return mixed
     */
-    public function backinstock($product_id)
+    public function productVariantInventory($product_id, $store_id=0)
     {
         if (!$product_id){
             throw new NotFoundException(_('A product id is required'));
         }
-        $product = $this->_objectManager->create('Magento\Catalog\Model\Product')->load($product_id);
+        // if store_id is specificed, use it
+        if ($store_id){
+            $product = $this->_productFactory->create()->setStoreId($store_id)->load($product_id);    
+        } else {
+            $product = $this->_productFactory->create()->load($product_id);
+        }
 
         if (!$product){
-            throw new NotFoundException(_('A product was not found'));
+            throw new NotFoundException(_('A product with id '. $product_id .' was not found'));
         }
 
         $productId = $product->getId();
 
         $response = array(array(
             'id' => $productId,
+            'sku' => $product->getSku(),
             'title' => $product->getName(),
             'price' => $product->getPrice(),
             'available' => true,
@@ -147,6 +155,7 @@ class Reclaim implements ReclaimInterface
             $response['variants'][] = array(
                 'id' => $child->getId(),
                 'title' => $child->getName(),
+                'sku' => $child->getSku(),
                 'available' => $child->isAvailable(),
                 'inventory_quantity' => $this->_stockItem->getStockQty($child->getId()),
                 'inventory_policy' => $this->_getStockItem($child->getId()),

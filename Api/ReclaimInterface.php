@@ -34,9 +34,10 @@ interface ReclaimInterface
      *
      * @api
      * @param int $product_id
+     * @param int $store_id
      * @return mixed
      */
-    public function backinstock($product_id);
+    public function productVariantInventory($product_id, $store_id=0);
 
     /**
      * Returns product by id range
