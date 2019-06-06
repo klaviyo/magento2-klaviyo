@@ -12,6 +12,12 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
+    <route url="/V1/klaviyo/reclaim/product/back-in-stock" method="GET">
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="productVariantInventory"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
     <route url="/V1/klaviyo/reclaim/product-inspector" method="GET">
         <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="productinspector"/>
         <resources>
