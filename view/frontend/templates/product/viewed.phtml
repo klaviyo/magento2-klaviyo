@@ -1,30 +1,9 @@
 <?php
-/** @var \Magento\Catalog\Helper\Image $_imagehelper */
-$_imagehelper = $this->helper('Magento\Catalog\Helper\Image');
-/** @var \Magento\Catalog\Api\Data\ProductInterface  $_product */
-$_product = $block->getProduct();
-
 /** @var Klaviyo\Reclaim\Block\Catalog\Product\ViewedProduct $block */
 ?>
 
 <script text="text/javascript">
-    var item = {
-        ProductID: "<?php echo $_product->getId(); ?>",
-        Name: "<?php echo $_product->getName(); ?>",
-        SKU: "<?php echo $_product->getSku(); ?>",
-        URL: "<?php echo $_product->getProductUrl(); ?>",
-        Price: <?php echo $block->getPrice(); ?>,
-        FinalPrice: <?php echo $block->getFinalPrice(); ?>,
-        ImageURL: "<?php echo $_imagehelper->init($_product, 'product_base_image')->getUrl(); ?>"
-        Categories: <?php echo $this->getProductCategoriesAsJson(); ?>
-    };
-    _learnq.push(['track', 'Viewed Product', item]);
-    _learnq.push(['trackViewedItem', {
-        Title: item.Name,
-        ItemId: item.ProductID,
-        Categories: item.Categories,
-        ImageUrl: item.ImageURL,
-        Url: item.URL
-    }]);
+    _learnq.push(['track', 'Viewed Product', <?= $block->getViewedProductJson() ?>]);
+    _learnq.push(['trackViewedItem', <?= $block->getViewedItemJson() ?>]);
 </script>
 

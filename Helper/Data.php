@@ -4,10 +4,14 @@ namespace Klaviyo\Reclaim\Helper;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
+    const MODULE_NAME = 'Klaviyo_Reclaim';
+    const USER_AGENT = 'Klaviyo/1.0';
+    const KLAVIYO_HOST =  'https://a.klaviyo.com/';
 
     protected $_scopeConfig;
     protected $_request;
     protected $_state;
+    protected $_moduleList;
 
     const ENABLE = 'klaviyo_reclaim_general/general/enable';
     const PUBLIC_API_KEY = 'klaviyo_reclaim_general/general/public_api_key';
@@ -17,13 +21,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Framework\App\State $state,
-        \Magento\Framework\ObjectManagerInterface $objectManager
+        \Magento\Framework\ObjectManagerInterface $objectManager,
+        \Magento\Framework\Module\ModuleListInterface $moduleList
     ) {
         parent::__construct($context);
         $this->_scopeConfig = $context->getScopeConfig();
         $this->_request = $context->getRequest();
         $this->_state = $state;
         $this->_storeId = $objectManager->get('Magento\Store\Model\StoreManagerInterface')->getStore()->getId();
+        $this->_moduleList = $moduleList;
     }
 
     protected function getScopeSetting($path){
@@ -47,6 +53,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         } else {
             return $this->_scopeConfig->getValue($path);
         };
+    }
+
+    public function getVersion()
+    {
+        return $this->_moduleList
+            ->getOne(self::MODULE_NAME)['setup_version'];
     }
 
     public function getEnabled()
@@ -116,29 +128,36 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $api_key = $this->getPrivateApiKey();
 
         $properties = [];
+        $properties['email'] = $email;
         if ($first_name) $properties['$first_name'] = $first_name;
         if ($last_name) $properties['$last_name'] = $last_name;
         if ($source) $properties['$source'] = $source;
-        $properties_val = count($properties) ? urlencode(json_encode($properties)) : '{}';
 
-        $fields = [
-            'api_key=' . $api_key,
-            'email=' . urlencode($email),
-            'confirm_optin=false',
-            'properties=' . $properties_val,
-        ];
+        $properties_val = count($properties) ? json_encode(array('profiles' => $properties)) : '{}';
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://a.klaviyo.com/api/v1/list/' . $list_id . '/members');
-        curl_setopt($ch, CURLOPT_POST, count($fields));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, join('&', $fields));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://a.klaviyo.com/api/v2/list/" . $list_id . "/members?api_key=" .$api_key,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => $properties_val,
+            CURLOPT_USERAGENT => self::USER_AGENT,
+            CURLOPT_HTTPHEADER => array(
+              "Content-Type: application/json",
+              'Content-Length: ' . strlen($properties_val)
+            ),
+        ));
+        // Submit the POST request
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        // Close cURL session handle
+        curl_close($curl);
 
-        curl_exec($ch);
-        curl_close($ch);
+        return $response;
     }
 
-    public function unsubscribeEmailFromKlaviyoList($email) {
+    public function unsubscribeEmailFromKlaviyoList($email) 
+    {
         $list_id = $this->getNewsletter();
         $api_key = $this->getPrivateApiKey();
 
@@ -155,5 +174,36 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         curl_exec($ch);
         curl_close($ch);
+    }
+
+    public function klaviyoTrackEvent($event, $customer_properties=array(), $properties=array(), $timestamp=NULL)
+    {
+        if ((!array_key_exists('$email', $customer_properties) || empty($customer_properties['$email']))
+            && (!array_key_exists('$id', $customer_properties) || empty($customer_properties['$id']))) {
+
+            return 'You must identify a user by email or ID.';
+        }
+        $params = array(
+            'token' => $this->getPublicApiKey(),
+            'event' => $event,
+            'properties' => $properties,
+            'customer_properties' => $customer_properties
+        );
+
+        if (!is_null($timestamp)) {
+            $params['time'] = $timestamp;
+        }
+        $encoded_params = $this->build_params($params);
+        return $this->make_request('api/track', $encoded_params);
+
+    }
+    protected function build_params($params) {
+        return 'data=' . urlencode(base64_encode(json_encode($params)));
+    }
+
+    protected function make_request($path, $params) {
+        $url = self::KLAVIYO_HOST . $path . '?' . $params;
+        $response = file_get_contents($url);
+        return $response == '1';
     }
 }

@@ -6,4 +6,46 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
+    <route url="/V1/klaviyo/reclaim/product" method="GET">
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="product"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/klaviyo/reclaim/product/back-in-stock" method="GET">
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="productVariantInventory"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/klaviyo/reclaim/product-inspector" method="GET">
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="productinspector"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/klaviyo/reclaim/customers/subscriptions/count" method="GET">
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="getSubscribersCount"/>
+        <resources>
+            <resource ref="Magento_Customer::group"/>
+        </resources>
+    </route>
+    <route url="/V1/klaviyo/reclaim/customers/subscriptions/periodic" method="GET">
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="getSubscribersByDateRange"/>
+        <resources>
+            <resource ref="Magento_Customer::group"/>
+        </resources>
+    </route>
+    <route url="/V1/klaviyo/reclaim/customers/subscriptions/historical" method="GET">
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="getSubscribersById"/>
+        <resources>
+            <resource ref="Magento_Customer::group"/>
+        </resources>
+    </route>
+    <route url="/V1/klaviyo/reclaim/" method="GET">
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="reclaim"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
 </routes>
