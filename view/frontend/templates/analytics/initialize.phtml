@@ -2,14 +2,12 @@
 <?php if ( $this->isKlaviyoEnabled() && $klaviyoKey ): ?>
 <script type="application/javascript" async 
  src="https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=<?php echo $klaviyoKey; ?>"></script>
-    <script text="text/javascript">
-        var _learnq = _learnq || [];
-        <?php if ( $this->isLoggedIn() ): ?>
-            _learnq.push(['identify', {
-                $email: "<?php echo $this->getCustomerEmail() ?>",
-                $first_name: "<?php echo $this->getCustomerFirstname(); ?>",
-                $last_name: "<?php echo $this->getCustomerLastname(); ?>"
-            }]);
-        <?php endif; ?>
+
+    <script type="text/x-magento-init">
+        {
+            "*": {
+                "KlaviyoCustomerData": {}
+            }
+        }
     </script>
 <?php endif; ?>
