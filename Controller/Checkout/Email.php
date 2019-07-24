@@ -26,6 +26,11 @@ class Email extends \Magento\Framework\App\Action\Action
         $quote = $this->_objectManager->create('Magento\Checkout\Model\Cart')->getQuote();
 
         $customer_email = $this->getRequest()->getParam('email');
+        // add a quick email validation
+        if (filter_var($customer_email, FILTER_VALIDATE_EMAIL)) {
+            return;
+        }
+
         $quote->setCustomerEmail($customer_email);
         $quote->save();
 
