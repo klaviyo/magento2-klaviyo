@@ -284,16 +284,23 @@ class Reclaim implements ReclaimInterface
         return $storeIdFilter;
     }
 
-    public function _getImages($product){
+    public function _getImages($product)
+    {
         $images = $product->getMediaGalleryImages();
         $image_array = array();
+        
         foreach($images as $image) {
-            $image_url = $image->getUrl();
-            if ($image_url){
-                $image_array[] = $image_url;
-            }
+            $image_array[] = $this->handleMediaURL($image);
         }
         return $image_array;
+    }
+    public function handleMediaURL($image)
+    {
+        $custom_media_url = $this->_klaviyoHelper->getCustomMediaURL();
+        if ($custom_media_url){
+            return $custom_media_url . "/media/catalog/product" . $image->getFile();
+        }
+        return $image->getUrl();
     }
     public function _getStockItem($productId)
     {

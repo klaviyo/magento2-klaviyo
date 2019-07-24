@@ -16,6 +16,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     const ENABLE = 'klaviyo_reclaim_general/general/enable';
     const PUBLIC_API_KEY = 'klaviyo_reclaim_general/general/public_api_key';
     const PRIVATE_API_KEY = 'klaviyo_reclaim_general/general/private_api_key';
+    const CUSTOM_MEDIA_URL = 'klaviyo_reclaim_general/general/custom_media_url';
     const NEWSLETTER = 'klaviyo_reclaim_newsletter/newsletter/newsletter';
 
     public function __construct(
@@ -74,6 +75,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getPrivateApiKey()
     {
         return $this->getScopeSetting(self::PRIVATE_API_KEY);
+    }
+
+    public function getCustomMediaURL()
+    {
+        return $this->getScopeSetting(self::CUSTOM_MEDIA_URL);
     }
 
     public function getNewsletter()
