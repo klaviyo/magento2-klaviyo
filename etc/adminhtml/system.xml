@@ -21,10 +21,6 @@
                 <field id="private_api_key" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Private Klaviyo API Key</label>
                 </field>
-                <field id="custom_media_url" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Custom Media URL</label>
-                    <validate>validate-url</validate>
-                </field>
             </group>
         </section>
 
