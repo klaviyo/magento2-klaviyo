@@ -2,26 +2,49 @@
 
 namespace Klaviyo\Reclaim\Block\Catalog\Product;
 
-class ViewedProduct extends \Magento\Framework\View\Element\Template
+use Klaviyo\Reclaim\Helper\Data;
+use Magento\Catalog\Helper\Image;
+use Magento\Catalog\Model\CategoryFactory;
+use Magento\Framework\Registry;
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template\Context;
+
+class ViewedProduct extends Template
 {
     protected $_helper;
-    protected $_objectManager;
     protected $_registry;
     protected $_categoryFactory;
+    protected $imageUrl = null;
+    protected $categories = [];
+    protected $price = 0;
 
+    /**
+     * @var Magento\Catalog\Helper\Image
+     */
+    private $imageHelper;
+
+    /**
+     * ViewedProduct constructor.
+     * @param Context $context
+     * @param Data $helper
+     * @param Registry $registry
+     * @param CategoryFactory $categoryFactory
+     * @param Image $imageHelper
+     * @param array $data
+     */
     public function __construct(
-        \Magento\Framework\View\Element\Template\Context $context,
-        \Klaviyo\Reclaim\Helper\Data $helper,
-        \Magento\Framework\ObjectManagerInterface $objectManager,
-        \Magento\Framework\Registry $registry,
-        \Magento\Catalog\Model\CategoryFactory $categoryFactory,
+        Context $context,
+        Data $helper,
+        Registry $registry,
+        CategoryFactory $categoryFactory,
+        Image $imageHelper,
         array $data = []
     ) {
         parent::__construct($context, $data);
         $this->_helper = $helper;
-        $this->_objectManager = $objectManager;
         $this->_registry = $registry;
         $this->_categoryFactory = $categoryFactory;
+        $this->imageHelper = $imageHelper;
     }
 
     /**
@@ -62,15 +85,143 @@ class ViewedProduct extends \Magento\Framework\View\Element\Template
      * View helper to return a list of category names for the currently viewed
      * catalog product. Used to track the `Viewed Product` metric.
      *
+     * @return array
+     */
+    public function getProductCategories()
+    {
+        if (empty($this->categories)) {
+            foreach ($this->getProduct()->getCategoryIds() as $category_id) {
+                $category = $category = $this->_categoryFactory->create()->load($category_id);
+                $this->categories[] = $category->getName();
+            }
+        }
+
+        return $this->categories;
+    }
+
+    /**
+     * View helper to return a list of category names for the currently viewed
+     * catalog product. Used to track the `Viewed Product` metric.
+     *
      * @return JSON
      */
     public function getProductCategoriesAsJson()
     {
-        $categories = array();
-        foreach ($this->getProduct()->getCategoryIds() as $category_id) {
-          $category = $category = $this->_categoryFactory->create()->load($category_id);
-          $categories[] = $category->getName();
+        return json_encode($this->getProductCategories());
+    }
+
+    /**
+     * Get Price
+     *
+     * @return double
+     */
+    public function getPrice()
+    {
+        if (!$this->price) {
+            $_product = $this->getProduct();
+            $this->price = $_product->getPrice();
+
+            if ($_product->getTypeId() == "configurable") {
+                $_children = $_product->getTypeInstance()->getUsedProducts($_product);
+                foreach ($_children as $child){
+                    $this->price = $child->getPrice();
+                    if ($this->price) {
+                        break;
+                    }
+                }
+            }
         }
-        return json_encode($categories);
+
+        return number_format($this->price, 2);
+    }
+
+    /**
+     * Get Final Price
+     *
+     * @return double
+     */
+    public function getFinalPrice()
+    {
+        return  number_format($this->getProduct()->getPriceInfo()->getPrice('final_price')->getValue(), 2);
+    }
+
+    public function getProductImage()
+    {
+        // should consider using
+        // $this->imageHelper->init($_product, 'product_base_image')->getUrl();
+        if (!$this->imageUrl) {
+            $_product = $this->getProduct();
+            // Check to see if we have an image for this product.
+            foreach ($_product->getMediaGalleryImages() as $_product_image) {
+                if (!$_product_image->getDisabled()) {
+                    $this->imageUrl = $this->imageHelper
+                        ->init($_product, 'product_base_image')
+                        ->setImageFile($_product_image->getFile())
+                        ->getUrl();
+                    break;
+                }
+            }
+        }
+
+        return $this->imageUrl;
+    }
+
+    /**
+     * Render block HTML
+     *
+     * @return string
+     */
+    protected function _toHtml()
+    {
+        if (!($this->isKlaviyoEnabled() && $this->getPublicApiKey())) {
+            return '';
+        }
+
+        return parent::_toHtml();
+    }
+
+    /**
+     * @return string
+     */
+    public function getViewedProductJson()
+    {
+        $_product = $this->getProduct();
+
+        $result = [
+            'ProductID' => $_product->getId(),
+            'Name' => $_product->getName(),
+            'SKU' => $_product->getSku(),
+            'URL' => $_product->getProductUrl(),
+            'Price' => $this->getPrice(),
+            'FinalPrice' => $this->getFinalPrice(),
+            'Categories' => $this->getProductCategories()
+        ];
+
+        if($this->getProductImage()) {
+            $result['ImageURL'] = $this->getProductImage();
+        }
+
+        return json_encode($result);
+    }
+
+    /**
+     * @return string
+     */
+    public function getViewedItemJson()
+    {
+        $_product = $this->getProduct();
+
+        $result = [
+            'Title' => $_product->getName(),
+            'ItemId' => $_product->getId(),
+            'Url' => $_product->getProductUrl(),
+            'Categories' => $this->getProductCategories()
+        ];
+
+        if ($this->getProductImage()) {
+            $result['ImageURL'] = $this->getProductImage();
+        }
+
+        return json_encode($result);
     }
 }
