@@ -75,7 +75,7 @@ interface ReclaimInterface
      * @api
      * @param string $start_id
      * @param string $end_id
-     * @param string $store_id
+     * @param int $store_id
      * @return mixed[]
      */
     public function getSubscribersById($start_id, $end_id, $store_id=null);
