@@ -150,17 +150,9 @@ class ViewedProduct extends Template
         // should consider using
         // $this->imageHelper->init($_product, 'product_base_image')->getUrl();
         if (!$this->imageUrl) {
-            $_product = $this->getProduct();
-            // Check to see if we have an image for this product.
-            foreach ($_product->getMediaGalleryImages() as $_product_image) {
-                if (!$_product_image->getDisabled()) {
-                    $this->imageUrl = $this->imageHelper
-                        ->init($_product, 'product_base_image')
-                        ->setImageFile($_product_image->getFile())
-                        ->getUrl();
-                    break;
-                }
-            }
+            $this->imageUrl = $this->imageHelper
+                ->init($this->getProduct(), 'product_base_image')
+                ->getUrl();
         }
 
         return $this->imageUrl;
