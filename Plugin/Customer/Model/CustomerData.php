@@ -34,8 +34,8 @@ class CustomerData
     public function afterGetSectionData(Customer $subject, $result)
     {
         if ($this->currentCustomer->getCustomerId()) {
-            $result['lastname'] = $this->currentCustomer->getLastname();
-            $result['email'] = $customer->getEmail();
+            $result['lastname'] = $this->currentCustomer->getCustomer()->getLastname()
+            $result['email'] = $this->currentCustomer->getCustomer()->getEmail()
         } else {
             $result['lastname'] = '';
             $result['email'] = '';
