@@ -4,6 +4,7 @@
 
 <script text="text/javascript">
     document.addEventListener("DOMContentLoaded", function() {
+        var _learnq = _learnq || [];
         _learnq.push(['track', 'Viewed Product', <?= $block->getViewedProductJson() ?>]);
         _learnq.push(['trackViewedItem', <?= $block->getViewedItemJson() ?>]);
     });

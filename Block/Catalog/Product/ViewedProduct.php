@@ -147,8 +147,6 @@ class ViewedProduct extends Template
 
     public function getProductImage()
     {
-        // should consider using
-        // $this->imageHelper->init($_product, 'product_base_image')->getUrl();
         if (!$this->imageUrl) {
             $this->imageUrl = $this->imageHelper
                 ->init($this->getProduct(), 'product_base_image')
