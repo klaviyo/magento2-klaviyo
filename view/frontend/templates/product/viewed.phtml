@@ -3,9 +3,9 @@
 ?>
 
 <script text="text/javascript">
-    document.addEventListener("DOMContentLoaded", function() {
-        _learnq.push(['track', 'Viewed Product', <?= $block->getViewedProductJson() ?>]);
-        _learnq.push(['trackViewedItem', <?= $block->getViewedItemJson() ?>]);
-    });
+  require(['domReady!'], function () {
+    _learnq.push(['track', 'Viewed Product', <?= $block->getViewedProductJson() ?>]);
+    _learnq.push(['trackViewedItem', <?= $block->getViewedItemJson() ?>]);
+  });
 </script>
 
