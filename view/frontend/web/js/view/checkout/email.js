@@ -4,7 +4,8 @@ define([
     'jquery/ui',
     '!domReady'
 ], function(Component) {
-    // initial
+    'use strict';
+    // initialize the customerData prior to returning the component
     var _klaviyoCustomerData = window.customerData;
 
     return Component.extend({
