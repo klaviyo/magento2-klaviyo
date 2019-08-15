@@ -1,9 +1,3 @@
-/***
- * Copyright © MagePal LLC. All rights reserved.
- * See COPYING.txt for license details.
- * https://www.magepal.com | support@magepal.com
- */
-
 define([
     'underscore',
     'Magento_Customer/js/customer-data'
