@@ -3,25 +3,25 @@
     <route url="/V1/klaviyo/reclaim/stores" method="GET">
         <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="stores"/>
         <resources>
-            <resource ref="anonymous"/>
+            <resource ref="Magento_Backend::store"/>
         </resources>
     </route>
     <route url="/V1/klaviyo/reclaim/product" method="GET">
         <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="product"/>
         <resources>
-            <resource ref="anonymous"/>
+            <resource ref="Magento_Catalog::products" />
         </resources>
     </route>
     <route url="/V1/klaviyo/reclaim/product/back-in-stock" method="GET">
         <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="productVariantInventory"/>
         <resources>
-            <resource ref="anonymous"/>
+            <resource ref="Magento_CatalogInventory::cataloginventory"/>
         </resources>
     </route>
     <route url="/V1/klaviyo/reclaim/product-inspector" method="GET">
         <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="productinspector"/>
         <resources>
-            <resource ref="anonymous"/>
+            <resource ref="Magento_Catalog::products" />
         </resources>
     </route>
     <route url="/V1/klaviyo/reclaim/customers/subscriptions/count" method="GET">
