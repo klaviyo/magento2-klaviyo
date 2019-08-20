@@ -2,7 +2,7 @@ define([
     'uiComponent',
     'jquery',
     'jquery/ui',
-    '!domReady'
+    'domReady!'
 ], function(Component) {
     'use strict';
     // initialize the customerData prior to returning the component

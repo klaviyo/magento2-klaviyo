@@ -4,8 +4,9 @@
 
 <script text="text/javascript">
   require(['domReady!'], function () {
-    _learnq.push(['track', 'Viewed Product', <?= $block->getViewedProductJson() ?>]);
-    _learnq.push(['trackViewedItem', <?= $block->getViewedItemJson() ?>]);
+    window._learnq = window._learnq || [];
+    window._learnq.push(['track', 'Viewed Product', <?= $block->getViewedProductJson() ?>]);
+    window._learnq.push(['trackViewedItem', <?= $block->getViewedItemJson() ?>]);
   });
 </script>
 
