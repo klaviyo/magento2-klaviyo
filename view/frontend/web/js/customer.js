@@ -5,7 +5,7 @@ define([
 ], function (_, customerData) {
     'use strict';
     
-    window._learnq = window._learnq || [];
+    var _learnq = window._learnq || [];
     var customer = customerData.get('customer')();
 
     if(_.has(customer, 'email') && customer.email) {
