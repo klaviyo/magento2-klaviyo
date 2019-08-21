@@ -1,16 +1,11 @@
-/***
- * Copyright © MagePal LLC. All rights reserved.
- * See COPYING.txt for license details.
- * https://www.magepal.com | support@magepal.com
- */
-
 define([
     'underscore',
-    'Magento_Customer/js/customer-data'
+    'Magento_Customer/js/customer-data',
+    'domReady!'
 ], function (_, customerData) {
     'use strict';
     
-    window._learnq = window._learnq || [];
+    var _learnq = window._learnq || [];
     var customer = customerData.get('customer')();
 
     if(_.has(customer, 'email') && customer.email) {
