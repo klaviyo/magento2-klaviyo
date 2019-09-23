@@ -198,7 +198,7 @@ class Reclaim implements ReclaimInterface
 
     public function getSubscribersCount()
     {
-        $subscriberCount =$this->_subscriberCollection->create()->count();
+        $subscriberCount =$this->_subscriberCollection->create()->getSize();
         return $subscriberCount;
     }
 
