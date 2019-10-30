@@ -93,7 +93,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getOptInSetting()
     {
-        if($this->getScopeSetting(self::USING_KLAVIYO_LIST_OPT_IN)) {
+        if ($this->getScopeSetting(self::USING_KLAVIYO_LIST_OPT_IN)) {
             return self::API_SUBSCRIBE;
         } else {
             return self::API_MEMBERS;
