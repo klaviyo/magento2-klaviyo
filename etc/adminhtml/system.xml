@@ -28,7 +28,7 @@
             </group>
         </section>
 
-        <section id="klaviyo_reclaim_newsletter" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+        <section id="klaviyo_reclaim_newsletter" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Newsletter</label>
             <tab>klaviyo</tab>
             <resource>Klaviyo_Reclaim::klaviyo_reclaim</resource>
@@ -41,7 +41,7 @@
                 </field>
                 <field id="using_klaviyo_list_opt_in" translate="label" type="radios" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Use Klaviyo Opt-In Setting For This List?</label>
-                    <source_model>Vendor\Extension\Model\Config\Source\Radiobtn</source_model>
+                    <source_model>Klaviyo\Reclaim\Model\Config\Source\Radiobtn</source_model>
                 </field>
             </group>
         </section>

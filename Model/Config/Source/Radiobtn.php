@@ -1,5 +1,5 @@
 <?php
-namespace Vendor\Extension\Model\Config\Source;
+namespace Klaviyo\Reclaim\Model\Config\Source;
 class Radiobtn implements \Magento\Framework\Option\ArrayInterface 
 {
     public function toOptionArray()

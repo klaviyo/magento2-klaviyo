@@ -20,8 +20,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     const NEWSLETTER = 'klaviyo_reclaim_newsletter/newsletter/newsletter';
     const USING_KLAVIYO_LIST_OPT_IN = 'klaviyo_reclaim_newsletter/newsletter/using_klaviyo_list_opt_in';
 
-    const MEMBERS = '/members';
-    const SUBSCRIBE = '/subscribe';
+    const API_MEMBERS = '/members';
+    const API_SUBSCRIBE = '/subscribe';
 
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
@@ -94,9 +94,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getOptInSetting()
     {
         if($this->getScopeSetting(self::USING_KLAVIYO_LIST_OPT_IN)) {
-            return SUBSCRIBE;
-        } else {
-            return MEMBERS;
+            return self::API_SUBSCRIBE;
+        } else if(!($this->getScopeSetting(self::USING_KLAVIYO_LIST_OPT_IN))) {
+            return self::API_MEMBERS;
         }
     }
 
@@ -155,9 +155,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         $properties_val = count($properties) ? json_encode(array('profiles' => $properties)) : '{}';
 
+        $url = "https://a.klaviyo.com/api/v2/list/" . $list_id . $opt_in . "?api_key=" . $api_key;
+
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://a.klaviyo.com/api/v2/list/" . $list_id . $opt_in . "?api_key=" .$api_key,
+            CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "POST",
             CURLOPT_POSTFIELDS => $properties_val,
