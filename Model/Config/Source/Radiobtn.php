@@ -15,5 +15,5 @@ class Radiobtn implements \Magento\Framework\Option\ArrayInterface
                 'label' => __('No, do not send opt-in emails from Klaviyo')
             ],
         ];
-	}
+    }
 }

@@ -42,7 +42,7 @@
                 <field id="using_klaviyo_list_opt_in" translate="label" type="radios" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Use Klaviyo Opt-In Settings For This List?</label>
                     <source_model>Klaviyo\Reclaim\Model\Config\Source\Radiobtn</source_model>
-                    <tooltip>NOTE: There is a separate Magento opt-in setting for this list that can also send opt-in emails</tooltip>
+                    <comment>NOTE: There is a separate Magento opt-in setting for this list that can also send opt-in emails</comment>
                 </field>
             </group>
         </section>
