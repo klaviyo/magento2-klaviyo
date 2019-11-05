@@ -18,6 +18,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     const PRIVATE_API_KEY = 'klaviyo_reclaim_general/general/private_api_key';
     const CUSTOM_MEDIA_URL = 'klaviyo_reclaim_general/general/custom_media_url';
     const NEWSLETTER = 'klaviyo_reclaim_newsletter/newsletter/newsletter';
+    const USING_KLAVIYO_LIST_OPT_IN = 'klaviyo_reclaim_newsletter/newsletter/using_klaviyo_list_opt_in';
+
+    const API_MEMBERS = '/members';
+    const API_SUBSCRIBE = '/subscribe';
 
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
@@ -87,6 +91,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->getScopeSetting(self::NEWSLETTER);
     }
 
+    public function getOptInSetting()
+    {
+        if ($this->getScopeSetting(self::USING_KLAVIYO_LIST_OPT_IN)) {
+            return self::API_SUBSCRIBE;
+        } else {
+            return self::API_MEMBERS;
+        }
+    }
+
     public function getKlaviyoLists($api_key=null){
         if (!$api_key) $api_key = $this->getPrivateApiKey();
 
@@ -131,6 +144,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function subscribeEmailToKlaviyoList($email, $first_name=null, $last_name=null, $source=null) {
         $list_id = $this->getNewsletter();
+        $opt_in = $this->getOptInSetting();
         $api_key = $this->getPrivateApiKey();
 
         $properties = [];
@@ -141,9 +155,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         $properties_val = count($properties) ? json_encode(array('profiles' => $properties)) : '{}';
 
+        $url = "https://a.klaviyo.com/api/v2/list/" . $list_id . $opt_in . "?api_key=" . $api_key;
+
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://a.klaviyo.com/api/v2/list/" . $list_id . "/members?api_key=" .$api_key,
+            CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "POST",
             CURLOPT_POSTFIELDS => $properties_val,
