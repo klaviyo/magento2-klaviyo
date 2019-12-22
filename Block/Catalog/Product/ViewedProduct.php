@@ -4,7 +4,7 @@ namespace Klaviyo\Reclaim\Block\Catalog\Product;
 
 use Klaviyo\Reclaim\Helper\Data;
 use Magento\Catalog\Helper\Image;
-use Magento\Catalog\Model\CategoryFactory;
+use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
@@ -13,7 +13,7 @@ class ViewedProduct extends Template
 {
     protected $_helper;
     protected $_registry;
-    protected $_categoryFactory;
+    protected $_categoryCollectionFactory;
     protected $imageUrl = null;
     protected $categories = [];
     protected $price = 0;
@@ -36,14 +36,14 @@ class ViewedProduct extends Template
         Context $context,
         Data $helper,
         Registry $registry,
-        CategoryFactory $categoryFactory,
+        CollectionFactory $categoryCollectionFactory,
         Image $imageHelper,
         array $data = []
     ) {
         parent::__construct($context, $data);
         $this->_helper = $helper;
         $this->_registry = $registry;
-        $this->_categoryFactory = $categoryFactory;
+        $this->_categoryCollectionFactory = $categoryCollectionFactory;
         $this->imageHelper = $imageHelper;
     }
 
@@ -90,8 +90,13 @@ class ViewedProduct extends Template
     public function getProductCategories()
     {
         if (empty($this->categories)) {
-            foreach ($this->getProduct()->getCategoryIds() as $category_id) {
-                $category = $category = $this->_categoryFactory->create()->load($category_id);
+            $categoryIds = $this->getProduct()->getCategoryIds();
+
+            $collection = $this->_categoryCollectionFactory->create();
+            $collection->addAttributeToSelect('name');
+            $collection->addAttributeToFilter('entity_id', $categoryIds);
+
+            foreach ($collection->getItems() as $category) {
                 $this->categories[] = $category->getName();
             }
         }
