@@ -20,6 +20,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     const NEWSLETTER = 'klaviyo_reclaim_newsletter/newsletter/newsletter';
     const USING_KLAVIYO_LIST_OPT_IN = 'klaviyo_reclaim_newsletter/newsletter/using_klaviyo_list_opt_in';
 
+    const REST_API_USERNAME = 'klaviyo_reclaim_rest_api_user/rest_api_user/username';
+    const REST_API_PASSWORD = 'klaviyo_reclaim_rest_api_user/rest_api_user/password';
+    const REST_API_EMAIL = 'klaviyo_reclaim_rest_api_user/rest_api_user/email';
+
     const API_MEMBERS = '/members';
     const API_SUBSCRIBE = '/subscribe';
 
@@ -79,6 +83,21 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getPrivateApiKey()
     {
         return $this->getScopeSetting(self::PRIVATE_API_KEY);
+    }
+
+    public function getRestApiUsername()
+    {
+        return $this->getScopeSetting(self::REST_API_USERNAME);
+    }
+
+    public function getRestApiPassword()
+    {
+        return $this->getScopeSetting(self::REST_API_PASSWORD);
+    }
+
+    public function getRestApiEmail()
+    {
+        return $this->getScopeSetting(self::REST_API_EMAIL);
     }
 
     public function getCustomMediaURL()
