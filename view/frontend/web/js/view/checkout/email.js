@@ -29,12 +29,15 @@ define([
         return true;
       }
     },
+    isKlaviyoActive: function() {
+      return !!(window._learnq && window._learnq.identify);
+    },
     bindEmailListener: function () {
       // jquery overrides this, so let's create an instance of the parent
       var self = this;
       console.log('Klaviyo_Reclaim - Binding to #customer-email');
       jQuery('#maincontent').delegate('#customer-email', 'change', function (event) {
-        if (!window._learnq || !window._learnq.identify) {
+        if (!self.isKlaviyoActive()) {
           return;
         }
         
