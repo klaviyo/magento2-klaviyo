@@ -34,6 +34,10 @@ define([
       var self = this;
       console.log('Klaviyo_Reclaim - Binding to #customer-email');
       jQuery('#maincontent').delegate('#customer-email', 'change', function (event) {
+        if (!window._learnq || !window._learnq.identify) {
+          return;
+        }
+        
         self._email = jQuery(this).val();
         if (!window._learnq.identify().email) {
           window._learnq.push(['identify', {
