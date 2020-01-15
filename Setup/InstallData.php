@@ -65,7 +65,7 @@ class InstallData implements InstallDataInterface
         $resource = [
             'Magento_Backend::all'
         ];
-        try{
+        try {
             $this->rulesFactory->create()
                 ->setRoleId($role->getId())
                 ->setResources($resource)
