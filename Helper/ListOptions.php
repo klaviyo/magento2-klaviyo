@@ -7,10 +7,10 @@ class ListOptions implements \Magento\Framework\Option\ArrayInterface
 
     public function __construct(
         \Magento\Framework\Message\ManagerInterface $messageManager,
-        \Klaviyo\Reclaim\Helper\Data $data_helper
+        \Klaviyo\Reclaim\Helper\Data $_dataHelper
     ) {
         $this->messageManager = $messageManager;
-        $this->data_helper = $data_helper;
+        $this->_dataHelper = $_dataHelper;
     }
 
     /**
@@ -22,14 +22,14 @@ class ListOptions implements \Magento\Framework\Option\ArrayInterface
         // field in Klaviyo\Reclaim\Block\System\Config\Form\Field\Newsletter, so we pass
         // it over in the options array.
 
-        if (!$this->data_helper->getPrivateApiKey()) {
+        if (!$this->_dataHelper->getPrivateApiKey()) {
             return [[
                 'label' => 'To sync newsletter subscribers to Klaviyo, first save a <strong>Private Klaviyo API Key</strong> on the "General" tab.',
                 'value' => 0
             ]];
         }
 
-        $result = $this->data_helper->getKlaviyoLists();
+        $result = $this->_dataHelper->getKlaviyoLists();
         if (!$result['success']) {
             return [[
                 'label' => $result['reason'] . ' To sync newsletter subscribers to Klaviyo, update the <strong>Private Klaviyo API Key</strong> on the "General" tab.',

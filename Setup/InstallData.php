@@ -32,6 +32,8 @@ class InstallData implements InstallDataInterface
      */
     protected $logger;
  
+    const KLAVIYO_ROLE_NAME = 'Klaviyo';
+
     /**
      * Init
      *
@@ -54,7 +56,7 @@ class InstallData implements InstallDataInterface
         ModuleContextInterface $context
     ) {
         $role = $this->roleFactory->create();
-        $role->setName('Klaviyo')
+        $role->setName(self::KLAVIYO_ROLE_NAME)
                 ->setPid(0)
                 ->setRoleType(RoleGroup::ROLE_TYPE) 
                 ->setUserType(UserContextInterface::USER_TYPE_ADMIN);

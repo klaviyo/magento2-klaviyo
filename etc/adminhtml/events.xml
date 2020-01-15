@@ -6,7 +6,7 @@
         <observer name="klaviyo_reclaim" instance="Klaviyo\Reclaim\Observer\UserProfileNewsletterSubscribeObserver" />
     </event>
     <event
-    name="admin_system_config_changed_section_klaviyo_reclaim_rest_api_user">
-        <observer name="custom_admin_system_config_changed_section_klaviyo_reclaim_rest_api_user" instance="Klaviyo\Reclaim\Observer\RestApiUserObserver"/>
+    name="admin_system_config_changed_section_klaviyo_reclaim_user">
+        <observer name="custom_admin_system_config_changed_section_klaviyo_reclaim_user" instance="Klaviyo\Reclaim\Observer\KlaviyoUserObserver"/>
     </event>
 </config>

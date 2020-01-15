@@ -12,6 +12,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_request;
     protected $_state;
     protected $_moduleList;
+    protected $_configWriter;
 
     const ENABLE = 'klaviyo_reclaim_general/general/enable';
     const PUBLIC_API_KEY = 'klaviyo_reclaim_general/general/public_api_key';
@@ -20,9 +21,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     const NEWSLETTER = 'klaviyo_reclaim_newsletter/newsletter/newsletter';
     const USING_KLAVIYO_LIST_OPT_IN = 'klaviyo_reclaim_newsletter/newsletter/using_klaviyo_list_opt_in';
 
-    const REST_API_USERNAME = 'klaviyo_reclaim_rest_api_user/rest_api_user/username';
-    const REST_API_PASSWORD = 'klaviyo_reclaim_rest_api_user/rest_api_user/password';
-    const REST_API_EMAIL = 'klaviyo_reclaim_rest_api_user/rest_api_user/email';
+    const KLAVIYO_USERNAME = 'klaviyo_reclaim_user/klaviyo_user/username';
+    const KLAVIYO_PASSWORD = 'klaviyo_reclaim_user/klaviyo_user/password';
+    const KLAVIYO_EMAIL = 'klaviyo_reclaim_user/klaviyo_user/email';
 
     const API_MEMBERS = '/members';
     const API_SUBSCRIBE = '/subscribe';
@@ -31,7 +32,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Framework\App\State $state,
         \Magento\Framework\ObjectManagerInterface $objectManager,
-        \Magento\Framework\Module\ModuleListInterface $moduleList
+        \Magento\Framework\Module\ModuleListInterface $moduleList,
+        \Magento\Framework\App\Config\Storage\WriterInterface $configWriter
     ) {
         parent::__construct($context);
         $this->_scopeConfig = $context->getScopeConfig();
@@ -39,10 +41,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_state = $state;
         $this->_storeId = $objectManager->get('Magento\Store\Model\StoreManagerInterface')->getStore()->getId();
         $this->_moduleList = $moduleList;
+        $this->_configWriter = $configWriter;
     }
 
-    protected function getScopeSetting($path){
-
+    protected function getScopeSetting($path)
+    {
         if ($this->_state->getAreaCode() == \Magento\Framework\App\Area::AREA_ADMINHTML) {
             $storeId = $this->_request->getParam('store');
             $websiteId = $this->_request->getParam('website');
@@ -53,14 +56,37 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         if (isset($storeId)) {
             $scope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
-            $value = $storeId;
-            return $this->_scopeConfig->getValue($path, $scope, $value);
+            $scopeCode = $storeId;
+            return $this->_scopeConfig->getValue($path, $scope, $scopeCode);
         } elseif (isset($websiteId)) {
             $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE;
-            $value = $websiteId;
-            return $this->_scopeConfig->getValue($path, $scope, $value);
+            $scopeCode = $websiteId;
+            return $this->_scopeConfig->getValue($path, $scope, $scopeCode);
         } else {
             return $this->_scopeConfig->getValue($path);
+        };
+    }
+
+    protected function setScopeSetting($path, $value)
+    {
+        if ($this->_state->getAreaCode() == \Magento\Framework\App\Area::AREA_ADMINHTML) {
+            $storeId = $this->_request->getParam('store');
+            $websiteId = $this->_request->getParam('website');
+        } else {
+            // In frontend area. Only concerned with store for frontend.
+            $storeId = $this->_storeId;
+        }
+
+        if (isset($storeId)) {
+            $scope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+            $scopeCode = $storeId;
+            return $this->_configWriter->save($path, $value, $scope, $scopeCode);
+        } elseif (isset($websiteId)) {
+            $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE;
+            $scopeCode = $websiteId;
+            return $this->_configWriter->save($path, $value, $scope, $scopeCode);
+        } else {
+            return $this->_configWriter->save($path, $value);
         };
     }
 
@@ -85,19 +111,34 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->getScopeSetting(self::PRIVATE_API_KEY);
     }
 
-    public function getRestApiUsername()
+    public function getKlaviyoUsername()
     {
-        return $this->getScopeSetting(self::REST_API_USERNAME);
+        return $this->getScopeSetting(self::KLAVIYO_USERNAME);
     }
 
-    public function getRestApiPassword()
+    public function unsetKlaviyoUsername() 
     {
-        return $this->getScopeSetting(self::REST_API_PASSWORD);
+        return $this->setScopeSetting(self::KLAVIYO_USERNAME, "klaviyo");
     }
 
-    public function getRestApiEmail()
+    public function getKlaviyoPassword()
     {
-        return $this->getScopeSetting(self::REST_API_EMAIL);
+        return $this->getScopeSetting(self::KLAVIYO_PASSWORD);
+    }
+
+    public function unsetKlaviyoPassword() 
+    {
+        return $this->setScopeSetting(self::KLAVIYO_PASSWORD, "");
+    }
+
+    public function getKlaviyoEmail()
+    {
+        return $this->getScopeSetting(self::KLAVIYO_EMAIL);
+    }
+
+    public function unsetKlaviyoEmail() 
+    {
+        return $this->setScopeSetting(self::KLAVIYO_EMAIL, "");
     }
 
     public function getCustomMediaURL()
