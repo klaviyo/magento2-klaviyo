@@ -4,11 +4,18 @@ namespace Klaviyo\Reclaim\Observer;
 
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer;
-use \Magento\Authorization\Model\Acl\Role\Group as RoleGroup;
+use Magento\Authorization\Model\Acl\Role\Group as RoleGroup;
 
 class KlaviyoUserObserver implements ObserverInterface
 {
     /**
+     * DataHelper
+     * 
+     * @var _dataHelper
+     */
+     protected $_dataHelper;
+
+     /**
      * ManagerInterface
      * 
      * @var _messageManager
@@ -16,25 +23,18 @@ class KlaviyoUserObserver implements ObserverInterface
     protected $_messageManager;
 
     /**
-     * DataHelper
-     * 
-     * @var _dataHelper
-     */
-    protected $_dataHelper;
-
-    /**
-     * UserFactory
-     * 
-     * @var _userFactory
-     */
-    protected $_userFactory;
-
-    /**
      * RoleCollectionFactory
      * 
      * @var RoleCollectionFactory
      */
     protected $_roleCollectionFactory;
+
+        /**
+     * UserFactory
+     * 
+     * @var _userFactory
+     */
+    protected $_userFactory;
 
     const KLAVIYO_FIRST_NAME = 'klaviyo';
     const KLAVIYO_LAST_NAME = 'klaviyo';
@@ -44,21 +44,21 @@ class KlaviyoUserObserver implements ObserverInterface
     /**
      * Init
      *
-     * @param MessageManager $_messageManager
      * @param DataHelper $_dataHelper
-     * @param UserFactory $_userFactory
+     * @param MessageManager $_messageManager
      * @param RoleCollectionFactory $_roleCollectionFactory
+     * @param UserFactory $_userFactory
      */
     public function __construct(
-        \Magento\Framework\Message\ManagerInterface $_messageManager,
         \Klaviyo\Reclaim\Helper\Data $_dataHelper,
-        \Magento\User\Model\UserFactory $_userFactory,
-        \Magento\Authorization\Model\ResourceModel\Role\CollectionFactory $_roleCollectionFactory
+        \Magento\Framework\Message\ManagerInterface $_messageManager,
+        \Magento\Authorization\Model\ResourceModel\Role\CollectionFactory $_roleCollectionFactory,
+        \Magento\User\Model\UserFactory $_userFactory
     ) {
-        $this->_messageManager = $_messageManager;
         $this->_dataHelper = $_dataHelper;
-        $this->_userFactory = $_userFactory;
+        $this->_messageManager = $_messageManager;
         $this->_roleCollectionFactory = $_roleCollectionFactory;
+        $this->_userFactory = $_userFactory;
     }
 
     public function execute(\Magento\Framework\Event\Observer $observer)

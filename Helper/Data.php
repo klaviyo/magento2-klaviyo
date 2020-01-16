@@ -21,6 +21,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     const NEWSLETTER = 'klaviyo_reclaim_newsletter/newsletter/newsletter';
     const USING_KLAVIYO_LIST_OPT_IN = 'klaviyo_reclaim_newsletter/newsletter/using_klaviyo_list_opt_in';
 
+    const KLAVIYO_NAME_DEFAULT = 'klaviyo';
     const KLAVIYO_USERNAME = 'klaviyo_reclaim_user/klaviyo_user/username';
     const KLAVIYO_PASSWORD = 'klaviyo_reclaim_user/klaviyo_user/password';
     const KLAVIYO_EMAIL = 'klaviyo_reclaim_user/klaviyo_user/email';
@@ -47,21 +48,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected function getScopeSetting($path)
     {
         if ($this->_state->getAreaCode() == \Magento\Framework\App\Area::AREA_ADMINHTML) {
-            $storeId = $this->_request->getParam('store');
-            $websiteId = $this->_request->getParam('website');
+            $scopedStoreCode = $this->_request->getParam('store');
+            $scopedWebsiteCode = $this->_request->getParam('website');
         } else {
             // In frontend area. Only concerned with store for frontend.
-            $storeId = $this->_storeId;
+            $scopedStoreCode = $this->_storeId;
         }
 
-        if (isset($storeId)) {
+        if (isset($scopedStoreCode)) {
             $scope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
-            $scopeCode = $storeId;
-            return $this->_scopeConfig->getValue($path, $scope, $scopeCode);
-        } elseif (isset($websiteId)) {
+            return $this->_scopeConfig->getValue($path, $scope, $scopedStoreCode);
+        } elseif (isset($scopedWebsiteCode)) {
             $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE;
-            $scopeCode = $websiteId;
-            return $this->_scopeConfig->getValue($path, $scope, $scopeCode);
+            return $this->_scopeConfig->getValue($path, $scope, $scopedWebsiteCode);
         } else {
             return $this->_scopeConfig->getValue($path);
         };
@@ -70,21 +69,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected function setScopeSetting($path, $value)
     {
         if ($this->_state->getAreaCode() == \Magento\Framework\App\Area::AREA_ADMINHTML) {
-            $storeId = $this->_request->getParam('store');
-            $websiteId = $this->_request->getParam('website');
+            $scopedStoreCode = $this->_request->getParam('store');
+            $scopedWebsiteCode = $this->_request->getParam('website');
         } else {
             // In frontend area. Only concerned with store for frontend.
-            $storeId = $this->_storeId;
+            $scopedStoreCode = $this->_storeId;
         }
 
-        if (isset($storeId)) {
+        if (isset($scopedStoreCode)) {
             $scope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
-            $scopeCode = $storeId;
-            return $this->_configWriter->save($path, $value, $scope, $scopeCode);
-        } elseif (isset($websiteId)) {
+            return $this->_configWriter->save($path, $value, $scope, $scopedStoreCode);
+        } elseif (isset($scopedWebsiteCode)) {
             $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE;
-            $scopeCode = $websiteId;
-            return $this->_configWriter->save($path, $value, $scope, $scopeCode);
+            return $this->_configWriter->save($path, $value, $scope, $scopedWebsiteCode);
         } else {
             return $this->_configWriter->save($path, $value);
         };
@@ -118,7 +115,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function unsetKlaviyoUsername() 
     {
-        return $this->setScopeSetting(self::KLAVIYO_USERNAME, "klaviyo");
+        return $this->setScopeSetting(self::KLAVIYO_USERNAME, self::KLAVIYO_NAME_DEFAULT);
     }
 
     public function getKlaviyoPassword()
