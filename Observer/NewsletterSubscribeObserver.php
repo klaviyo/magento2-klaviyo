@@ -2,26 +2,49 @@
 
 namespace Klaviyo\Reclaim\Observer;
 
+use Klaviyo\Reclaim\Helper\Data;
+use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer;
 
 class NewsletterSubscribeObserver implements ObserverInterface
 {
-    protected $data_helper;
+    protected $helper;
+    protected $customerRepository;
 
     public function __construct(
-        \Klaviyo\Reclaim\Helper\Data $data_helper,
-        \Magento\Framework\App\RequestInterface $request
+        Data $helper,
+        CustomerRepositoryInterface $customerRepository
     ) {
-        $this->data_helper = $data_helper;
-        $this->request = $request;
+        $this->helper = $helper;
+        $this->customerRepository = $customerRepository;
     }
 
-    public function execute(\Magento\Framework\Event\Observer $observer)
+    public function execute(Observer $observer)
     {
-        if (!$this->data_helper->getEnabled()) return;
+        if (!$this->helper->getEnabled()) {
+            return;
+        }
 
-        $email = $this->request->getParam('email');
-        $this->data_helper->subscribeEmailToKlaviyoList($email);
+        $customer = null;
+        $subscriber = $observer->getDataObject();
+
+        if ($subscriber->isStatusChanged()) {
+            if ($subscriber->getCustomerId()) {
+                $customer = $this->customerRepository->getById($subscriber->getCustomerId());
+            }
+
+            if ($subscriber->isSubscribed()) {
+                $this->helper->subscribeEmailToKlaviyoList(
+                    $customer ? $customer->getEmail() : $subscriber->getEmail(),
+                    $customer ? $customer->getFirstname() : $subscriber->getFirstname(),
+                    $customer ? $customer->getLastname() : $subscriber->getLastname()
+                );
+            } else {
+                $this->helper->unsubscribeEmailFromKlaviyoList(
+                    $customer ? $customer->getEmail() : $subscriber->getEmail()
+                );
+            }
+        }
     }
 }
