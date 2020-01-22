@@ -178,24 +178,36 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $response;
     }
 
-    public function unsubscribeEmailFromKlaviyoList($email) 
+    public function unsubscribeEmailFromKlaviyoList($email)
     {
         $list_id = $this->getNewsletter();
         $api_key = $this->getPrivateApiKey();
 
-        $fields = [
-            'api_key=' . $api_key,
-            'email=' . urlencode($email),
-        ];
+        $url = 'https://a.klaviyo.com/api/v2/list/' . $list_id . '/subscribe';
+        $fields = json_encode([
+            'api_key' => (string)$api_key,
+            'emails' => [(string)$email],
+        ]);
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://a.klaviyo.com/api/v1/list/' . $list_id . '/members/exclude');
-        curl_setopt($ch, CURLOPT_POST, count($fields));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, join('&', $fields));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => 'DELETE',
+            CURLOPT_POSTFIELDS => $fields,
+            CURLOPT_USERAGENT => self::USER_AGENT,
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json',
+                'Content-Length: ' . strlen($fields)
+            ],
+        ]);
+        // Submit the POST request
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        // Close cURL session handle
+        curl_close($curl);
 
-        curl_exec($ch);
-        curl_close($ch);
+        return $response;
     }
 
     public function klaviyoTrackEvent($event, $customer_properties=array(), $properties=array(), $timestamp=NULL)
