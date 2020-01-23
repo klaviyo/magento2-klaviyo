@@ -9,6 +9,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     const MODULE_NAME = 'Klaviyo_Reclaim';
     const USER_AGENT = 'Klaviyo/1.0';
     const KLAVIYO_HOST =  'https://a.klaviyo.com/';
+    const LIST_V2_API = 'api/v2/list/';
 
     protected $_scopeConfig;
     protected $_request;
@@ -172,7 +173,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         $propertiesVal = ['profiles' => $properties];
 
-        $path = "api/v2/list/" . $listId . $optInSetting . "?api_key=" . $apiKey;
+        $path = self::LIST_V2_API . $listId . $optInSetting . "?api_key=" . $apiKey;
 
         try {
             $response = $this->sendApiRequest($path, $propertiesVal, 'POST');
@@ -192,7 +193,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $listId = $this->getNewsletter();
         $apiKey = $this->getPrivateApiKey();
 
-        $path = 'api/v2/list/' . $listId . '/subscribe';
+        $path = self::LIST_V2_API . $listId . self::API_SUBSCRIBE;
         $fields = [
             'api_key' => (string)$apiKey,
             'emails' => [(string)$email],
