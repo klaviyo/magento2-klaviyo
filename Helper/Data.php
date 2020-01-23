@@ -2,6 +2,8 @@
 
 namespace Klaviyo\Reclaim\Helper;
 
+use Psr\Log\LoggerInterface;
+
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const MODULE_NAME = 'Klaviyo_Reclaim';
@@ -12,6 +14,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_request;
     protected $_state;
     protected $_moduleList;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     const ENABLE = 'klaviyo_reclaim_general/general/enable';
     const PUBLIC_API_KEY = 'klaviyo_reclaim_general/general/public_api_key';
@@ -27,7 +34,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Framework\App\State $state,
         \Magento\Framework\ObjectManagerInterface $objectManager,
-        \Magento\Framework\Module\ModuleListInterface $moduleList
+        \Magento\Framework\Module\ModuleListInterface $moduleList,
+        LoggerInterface $logger
     ) {
         parent::__construct($context);
         $this->_scopeConfig = $context->getScopeConfig();
@@ -35,6 +43,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_state = $state;
         $this->_storeId = $objectManager->get('Magento\Store\Model\StoreManagerInterface')->getStore()->getId();
         $this->_moduleList = $moduleList;
+        $this->logger = $logger;
     }
 
     protected function getScopeSetting($path){
@@ -142,70 +151,58 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $result;
     }
 
-    public function subscribeEmailToKlaviyoList($email, $first_name=null, $last_name=null, $source=null) {
-        $list_id = $this->getNewsletter();
-        $opt_in = $this->getOptInSetting();
-        $api_key = $this->getPrivateApiKey();
+    /**
+     * @param string $email
+     * @param string $firstName
+     * @param string $lastName
+     * @param string $source
+     * @return bool|string
+     */
+    public function subscribeEmailToKlaviyoList($email, $firstName = null, $lastName = null, $source = null)
+    {
+        $listId = $this->getNewsletter();
+        $optInSetting = $this->getOptInSetting();
+        $apiKey = $this->getPrivateApiKey();
 
         $properties = [];
         $properties['email'] = $email;
-        if ($first_name) $properties['$first_name'] = $first_name;
-        if ($last_name) $properties['$last_name'] = $last_name;
+        if ($firstName) $properties['$first_name'] = $firstName;
+        if ($lastName) $properties['$last_name'] = $lastName;
         if ($source) $properties['$source'] = $source;
 
-        $properties_val = count($properties) ? json_encode(array('profiles' => $properties)) : '{}';
+        $propertiesVal = ['profiles' => $properties];
 
-        $url = "https://a.klaviyo.com/api/v2/list/" . $list_id . $opt_in . "?api_key=" . $api_key;
+        $path = "api/v2/list/" . $listId . $optInSetting . "?api_key=" . $apiKey;
 
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => $properties_val,
-            CURLOPT_USERAGENT => self::USER_AGENT,
-            CURLOPT_HTTPHEADER => array(
-              "Content-Type: application/json",
-              'Content-Length: ' . strlen($properties_val)
-            ),
-        ));
-        // Submit the POST request
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        // Close cURL session handle
-        curl_close($curl);
+        try {
+            $response = $this->sendApiRequest($path, $propertiesVal, 'POST');
+        } catch (\Exception $e) {
+            $this->logger->warning(sprintf('Unable to subscribe %s to list %s: %s', $email, $listId, $e));
+        }
 
         return $response;
     }
 
+    /**
+     * @param string $email
+     * @return bool|string
+     */
     public function unsubscribeEmailFromKlaviyoList($email)
     {
-        $list_id = $this->getNewsletter();
-        $api_key = $this->getPrivateApiKey();
+        $listId = $this->getNewsletter();
+        $apiKey = $this->getPrivateApiKey();
 
-        $url = 'https://a.klaviyo.com/api/v2/list/' . $list_id . '/subscribe';
-        $fields = json_encode([
-            'api_key' => (string)$api_key,
+        $path = 'api/v2/list/' . $listId . '/subscribe';
+        $fields = [
+            'api_key' => (string)$apiKey,
             'emails' => [(string)$email],
-        ]);
+        ];
 
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => 'DELETE',
-            CURLOPT_POSTFIELDS => $fields,
-            CURLOPT_USERAGENT => self::USER_AGENT,
-            CURLOPT_HTTPHEADER => [
-                'Content-Type: application/json',
-                'Content-Length: ' . strlen($fields)
-            ],
-        ]);
-        // Submit the POST request
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        // Close cURL session handle
-        curl_close($curl);
+        try {
+            $response = $this->sendApiRequest($path, $fields, 'DELETE');
+        } catch (\Exception $e) {
+            $this->logger->warning(sprintf('Unable to unsubscribe %s from list %s: %s', $email, $listId, $e));
+        }
 
         return $response;
     }
@@ -239,5 +236,45 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $url = self::KLAVIYO_HOST . $path . '?' . $params;
         $response = file_get_contents($url);
         return $response == '1';
+    }
+
+    /**
+     * @param string $path
+     * @param array $params
+     * @param string $method
+     * @return bool|string
+     * @throws \Exception
+     */
+    private function sendApiRequest(string $path, array $params, string $method = 'POST')
+    {
+        $url = self::KLAVIYO_HOST . $path;
+
+        $curl = curl_init();
+        $encodedParams = json_encode($params);
+
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => $method,
+            CURLOPT_POSTFIELDS => $encodedParams,
+            CURLOPT_USERAGENT => self::USER_AGENT,
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json',
+                'Content-Length: ' . strlen($encodedParams)
+            ],
+        ]);
+
+        // Submit the POST request
+        $response = curl_exec($curl);
+        $err = curl_errno($curl);
+
+        if ($err) {
+            throw new \Exception(curl_error($curl));
+        }
+
+        // Close cURL session handle
+        curl_close($curl);
+
+        return $response;
     }
 }
