@@ -264,7 +264,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             ],
         ]);
 
-        // Submit the POST request
+        // Submit the request
         $response = curl_exec($curl);
         $err = curl_errno($curl);
 
