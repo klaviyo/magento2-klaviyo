@@ -163,7 +163,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $listId = $this->getNewsletter();
         $optInSetting = $this->getOptInSetting();
-        $apiKey = $this->getPrivateApiKey();
 
         $properties = [];
         $properties['email'] = $email;
@@ -173,7 +172,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         $propertiesVal = ['profiles' => $properties];
 
-        $path = self::LIST_V2_API . $listId . $optInSetting . "?api_key=" . $apiKey;
+        $path = self::LIST_V2_API . $listId . $optInSetting;
 
         try {
             $response = $this->sendApiRequest($path, $propertiesVal, 'POST');
@@ -191,11 +190,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function unsubscribeEmailFromKlaviyoList($email)
     {
         $listId = $this->getNewsletter();
-        $apiKey = $this->getPrivateApiKey();
 
         $path = self::LIST_V2_API . $listId . self::API_SUBSCRIBE;
         $fields = [
-            'api_key' => (string)$apiKey,
             'emails' => [(string)$email],
         ];
 
@@ -249,6 +246,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     private function sendApiRequest(string $path, array $params, string $method = 'POST')
     {
         $url = self::KLAVIYO_HOST . $path;
+
+        //Add API Key to params
+        $params['api_key'] = $this->getPrivateApiKey();
 
         $curl = curl_init();
         $encodedParams = json_encode($params);
