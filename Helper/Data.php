@@ -123,7 +123,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->getScopeSetting(self::KLAVIYO_USERNAME);
     }
 
-    public function unsetKlaviyoUsername() 
+    public function unsetKlaviyoUsername()
     {
         return $this->setScopeSetting(self::KLAVIYO_USERNAME, self::KLAVIYO_NAME_DEFAULT);
     }
@@ -133,7 +133,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->getScopeSetting(self::KLAVIYO_PASSWORD);
     }
 
-    public function unsetKlaviyoPassword() 
+    public function unsetKlaviyoPassword()
     {
         return $this->setScopeSetting(self::KLAVIYO_PASSWORD, "");
     }
@@ -143,7 +143,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->getScopeSetting(self::KLAVIYO_EMAIL);
     }
 
-    public function unsetKlaviyoEmail() 
+    public function unsetKlaviyoEmail()
     {
         return $this->setScopeSetting(self::KLAVIYO_EMAIL, "");
     }
@@ -235,6 +235,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $response = $this->sendApiRequest($path, $propertiesVal, 'POST');
         } catch (\Exception $e) {
             $this->logger->warning(sprintf('Unable to subscribe %s to list %s: %s', $email, $listId, $e));
+            $responce = false;
         }
 
         return $response;
@@ -257,6 +258,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $response = $this->sendApiRequest($path, $fields, 'DELETE');
         } catch (\Exception $e) {
             $this->logger->warning(sprintf('Unable to unsubscribe %s from list %s: %s', $email, $listId, $e));
+            $responce = false;
         }
 
         return $response;
