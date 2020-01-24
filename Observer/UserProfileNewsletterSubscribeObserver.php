@@ -7,22 +7,22 @@ use Magento\Framework\Event\Observer;
 
 class UserProfileNewsletterSubscribeObserver implements ObserverInterface
 {
-    protected $data_helper;
+    protected $_dataHelper;
     protected $customer_repository_interface;
 
     public function __construct(
-        \Klaviyo\Reclaim\Helper\Data $data_helper,
+        \Klaviyo\Reclaim\Helper\Data $_dataHelper,
         \Magento\Framework\App\RequestInterface $request,
         \Magento\Customer\Api\CustomerRepositoryInterface $customer_repository_interface
     ) {
-        $this->data_helper = $data_helper;
+        $this->_dataHelper = $_dataHelper;
         $this->request = $request;
         $this->customer_repository_interface = $customer_repository_interface;
     }
 
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        if (!$this->data_helper->getEnabled()) return;
+        if (!$this->_dataHelper->getEnabled()) return;
 
         $subscriber = $observer->getDataObject();
 
@@ -30,13 +30,13 @@ class UserProfileNewsletterSubscribeObserver implements ObserverInterface
           $customer = $this->customer_repository_interface->getById($subscriber->getCustomerId());
 
           if ($subscriber->isSubscribed()) {
-            $this->data_helper->subscribeEmailToKlaviyoList(
+            $this->_dataHelper->subscribeEmailToKlaviyoList(
                 $customer->getEmail(),
                 $customer->getFirstname(),
                 $customer->getLastname()
             );
           } else {
-            $this->data_helper->unsubscribeEmailFromKlaviyoList($customer->getEmail());
+            $this->_dataHelper->unsubscribeEmailFromKlaviyoList($customer->getEmail());
           }
         }
     }

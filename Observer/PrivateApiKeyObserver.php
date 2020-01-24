@@ -8,14 +8,14 @@ use Magento\Framework\Event\Observer;
 class PrivateApiKeyObserver implements ObserverInterface
 {
     protected $messageManager;
-    protected $data_helper;
+    protected $_dataHelper;
 
     public function __construct(
         \Magento\Framework\Message\ManagerInterface $messageManager,
-        \Klaviyo\Reclaim\Helper\Data $data_helper
+        \Klaviyo\Reclaim\Helper\Data $_dataHelper
     ) {
         $this->messageManager = $messageManager;
-        $this->data_helper = $data_helper;
+        $this->_dataHelper = $_dataHelper;
     }
 
     public function execute(\Magento\Framework\Event\Observer $observer)
@@ -27,7 +27,7 @@ class PrivateApiKeyObserver implements ObserverInterface
         $api_key = $field['value'];
         if (!$api_key) return;
 
-        $result = $this->data_helper->getKlaviyoLists($api_key);
+        $result = $this->_dataHelper->getKlaviyoLists($api_key);
 
         if ($result['success']) {
             $this->messageManager->addSuccessMessage('Your Private Klaviyo API Key was successfully validated.');

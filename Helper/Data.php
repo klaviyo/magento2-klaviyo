@@ -15,6 +15,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_request;
     protected $_state;
     protected $_moduleList;
+    protected $_configWriter;
 
     /**
      * @var LoggerInterface
@@ -28,6 +29,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     const NEWSLETTER = 'klaviyo_reclaim_newsletter/newsletter/newsletter';
     const USING_KLAVIYO_LIST_OPT_IN = 'klaviyo_reclaim_newsletter/newsletter/using_klaviyo_list_opt_in';
 
+    const KLAVIYO_NAME_DEFAULT = 'klaviyo';
+    const KLAVIYO_USERNAME = 'klaviyo_reclaim_user/klaviyo_user/username';
+    const KLAVIYO_PASSWORD = 'klaviyo_reclaim_user/klaviyo_user/password';
+    const KLAVIYO_EMAIL = 'klaviyo_reclaim_user/klaviyo_user/email';
+
     const API_MEMBERS = '/members';
     const API_SUBSCRIBE = '/subscribe';
 
@@ -36,6 +42,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\App\State $state,
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Framework\Module\ModuleListInterface $moduleList,
+        \Magento\Framework\App\Config\Storage\WriterInterface $configWriter,
         LoggerInterface $logger
     ) {
         parent::__construct($context);
@@ -44,29 +51,49 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_state = $state;
         $this->_storeId = $objectManager->get('Magento\Store\Model\StoreManagerInterface')->getStore()->getId();
         $this->_moduleList = $moduleList;
+        $this->_configWriter = $configWriter;
         $this->logger = $logger;
     }
 
-    protected function getScopeSetting($path){
-
+    protected function getScopeSetting($path)
+    {
         if ($this->_state->getAreaCode() == \Magento\Framework\App\Area::AREA_ADMINHTML) {
-            $storeId = $this->_request->getParam('store');
-            $websiteId = $this->_request->getParam('website');
+            $scopedStoreCode = $this->_request->getParam('store');
+            $scopedWebsiteCode = $this->_request->getParam('website');
         } else {
             // In frontend area. Only concerned with store for frontend.
-            $storeId = $this->_storeId;
+            $scopedStoreCode = $this->_storeId;
         }
 
-        if (isset($storeId)) {
+        if (isset($scopedStoreCode)) {
             $scope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
-            $value = $storeId;
-            return $this->_scopeConfig->getValue($path, $scope, $value);
-        } elseif (isset($websiteId)) {
+            return $this->_scopeConfig->getValue($path, $scope, $scopedStoreCode);
+        } elseif (isset($scopedWebsiteCode)) {
             $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE;
-            $value = $websiteId;
-            return $this->_scopeConfig->getValue($path, $scope, $value);
+            return $this->_scopeConfig->getValue($path, $scope, $scopedWebsiteCode);
         } else {
             return $this->_scopeConfig->getValue($path);
+        };
+    }
+
+    protected function setScopeSetting($path, $value)
+    {
+        if ($this->_state->getAreaCode() == \Magento\Framework\App\Area::AREA_ADMINHTML) {
+            $scopedStoreCode = $this->_request->getParam('store');
+            $scopedWebsiteCode = $this->_request->getParam('website');
+        } else {
+            // In frontend area. Only concerned with store for frontend.
+            $scopedStoreCode = $this->_storeId;
+        }
+
+        if (isset($scopedStoreCode)) {
+            $scope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+            return $this->_configWriter->save($path, $value, $scope, $scopedStoreCode);
+        } elseif (isset($scopedWebsiteCode)) {
+            $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE;
+            return $this->_configWriter->save($path, $value, $scope, $scopedWebsiteCode);
+        } else {
+            return $this->_configWriter->save($path, $value);
         };
     }
 
@@ -89,6 +116,36 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getPrivateApiKey()
     {
         return $this->getScopeSetting(self::PRIVATE_API_KEY);
+    }
+
+    public function getKlaviyoUsername()
+    {
+        return $this->getScopeSetting(self::KLAVIYO_USERNAME);
+    }
+
+    public function unsetKlaviyoUsername() 
+    {
+        return $this->setScopeSetting(self::KLAVIYO_USERNAME, self::KLAVIYO_NAME_DEFAULT);
+    }
+
+    public function getKlaviyoPassword()
+    {
+        return $this->getScopeSetting(self::KLAVIYO_PASSWORD);
+    }
+
+    public function unsetKlaviyoPassword() 
+    {
+        return $this->setScopeSetting(self::KLAVIYO_PASSWORD, "");
+    }
+
+    public function getKlaviyoEmail()
+    {
+        return $this->getScopeSetting(self::KLAVIYO_EMAIL);
+    }
+
+    public function unsetKlaviyoEmail() 
+    {
+        return $this->setScopeSetting(self::KLAVIYO_EMAIL, "");
     }
 
     public function getCustomMediaURL()

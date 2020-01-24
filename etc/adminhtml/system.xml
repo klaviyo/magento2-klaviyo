@@ -18,11 +18,12 @@
                 <field id="public_api_key" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Public Klaviyo API Key</label>
                 </field>
-                <field id="private_api_key" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="private_api_key" translate="label" type="obscure" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Private Klaviyo API Key</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
                 <field id="custom_media_url" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
-                     <label>Custom Media URL</label>
+                    <label>Custom Media URL</label>
                     <validate>validate-url</validate>
                 </field>
             </group>
@@ -47,5 +48,23 @@
             </group>
         </section>
 
+        <section id="klaviyo_reclaim_user" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Setup Klaviyo User</label>
+            <tab>klaviyo</tab>
+            <resource>Klaviyo_Reclaim::klaviyo_reclaim</resource>
+            <group id="klaviyo_user" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Setup Klaviyo User</label>
+                <field id="username" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Username</label>
+                </field>
+                <field id="password" translate="label comment" type="password" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Password</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                </field>
+                <field id="email" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Email</label>
+                </field>
+            </group>
+        </section>
     </system>
 </config>

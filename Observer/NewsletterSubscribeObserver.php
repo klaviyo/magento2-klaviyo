@@ -7,21 +7,21 @@ use Magento\Framework\Event\Observer;
 
 class NewsletterSubscribeObserver implements ObserverInterface
 {
-    protected $data_helper;
+    protected $_dataHelper;
 
     public function __construct(
-        \Klaviyo\Reclaim\Helper\Data $data_helper,
+        \Klaviyo\Reclaim\Helper\Data $_dataHelper,
         \Magento\Framework\App\RequestInterface $request
     ) {
-        $this->data_helper = $data_helper;
+        $this->_dataHelper = $_dataHelper;
         $this->request = $request;
     }
 
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        if (!$this->data_helper->getEnabled()) return;
+        if (!$this->_dataHelper->getEnabled()) return;
 
         $email = $this->request->getParam('email');
-        $this->data_helper->subscribeEmailToKlaviyoList($email);
+        $this->_dataHelper->subscribeEmailToKlaviyoList($email);
     }
 }
