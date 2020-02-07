@@ -47,8 +47,20 @@ class Reclaim implements ReclaimInterface
      * @api
      * @return string
      */
-    public function reclaim(){
+    public function reclaim()
+    {
         return $this->_klaviyoHelper->getVersion();
+    }
+
+    /**
+     * Returns the Klaviyo log file
+     * 
+     * @api
+     * @return string
+     */
+    public function getLog()
+    {
+        return TODO;
     }
 
     /**

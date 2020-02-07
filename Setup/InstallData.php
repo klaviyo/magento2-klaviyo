@@ -26,11 +26,11 @@ class InstallData implements InstallDataInterface
     private $rulesFactory;
 
     /**
-     * Logger
-     *
-     * @var logger
+     * Logging instance
+     * 
+     * @var \Klaviyo\Reclaim\Logger\Logger
      */
-    protected $logger;
+    protected $_logger;
  
     const KLAVIYO_ROLE_NAME = 'Klaviyo';
 
@@ -39,16 +39,16 @@ class InstallData implements InstallDataInterface
      *
      * @param RoleFactory $roleFactory
      * @param RulesFactory $rulesFactory
-     * @param Logger $logger
+     * @param \Klaviyo\Reclaim\Logger\Logger $_logger
      */
     public function __construct(
         RoleFactory $roleFactory,
         RulesFactory $rulesFactory,
-        \Psr\Log\LoggerInterface $logger
+        \Klaviyo\Reclaim\Logger\Logger $_logger
     ) {
         $this->roleFactory = $roleFactory;
         $this->rulesFactory = $rulesFactory;
-        $this->logger = $logger;
+        $this->_logger = $_logger;
     }
  
     public function install(
@@ -71,7 +71,7 @@ class InstallData implements InstallDataInterface
                 ->setResources($resource)
                 ->saveRel();
         } catch (\Exception $ex) {
-            $this->logger->info('RULE CREATION ISSUE: ' . $ex->getMessage());
+            $this->_logger->info('RULE CREATION ISSUE: ' . $ex->getMessage());
         }
     }
 }

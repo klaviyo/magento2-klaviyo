@@ -2,4 +2,17 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Klaviyo\Reclaim\Api\ReclaimInterface"
                 type="Klaviyo\Reclaim\Model\Reclaim" />
+    <type name="Klaviyo\Reclaim\Logger\Handler">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+        </arguments>
+    </type>
+    <type name="Klaviyo\Reclaim\Logger\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">klaviyoLogger</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="system" xsi:type="object">Klaviyo\Reclaim\Logger\Handler</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

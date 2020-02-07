@@ -48,4 +48,10 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
+    <route url="/V1/klaviyo/reclaim/log" method="GET">
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="getLog"/>
+        <resources>
+            <resource ref="Magento_Backend::TODO"/>
+        </resources>
+    </route>
 </routes>

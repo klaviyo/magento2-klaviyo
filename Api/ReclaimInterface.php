@@ -20,6 +20,14 @@ interface ReclaimInterface
     public function reclaim();
 
     /**
+     * Returns the Klaviyo log file
+     * 
+     * @api
+     * @return string
+     */
+    public function getLog();
+
+    /**
      * Returns product information
      *
      * @api
