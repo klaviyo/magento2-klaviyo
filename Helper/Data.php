@@ -2,17 +2,25 @@
 
 namespace Klaviyo\Reclaim\Helper;
 
+use Psr\Log\LoggerInterface;
+
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const MODULE_NAME = 'Klaviyo_Reclaim';
     const USER_AGENT = 'Klaviyo/1.0';
     const KLAVIYO_HOST =  'https://a.klaviyo.com/';
+    const LIST_V2_API = 'api/v2/list/';
 
     protected $_scopeConfig;
     protected $_request;
     protected $_state;
     protected $_moduleList;
     protected $_configWriter;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     const ENABLE = 'klaviyo_reclaim_general/general/enable';
     const PUBLIC_API_KEY = 'klaviyo_reclaim_general/general/public_api_key';
@@ -34,7 +42,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\App\State $state,
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Framework\Module\ModuleListInterface $moduleList,
-        \Magento\Framework\App\Config\Storage\WriterInterface $configWriter
+        \Magento\Framework\App\Config\Storage\WriterInterface $configWriter,
+        LoggerInterface $logger
     ) {
         parent::__construct($context);
         $this->_scopeConfig = $context->getScopeConfig();
@@ -43,6 +52,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_storeId = $objectManager->get('Magento\Store\Model\StoreManagerInterface')->getStore()->getId();
         $this->_moduleList = $moduleList;
         $this->_configWriter = $configWriter;
+        $this->logger = $logger;
     }
 
     protected function getScopeSetting($path)
@@ -113,7 +123,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->getScopeSetting(self::KLAVIYO_USERNAME);
     }
 
-    public function unsetKlaviyoUsername() 
+    public function unsetKlaviyoUsername()
     {
         return $this->setScopeSetting(self::KLAVIYO_USERNAME, self::KLAVIYO_NAME_DEFAULT);
     }
@@ -123,7 +133,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->getScopeSetting(self::KLAVIYO_PASSWORD);
     }
 
-    public function unsetKlaviyoPassword() 
+    public function unsetKlaviyoPassword()
     {
         return $this->setScopeSetting(self::KLAVIYO_PASSWORD, "");
     }
@@ -133,7 +143,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->getScopeSetting(self::KLAVIYO_EMAIL);
     }
 
-    public function unsetKlaviyoEmail() 
+    public function unsetKlaviyoEmail()
     {
         return $this->setScopeSetting(self::KLAVIYO_EMAIL, "");
     }
@@ -199,60 +209,59 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $result;
     }
 
-    public function subscribeEmailToKlaviyoList($email, $first_name=null, $last_name=null, $source=null) {
-        $list_id = $this->getNewsletter();
-        $opt_in = $this->getOptInSetting();
-        $api_key = $this->getPrivateApiKey();
+    /**
+     * @param string $email
+     * @param string $firstName
+     * @param string $lastName
+     * @param string $source
+     * @return bool|string
+     */
+    public function subscribeEmailToKlaviyoList($email, $firstName = null, $lastName = null, $source = null)
+    {
+        $listId = $this->getNewsletter();
+        $optInSetting = $this->getOptInSetting();
 
         $properties = [];
         $properties['email'] = $email;
-        if ($first_name) $properties['$first_name'] = $first_name;
-        if ($last_name) $properties['$last_name'] = $last_name;
+        if ($firstName) $properties['$first_name'] = $firstName;
+        if ($lastName) $properties['$last_name'] = $lastName;
         if ($source) $properties['$source'] = $source;
 
-        $properties_val = count($properties) ? json_encode(array('profiles' => $properties)) : '{}';
+        $propertiesVal = ['profiles' => $properties];
 
-        $url = "https://a.klaviyo.com/api/v2/list/" . $list_id . $opt_in . "?api_key=" . $api_key;
+        $path = self::LIST_V2_API . $listId . $optInSetting;
 
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => $properties_val,
-            CURLOPT_USERAGENT => self::USER_AGENT,
-            CURLOPT_HTTPHEADER => array(
-              "Content-Type: application/json",
-              'Content-Length: ' . strlen($properties_val)
-            ),
-        ));
-        // Submit the POST request
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        // Close cURL session handle
-        curl_close($curl);
+        try {
+            $response = $this->sendApiRequest($path, $propertiesVal, 'POST');
+        } catch (\Exception $e) {
+            $this->logger->warning(sprintf('Unable to subscribe %s to list %s: %s', $email, $listId, $e));
+            $responce = false;
+        }
 
         return $response;
     }
 
-    public function unsubscribeEmailFromKlaviyoList($email) 
+    /**
+     * @param string $email
+     * @return bool|string
+     */
+    public function unsubscribeEmailFromKlaviyoList($email)
     {
-        $list_id = $this->getNewsletter();
-        $api_key = $this->getPrivateApiKey();
+        $listId = $this->getNewsletter();
 
+        $path = self::LIST_V2_API . $listId . self::API_SUBSCRIBE;
         $fields = [
-            'api_key=' . $api_key,
-            'email=' . urlencode($email),
+            'emails' => [(string)$email],
         ];
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://a.klaviyo.com/api/v1/list/' . $list_id . '/members/exclude');
-        curl_setopt($ch, CURLOPT_POST, count($fields));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, join('&', $fields));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        try {
+            $response = $this->sendApiRequest($path, $fields, 'DELETE');
+        } catch (\Exception $e) {
+            $this->logger->warning(sprintf('Unable to unsubscribe %s from list %s: %s', $email, $listId, $e));
+            $responce = false;
+        }
 
-        curl_exec($ch);
-        curl_close($ch);
+        return $response;
     }
 
     public function klaviyoTrackEvent($event, $customer_properties=array(), $properties=array(), $timestamp=NULL)
@@ -284,5 +293,48 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $url = self::KLAVIYO_HOST . $path . '?' . $params;
         $response = file_get_contents($url);
         return $response == '1';
+    }
+
+    /**
+     * @param string $path
+     * @param array $params
+     * @param string $method
+     * @return bool|string
+     * @throws \Exception
+     */
+    private function sendApiRequest(string $path, array $params, string $method = 'POST')
+    {
+        $url = self::KLAVIYO_HOST . $path;
+
+        //Add API Key to params
+        $params['api_key'] = $this->getPrivateApiKey();
+
+        $curl = curl_init();
+        $encodedParams = json_encode($params);
+
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => $method,
+            CURLOPT_POSTFIELDS => $encodedParams,
+            CURLOPT_USERAGENT => self::USER_AGENT,
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json',
+                'Content-Length: ' . strlen($encodedParams)
+            ],
+        ]);
+
+        // Submit the request
+        $response = curl_exec($curl);
+        $err = curl_errno($curl);
+
+        if ($err) {
+            throw new \Exception(curl_error($curl));
+        }
+
+        // Close cURL session handle
+        curl_close($curl);
+
+        return $response;
     }
 }
