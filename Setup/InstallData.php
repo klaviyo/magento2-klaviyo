@@ -8,9 +8,16 @@ use \Magento\Authorization\Model\Acl\Role\Group as RoleGroup;
 use \Magento\Authorization\Model\UserContextInterface;
 use \Magento\Authorization\Model\RoleFactory;
 use \Magento\Authorization\Model\RulesFactory;
+use Magento\Framework\Filesystem\DirectoryList;
  
 class InstallData implements InstallDataInterface
 {
+    /**
+     * DirectoryList instance
+     * @var \Magento\Framework\Filesystem\DirectoryList $_dir
+     */
+    protected $_dir;
+
     /**
      * RoleFactory
      *
@@ -30,31 +37,42 @@ class InstallData implements InstallDataInterface
      * 
      * @var \Klaviyo\Reclaim\Logger\Logger
      */
-    protected $_logger;
+    protected $_klaviyoLogger;
  
     const KLAVIYO_ROLE_NAME = 'Klaviyo';
 
     /**
      * Init
      *
+     * @param DirectoryList $dir
      * @param RoleFactory $roleFactory
      * @param RulesFactory $rulesFactory
-     * @param \Klaviyo\Reclaim\Logger\Logger $_logger
+     * @param \Klaviyo\Reclaim\Logger\Logger $klaviyoLogger
      */
     public function __construct(
+        DirectoryList $dir,
         RoleFactory $roleFactory,
         RulesFactory $rulesFactory,
-        \Klaviyo\Reclaim\Logger\Logger $_logger
+        \Klaviyo\Reclaim\Logger\Logger $klaviyoLogger
     ) {
+        $this->_dir = $dir;
         $this->roleFactory = $roleFactory;
         $this->rulesFactory = $rulesFactory;
-        $this->_logger = $_logger;
+        $this->_klaviyoLogger = $klaviyoLogger;
     }
  
     public function install(
         ModuleDataSetupInterface $setup, 
         ModuleContextInterface $context
     ) {
+        //Klaviyo log file creation
+        $path = $this->_dir->getPath('log') . '/klaviyo.log';
+        if (!file_exists($path)) {
+            fopen($path, 'w');
+        }
+        chmod($path, 0644);
+        
+        //Klaviyo role creation
         $role = $this->roleFactory->create();
         $role->setName(self::KLAVIYO_ROLE_NAME)
                 ->setPid(0)
@@ -71,7 +89,7 @@ class InstallData implements InstallDataInterface
                 ->setResources($resource)
                 ->saveRel();
         } catch (\Exception $ex) {
-            $this->_logger->info('RULE CREATION ISSUE: ' . $ex->getMessage());
+            $this->_klaviyoLogger->info('RULE CREATION ISSUE: ' . $ex->getMessage());
         }
     }
 }

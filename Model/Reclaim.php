@@ -12,9 +12,31 @@ class Reclaim implements ReclaimInterface
      * @var \Magento\Framework\ObjectManagerInterface
      */
     protected $_objectManager = null;
+
+    /**
+     * DirectoryList instance
+     * @var \Magento\Framework\Filesystem\DirectoryList $_dir
+     */
+    protected $_dir;
+
+    /**
+     * 
+     */
     protected $_subscriber;
+
+    /**
+     * 
+     */
     protected $_stockItemRepository;
+
+    /**
+     * 
+     */
     protected $subscriberCollection;
+
+    /**
+     * 
+     */
     public $response;
 
     const MAX_QUERY_DAYS = 10;
@@ -28,7 +50,8 @@ class Reclaim implements ReclaimInterface
         \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository,
         \Magento\Newsletter\Model\Subscriber $subscriber,
         \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection,
-        \Klaviyo\Reclaim\Helper\Data $klaviyoHelper
+        \Klaviyo\Reclaim\Helper\Data $klaviyoHelper,
+        \Magento\Framework\Filesystem\DirectoryList $_dir
         )
     {
         $this->quoteFactory = $quoteFactory;
@@ -39,6 +62,7 @@ class Reclaim implements ReclaimInterface
         $this->_subscriber= $subscriber;
         $this->_subscriberCollection = $subscriberCollection;
         $this->_klaviyoHelper = $klaviyoHelper;
+        $this->_dir = $_dir;
     }
 
     /**
@@ -60,7 +84,74 @@ class Reclaim implements ReclaimInterface
      */
     public function getLog()
     {
-        return TODO;
+        $log = file_get_contents($this->_dir->getPath('log') . '/klaviyo.log');
+        if ($log != "") {
+            return $log;
+        } else {
+            return array (
+                'message' => 'Unable to retrieve log file'
+            );
+        }
+    }
+
+    /**
+     * Cleans the Klaviyo log file
+     * 
+     * @api
+     * @param string $date
+     * @return boolean
+     */
+    public function cleanLog($date)
+    {
+        //get log file path and do the old switcheroo in preparation for cleaning
+        $path = $this->_dir->getPath('log') . '/klaviyo.log';
+        $old = $path . ".old";
+        rename($path, $old);
+
+        //open file streams
+        $input = fopen($old, "rb");
+        $output = fopen($path, "wb");
+
+        //attempt to parse unix timestamp from api request parameter
+        $cursor = strtotime($date);
+
+        //check if we were able to parse the timestamp
+        //if no timestamp, return failure message
+        if ($cursor == "")
+        {
+            $response = array(
+                'success' => False,
+                'message' => 'Unable to parse timestamp: ' . $date
+            );
+            return $response;
+        }
+
+        //loop through all of the lines in the log
+        while ($row = fgets($input))
+        {
+            //parse timestamp from the line in the log
+            //example formatting:
+            //[2018-07-05 11:10:35] channel-name.INFO: This is a log entry
+            preg_match('/\[.*?\]/', $row, $matches);
+            $timestamp = strtotime(substr($matches[0], 1, -1));
+            if ($timestamp > $cursor)
+            {
+                fwrite($output, $row);
+            }
+        }
+
+        //close file streams
+        fclose($input);
+        fclose($output);
+        //remove old log file
+        unlink($old);
+
+        //return success message
+        $response = array(
+            'success' => True,
+            'message' => 'Cleaned all log entries before: ' . $date
+        );
+        return $response;
     }
 
     /**

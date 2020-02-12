@@ -28,6 +28,15 @@ interface ReclaimInterface
     public function getLog();
 
     /**
+     * Cleans the Klaviyo log file
+     * 
+     * @api
+     * @param string $date
+     * @return boolean
+     */
+    public function cleanLog($date);
+
+    /**
      * Returns product information
      *
      * @api

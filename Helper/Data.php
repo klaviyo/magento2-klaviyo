@@ -13,6 +13,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_state;
     protected $_moduleList;
     protected $_configWriter;
+    protected $_klaviyoLogger;
 
     const ENABLE = 'klaviyo_reclaim_general/general/enable';
     const PUBLIC_API_KEY = 'klaviyo_reclaim_general/general/public_api_key';
@@ -34,7 +35,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\App\State $state,
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Framework\Module\ModuleListInterface $moduleList,
-        \Magento\Framework\App\Config\Storage\WriterInterface $configWriter
+        \Magento\Framework\App\Config\Storage\WriterInterface $configWriter,
+        \Klaviyo\Reclaim\Logger\Logger $klaviyoLogger
     ) {
         parent::__construct($context);
         $this->_scopeConfig = $context->getScopeConfig();
@@ -43,6 +45,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_storeId = $objectManager->get('Magento\Store\Model\StoreManagerInterface')->getStore()->getId();
         $this->_moduleList = $moduleList;
         $this->_configWriter = $configWriter;
+        $this->_klaviyoLogger = $klaviyoLogger;
+    }
+
+    protected function log($event)
+    {
+        $this->_klaviyoLogger->info($event);
     }
 
     protected function getScopeSetting($path)
