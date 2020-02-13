@@ -39,6 +39,8 @@ class Reclaim implements ReclaimInterface
      */
     public $response;
 
+    protected $klaviyoLogger;
+
     const MAX_QUERY_DAYS = 10;
     const SUBSCRIBER_BATCH_SIZE = 500;
 
@@ -51,7 +53,8 @@ class Reclaim implements ReclaimInterface
         \Magento\Newsletter\Model\Subscriber $subscriber,
         \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection,
         \Klaviyo\Reclaim\Helper\Data $klaviyoHelper,
-        \Magento\Framework\Filesystem\DirectoryList $_dir
+        \Magento\Framework\Filesystem\DirectoryList $_dir,
+        \Klaviyo\Reclaim\Logger\Logger $klaviyoLogger
         )
     {
         $this->quoteFactory = $quoteFactory;
@@ -63,6 +66,7 @@ class Reclaim implements ReclaimInterface
         $this->_subscriberCollection = $subscriberCollection;
         $this->_klaviyoHelper = $klaviyoHelper;
         $this->_dir = $_dir;
+        $this->klaviyoLogger = $klaviyoLogger;
     }
 
     /**
@@ -84,7 +88,7 @@ class Reclaim implements ReclaimInterface
      */
     public function getLog()
     {
-        $log = file_get_contents($this->_dir->getPath('log') . '/klaviyo.log');
+        $log = file($this->_dir->getPath('log') . '/klaviyo.log');
         if ($log != "") {
             return $log;
         } else {
@@ -112,6 +116,9 @@ class Reclaim implements ReclaimInterface
         $input = fopen($old, "rb");
         $output = fopen($path, "wb");
 
+        //setup permissions on log file
+        chmod($path,0644);
+
         //attempt to parse unix timestamp from api request parameter
         $cursor = strtotime($date);
 
@@ -120,9 +127,9 @@ class Reclaim implements ReclaimInterface
         if ($cursor == "")
         {
             $response = array(
-                'success' => False,
                 'message' => 'Unable to parse timestamp: ' . $date
             );
+            $this->klaviyoLogger->info("cleanLog failed: unable to parse timestamp from: " . $date);
             return $response;
         }
 
@@ -140,18 +147,40 @@ class Reclaim implements ReclaimInterface
             }
         }
 
+
         //close file streams
         fclose($input);
         fclose($output);
+
         //remove old log file
         unlink($old);
 
+        //log cleaning success
+        $this->klaviyoLogger->info("Cleaned all log entries before: " . $date);
+
         //return success message
         $response = array(
-            'success' => True,
             'message' => 'Cleaned all log entries before: ' . $date
         );
         return $response;
+    }
+
+    /**
+     * Appends a message to the Klaviyo log file
+     * 
+     * @api
+     * @param string $data
+     * @return mixed[]
+     */
+    public function appendLog($message)
+    {
+        //log the provided message
+        $this->klaviyoLogger->info($message);
+
+        //return success message
+        return array(
+            "message" => 'Logged message: \'' . $message . '\''
+        );
     }
 
     /**

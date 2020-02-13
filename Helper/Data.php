@@ -48,9 +48,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_klaviyoLogger = $klaviyoLogger;
     }
 
-    protected function log($event)
+    protected function log($message)
     {
-        $this->_klaviyoLogger->info($event);
+        $this->_klaviyoLogger->info($message);
     }
 
     protected function getScopeSetting($path)

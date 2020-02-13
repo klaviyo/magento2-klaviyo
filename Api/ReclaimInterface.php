@@ -23,7 +23,7 @@ interface ReclaimInterface
      * Returns the Klaviyo log file
      * 
      * @api
-     * @return string
+     * @return mixed[]
      */
     public function getLog();
 
@@ -32,9 +32,18 @@ interface ReclaimInterface
      * 
      * @api
      * @param string $date
-     * @return boolean
+     * @return mixed[]
      */
     public function cleanLog($date);
+
+    /**
+     * Appends a message to the Klaviyo log file
+     * 
+     * @api
+     * @param string $data
+     * @return mixed[]
+     */
+    public function appendLog($message);
 
     /**
      * Returns product information
