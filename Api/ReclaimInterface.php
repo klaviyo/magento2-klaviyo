@@ -40,7 +40,7 @@ interface ReclaimInterface
      * Appends a message to the Klaviyo log file
      * 
      * @api
-     * @param string $data
+     * @param string $message
      * @return mixed[]
      */
     public function appendLog($message);
