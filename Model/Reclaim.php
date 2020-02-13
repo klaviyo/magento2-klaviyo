@@ -107,18 +107,6 @@ class Reclaim implements ReclaimInterface
      */
     public function cleanLog($date)
     {
-        //get log file path and do the old switcheroo in preparation for cleaning
-        $path = $this->_dir->getPath('log') . '/klaviyo.log';
-        $old = $path . ".old";
-        rename($path, $old);
-
-        //open file streams
-        $input = fopen($old, "rb");
-        $output = fopen($path, "wb");
-
-        //setup permissions on log file
-        chmod($path,0644);
-
         //attempt to parse unix timestamp from api request parameter
         $cursor = strtotime($date);
 
@@ -132,6 +120,18 @@ class Reclaim implements ReclaimInterface
             $this->klaviyoLogger->info("cleanLog failed: unable to parse timestamp from: " . $date);
             return $response;
         }
+        
+        //get log file path and do the old switcheroo in preparation for cleaning
+        $path = $this->_dir->getPath('log') . '/klaviyo.log';
+        $old = $path . ".old";
+        rename($path, $old);
+
+        //open file streams
+        $input = fopen($old, "rb");
+        $output = fopen($path, "wb");
+
+        //setup permissions on log file
+        chmod($path,0644);
 
         //loop through all of the lines in the log
         while ($row = fgets($input))
