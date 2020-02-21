@@ -9,7 +9,7 @@
     </type>
     <type name="Klaviyo\Reclaim\Logger\Logger">
         <arguments>
-            <argument name="name" xsi:type="string">klaviyoLogger</argument>
+            <argument name="name" xsi:type="string">Klaviyo</argument>
             <argument name="handlers" xsi:type="array">
                 <item name="system" xsi:type="object">Klaviyo\Reclaim\Logger\Handler</item>
             </argument>

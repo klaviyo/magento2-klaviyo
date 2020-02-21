@@ -4,17 +4,17 @@ namespace Klaviyo\Reclaim\Block;
 
 class Initialize extends \Magento\Framework\View\Element\Template
 {
-    protected $_helper;
+    protected $_klaviyoScopeSetting;
     protected $_objectManager;
 
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
-        \Klaviyo\Reclaim\Helper\Data $helper,
+        \Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting,
         \Magento\Framework\ObjectManagerInterface $objectManager,
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->_helper = $helper;
+        $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
         $this->_objectManager = $objectManager;
     }
 
@@ -27,7 +27,7 @@ class Initialize extends \Magento\Framework\View\Element\Template
      */
     public function getPublicApiKey()
     {
-        return $this->_helper->getPublicApiKey();
+        return $this->_klaviyoScopeSetting->getPublicApiKey();
     }
 
     /**
@@ -38,7 +38,7 @@ class Initialize extends \Magento\Framework\View\Element\Template
      */
     public function isKlaviyoEnabled()
     {
-        return $this->_helper->getEnabled();
+        return $this->_klaviyoScopeSetting->getEnabled();
     }
 
     /**

@@ -14,12 +14,6 @@ class Reclaim implements ReclaimInterface
     protected $_objectManager = null;
 
     /**
-     * DirectoryList instance
-     * @var \Magento\Framework\Filesystem\DirectoryList $_dir
-     */
-    protected $_dir;
-
-    /**
      * 
      */
     protected $_subscriber;
@@ -39,7 +33,8 @@ class Reclaim implements ReclaimInterface
      */
     public $response;
 
-    protected $klaviyoLogger;
+    protected $_klaviyoLogger;
+    protected $_klaviyoScopeSetting;
 
     const MAX_QUERY_DAYS = 10;
     const SUBSCRIBER_BATCH_SIZE = 500;
@@ -52,9 +47,8 @@ class Reclaim implements ReclaimInterface
         \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository,
         \Magento\Newsletter\Model\Subscriber $subscriber,
         \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection,
-        \Klaviyo\Reclaim\Helper\Data $klaviyoHelper,
-        \Magento\Framework\Filesystem\DirectoryList $_dir,
-        \Klaviyo\Reclaim\Logger\Logger $klaviyoLogger
+        \Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting,
+        \Klaviyo\Reclaim\Helper\Logger $klaviyoLogger
         )
     {
         $this->quoteFactory = $quoteFactory;
@@ -64,9 +58,8 @@ class Reclaim implements ReclaimInterface
         $this->_stockItemRepository = $stockItemRepository;
         $this->_subscriber= $subscriber;
         $this->_subscriberCollection = $subscriberCollection;
-        $this->_klaviyoHelper = $klaviyoHelper;
-        $this->_dir = $_dir;
-        $this->klaviyoLogger = $klaviyoLogger;
+        $this->_klaviyoLogger = $klaviyoLogger;
+        $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
     }
 
     /**
@@ -77,7 +70,7 @@ class Reclaim implements ReclaimInterface
      */
     public function reclaim()
     {
-        return $this->_klaviyoHelper->getVersion();
+        return $this->_klaviyoScopeSetting->getVersion();
     }
 
     /**
@@ -88,7 +81,7 @@ class Reclaim implements ReclaimInterface
      */
     public function getLog()
     {
-        $log = file($this->_dir->getPath('log') . '/klaviyo.log');
+        $log = file($this->_klaviyoLogger->getPath());
         if ($log != "") {
             return $log;
         } else {
@@ -117,12 +110,12 @@ class Reclaim implements ReclaimInterface
             $response = array(
                 'message' => 'Unable to parse timestamp: ' . $date
             );
-            $this->klaviyoLogger->info("cleanLog failed: unable to parse timestamp from: " . $date);
+            $this->_klaviyoLogger->log("cleanLog failed: unable to parse timestamp from: " . $date);
             return $response;
         }
-        
+
         //get log file path and do the old switcheroo in preparation for cleaning
-        $path = $this->_dir->getPath('log') . '/klaviyo.log';
+        $path = $this->_klaviyoLogger->getPath();
         $old = $path . ".old";
         rename($path, $old);
 
@@ -156,7 +149,7 @@ class Reclaim implements ReclaimInterface
         unlink($old);
 
         //log cleaning success
-        $this->klaviyoLogger->info("Cleaned all log entries before: " . $date);
+        $this->_klaviyoLogger->log("Cleaned all log entries before: " . $date);
 
         //return success message
         $response = array(
@@ -175,11 +168,11 @@ class Reclaim implements ReclaimInterface
     public function appendLog($message)
     {
         //log the provided message
-        $this->klaviyoLogger->info($message);
+        $this->_klaviyoLogger->log($message);
 
         //return success message
         return array(
-            "message" => 'Logged message: \'' . $message . '\''
+            'message' => 'Logged message: \'' . $message . '\''
         );
     }
 
@@ -428,7 +421,7 @@ class Reclaim implements ReclaimInterface
     }
     public function handleMediaURL($image)
     {
-        $custom_media_url = $this->_klaviyoHelper->getCustomMediaURL();
+        $custom_media_url = $this->_klaviyoScopeSetting->getCustomMediaURL();
         if ($custom_media_url){
             return $custom_media_url . "/media/catalog/product" . $image->getFile();
         }

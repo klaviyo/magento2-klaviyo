@@ -9,30 +9,29 @@ use Magento\Authorization\Model\Acl\Role\Group as RoleGroup;
 class KlaviyoUserObserver implements ObserverInterface
 {
     /**
-     * DataHelper
      * 
-     * @var _dataHelper
+     * @var \Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting
      */
-     protected $_dataHelper;
+     protected $_klaviyoScopeSetting;
 
      /**
      * ManagerInterface
      * 
-     * @var _messageManager
+     * @var ManagerInterface $messageManager
      */
     protected $_messageManager;
 
     /**
      * RoleCollectionFactory
      * 
-     * @var RoleCollectionFactory
+     * @var RoleCollectionFactory $roleCollectionFactory
      */
     protected $_roleCollectionFactory;
 
-        /**
+    /**
      * UserFactory
      * 
-     * @var _userFactory
+     * @var UserFactory $userFactory
      */
     protected $_userFactory;
 
@@ -44,28 +43,28 @@ class KlaviyoUserObserver implements ObserverInterface
     /**
      * Init
      *
-     * @param DataHelper $_dataHelper
-     * @param MessageManager $_messageManager
-     * @param RoleCollectionFactory $_roleCollectionFactory
-     * @param UserFactory $_userFactory
+     * @param ScopeSetting $klaviyoScopeSetting
+     * @param MessageManager $messageManager
+     * @param RoleCollectionFactory $roleCollectionFactory
+     * @param UserFactory $userFactory
      */
     public function __construct(
-        \Klaviyo\Reclaim\Helper\Data $_dataHelper,
-        \Magento\Framework\Message\ManagerInterface $_messageManager,
-        \Magento\Authorization\Model\ResourceModel\Role\CollectionFactory $_roleCollectionFactory,
-        \Magento\User\Model\UserFactory $_userFactory
+        \Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting,
+        \Magento\Framework\Message\ManagerInterface $messageManager,
+        \Magento\Authorization\Model\ResourceModel\Role\CollectionFactory $roleCollectionFactory,
+        \Magento\User\Model\UserFactory $userFactory
     ) {
-        $this->_dataHelper = $_dataHelper;
-        $this->_messageManager = $_messageManager;
-        $this->_roleCollectionFactory = $_roleCollectionFactory;
-        $this->_userFactory = $_userFactory;
+        $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
+        $this->_messageManager = $messageManager;
+        $this->_roleCollectionFactory = $roleCollectionFactory;
+        $this->_userFactory = $userFactory;
     }
 
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $apiUsername = $this->_dataHelper->getKlaviyoUsername();
-        $apiPassword = $this->_dataHelper->getKlaviyoPassword();
-        $apiEmail = $this->_dataHelper->getKlaviyoEmail();
+        $apiUsername = $this->_klaviyoScopeSetting->getKlaviyoUsername();
+        $apiPassword = $this->_klaviyoScopeSetting->getKlaviyoPassword();
+        $apiEmail = $this->_klaviyoScopeSetting->getKlaviyoEmail();
 
         //
         $role = $this->_roleCollectionFactory->create();
@@ -106,8 +105,8 @@ class KlaviyoUserObserver implements ObserverInterface
         }
 
         //reset the details in the store config
-        $this->_dataHelper->unsetKlaviyoUsername();
-        $this->_dataHelper->unsetKlaviyoPassword();
-        $this->_dataHelper->unsetKlaviyoEmail();
+        $this->_klaviyoScopeSetting->unsetKlaviyoUsername();
+        $this->_klaviyoScopeSetting->unsetKlaviyoPassword();
+        $this->_klaviyoScopeSetting->unsetKlaviyoEmail();
     }
 }

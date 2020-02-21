@@ -33,9 +33,9 @@ class InstallData implements InstallDataInterface
     private $rulesFactory;
 
     /**
-     * Logging instance
+     * Logging helper
      * 
-     * @var \Klaviyo\Reclaim\Logger\Logger
+     * @var \Klaviyo\Reclaim\Helper\Logger
      */
     protected $_klaviyoLogger;
  
@@ -47,13 +47,13 @@ class InstallData implements InstallDataInterface
      * @param DirectoryList $dir
      * @param RoleFactory $roleFactory
      * @param RulesFactory $rulesFactory
-     * @param \Klaviyo\Reclaim\Logger\Logger $klaviyoLogger
+     * @param \Klaviyo\Reclaim\Helper\Logger $klaviyoLogger
      */
     public function __construct(
         DirectoryList $dir,
         RoleFactory $roleFactory,
         RulesFactory $rulesFactory,
-        \Klaviyo\Reclaim\Logger\Logger $klaviyoLogger
+        \Klaviyo\Reclaim\Helper\Logger $klaviyoLogger
     ) {
         $this->_dir = $dir;
         $this->roleFactory = $roleFactory;
@@ -66,7 +66,7 @@ class InstallData implements InstallDataInterface
         ModuleContextInterface $context
     ) {
         //Klaviyo log file creation
-        $path = $this->_dir->getPath('log') . '/klaviyo.log';
+        $path = $this->getPath();
         if (!file_exists($path)) {
             fopen($path, 'w');
         }
@@ -89,7 +89,7 @@ class InstallData implements InstallDataInterface
                 ->setResources($resource)
                 ->saveRel();
         } catch (\Exception $ex) {
-            $this->_klaviyoLogger->info('RULE CREATION ISSUE: ' . $ex->getMessage());
+            $this->_klaviyoLogger->log('RULE CREATION ISSUE: ' . $ex->getMessage());
         }
     }
 }
