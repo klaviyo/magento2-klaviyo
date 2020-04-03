@@ -53,6 +53,13 @@ class UpgradeData implements UpgradeDataInterface
         ModuleContextInterface $context
     )
     {
+        try{
+            $this->_state->getAreaCode();
+        }
+        catch (\Magento\Framework\Exception\LocalizedException $ex) {
+            $this->_state->setAreaCode('adminhtml');
+        }
+
         $setup->startSetup();
 
         //Klaviyo log file creation
@@ -61,12 +68,6 @@ class UpgradeData implements UpgradeDataInterface
             fopen($path, 'w');
         }
         chmod($path, 0644);
-        try{
-            $this->_state->getAreaCode();
-        }
-        catch (\Magento\Framework\Exception\LocalizedException $ex) {
-            $this->_state->setAreaCode('adminhtml');
-        }
 
         /**
          * in release 1.1.7 we started using the encrypted backend model for the private api key
