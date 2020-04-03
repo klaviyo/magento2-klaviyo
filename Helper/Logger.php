@@ -63,13 +63,4 @@ class Logger
             $this->_klaviyoLogger->info($message);
         }
     }
-
-    /**
-     * do I need this? who tf knows
-     * probably
-     */
-    public function clean($since)
-    {
-
-    }
 }
