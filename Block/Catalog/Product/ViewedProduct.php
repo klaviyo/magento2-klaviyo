@@ -67,7 +67,7 @@ class ViewedProduct extends Template
      */
     public function isKlaviyoEnabled()
     {
-        return $this->_klaviyoScopeSetting->getEnabled();
+        return $this->_klaviyoScopeSetting->isEnabled();
     }
 
     /**

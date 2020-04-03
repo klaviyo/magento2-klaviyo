@@ -38,7 +38,7 @@ class Initialize extends \Magento\Framework\View\Element\Template
      */
     public function isKlaviyoEnabled()
     {
-        return $this->_klaviyoScopeSetting->getEnabled();
+        return $this->_klaviyoScopeSetting->isEnabled();
     }
 
     /**

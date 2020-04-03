@@ -47,9 +47,11 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected function checkAreaCode()
     {
-        //when this class is accessed from cli commands, there is no area code set
-        //(since there is no actual session running persay)
-        //this try-catch block is needed to allow this helper to be used in setup files
+        /**
+         * when this class is accessed from cli commands, there is no area code set
+         * (since there is no actual session running persay)
+         * this try-catch block is needed to allow this helper to be used in setup files
+         */
         try{
             $this->_state->getAreaCode();
         }
@@ -119,7 +121,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
             ->getOne(self::MODULE_NAME)['setup_version'];
     }
 
-    public function getEnabled()
+    public function isEnabled()
     {
         return $this->getScopeSetting(self::ENABLE);
     }
@@ -139,7 +141,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->setScopeSetting(self::PRIVATE_API_KEY, $value);
     }
 
-    public function getLoggerEnabled()
+    public function isLoggerEnabled()
     {
         return $this->getScopeSetting(self::USING_KLAVIYO_LOGGER);
     }
@@ -161,7 +163,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function unsetKlaviyoPassword()
     {
-        return $this->setScopeSetting(self::KLAVIYO_PASSWORD, "");
+        return $this->setScopeSetting(self::KLAVIYO_PASSWORD, '');
     }
 
     public function getKlaviyoEmail()
@@ -171,7 +173,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function unsetKlaviyoEmail()
     {
-        return $this->setScopeSetting(self::KLAVIYO_EMAIL, "");
+        return $this->setScopeSetting(self::KLAVIYO_EMAIL, '');
     }
 
     public function getCustomMediaURL()

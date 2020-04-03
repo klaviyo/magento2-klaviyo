@@ -25,7 +25,7 @@ class UserProfileNewsletterSubscribeObserver implements ObserverInterface
 
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        if (!$this->_klaviyoScopeSetting->getEnabled()) return;
+        if (!$this->_klaviyoScopeSetting->isEnabled()) return;
 
         $subscriber = $observer->getDataObject();
 

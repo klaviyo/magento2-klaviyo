@@ -40,7 +40,7 @@ class Logger
     {
         $this->_dir = $dir;
         $this->_klaviyoLogger = $klaviyoLogger;
-        $this->_loggerEnabled = $klaviyoScopeSetting->getLoggerEnabled();
+        $this->_loggerEnabled = $klaviyoScopeSetting->isLoggerEnabled();
         $this->_logPath = $this->_dir->getPath('log') . '/klaviyo.log';
     }
 
