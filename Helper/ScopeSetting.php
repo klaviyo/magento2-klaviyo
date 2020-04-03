@@ -114,6 +114,11 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->getScopeSetting(self::PRIVATE_API_KEY);
     }
 
+    public function setPrivateApiKey($value)
+    {
+        return $this->setScopeSetting(self::PRIVATE_API_KEY, $value);
+    }
+
     public function getLoggerEnabled()
     {
         return $this->getScopeSetting(self::USING_KLAVIYO_LOGGER);
