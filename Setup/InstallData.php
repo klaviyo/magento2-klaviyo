@@ -8,16 +8,10 @@ use \Magento\Authorization\Model\Acl\Role\Group as RoleGroup;
 use \Magento\Authorization\Model\UserContextInterface;
 use \Magento\Authorization\Model\RoleFactory;
 use \Magento\Authorization\Model\RulesFactory;
-use Magento\Framework\Filesystem\DirectoryList;
+use \Klaviyo\Reclaim\Helper\Logger;
  
 class InstallData implements InstallDataInterface
 {
-    /**
-     * DirectoryList instance
-     * @var \Magento\Framework\Filesystem\DirectoryList $_dir
-     */
-    protected $_dir;
-
     /**
      * RoleFactory
      *
@@ -35,7 +29,7 @@ class InstallData implements InstallDataInterface
     /**
      * Logging helper
      * 
-     * @var \Klaviyo\Reclaim\Helper\Logger
+     * @var Logger
      */
     protected $_klaviyoLogger;
  
@@ -44,18 +38,15 @@ class InstallData implements InstallDataInterface
     /**
      * Init
      *
-     * @param DirectoryList $dir
      * @param RoleFactory $roleFactory
      * @param RulesFactory $rulesFactory
-     * @param \Klaviyo\Reclaim\Helper\Logger $klaviyoLogger
+     * @param Logger $klaviyoLogger
      */
     public function __construct(
-        DirectoryList $dir,
         RoleFactory $roleFactory,
         RulesFactory $rulesFactory,
-        \Klaviyo\Reclaim\Helper\Logger $klaviyoLogger
+        Logger $klaviyoLogger
     ) {
-        $this->_dir = $dir;
         $this->roleFactory = $roleFactory;
         $this->rulesFactory = $rulesFactory;
         $this->_klaviyoLogger = $klaviyoLogger;
@@ -66,7 +57,7 @@ class InstallData implements InstallDataInterface
         ModuleContextInterface $context
     ) {
         //Klaviyo log file creation
-        $path = $this->getPath();
+        $path = $this->_klaviyoLogger->getPath();
         if (!file_exists($path)) {
             fopen($path, 'w');
         }

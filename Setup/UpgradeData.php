@@ -4,21 +4,21 @@ namespace Klaviyo\Reclaim\Setup;
 use Magento\Framework\Setup\UpgradeDataInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Filesystem\DirectoryList;
+use Klaviyo\Reclaim\Helper\Logger;
 
 class UpgradeData implements UpgradeDataInterface
 {
     /**
-     * DirectoryList instance
-     * @var \Magento\Framework\Filesystem\DirectoryList $_dir
+     * Logging helper
+     * @var \Klaviyo\Reclaim\Helper\Logger
      */
-    protected $_dir;
+    protected $_klaviyoLogger;
 
     public function __construct(
-        DirectoryList $dir
+        Logger $klaviyoLogger
     )
     {
-        $this->_dir = $dir;
+        $this->_klaviyoLogger = $klaviyoLogger;
     }
 
     public function upgrade(
@@ -27,7 +27,7 @@ class UpgradeData implements UpgradeDataInterface
     )
     {
         //Klaviyo log file creation
-        $path = $this->_dir->getPath('log') . '/klaviyo.log';
+        $path = $this->_klaviyoLogger->getPath();
         if (!file_exists($path)) {
             fopen($path, 'w');
         }

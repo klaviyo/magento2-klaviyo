@@ -4,29 +4,30 @@ namespace Klaviyo\Reclaim\Setup;
 use Magento\Framework\Setup\UninstallInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Filesystem\DirectoryList;
+use Klaviyo\Reclaim\Helper\Logger;
 
 class Uninstall implements UninstallInterface
 {
     /**
-     * DirectoryList instance
-     * @var \Magento\Framework\Filesystem\DirectoryList $_dir
+     * Logging helper
+     * @var \Klaviyo\Reclaim\Helper\Logger
      */
-    protected $_dir;
+    protected $_klaviyoLogger;
 
     public function __construct(
-        DirectoryList $dir
+        Logger $klaviyoLogger
     )
     {
-        $this->_dir = $dir;
+        $this->_klaviyoLogger = $klaviyoLogger;
     }
 
     public function uninstall(
-        SchemaSetupInterface $setup, ModuleContextInterface $context
+        SchemaSetupInterface $setup,
+        ModuleContextInterface $context
     )
     {
         //remove the Klaviyo log file
-        $path = $this->_dir->getPath('log') . '/klaviyo.log';
+        $path = $this->_klaviyoLogger->getPath();
         if (file_exists($path)) {
             unlink($path);
         }
