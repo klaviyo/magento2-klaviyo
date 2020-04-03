@@ -1,7 +1,7 @@
 <?php
 namespace Klaviyo\Reclaim\Helper;
 
-class Data extends \Magento\Framework\App\Helper\AbstractHelper
+class Data
 {
     const USER_AGENT = 'Klaviyo/1.0';
     const KLAVIYO_HOST = 'https://a.klaviyo.com/';

@@ -45,7 +45,6 @@ class UpgradeData implements UpgradeDataInterface
         $this->_klaviyoLogger = $klaviyoLogger;
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
         $this->_state = $state;
-
     }
 
     public function upgrade(
@@ -57,7 +56,7 @@ class UpgradeData implements UpgradeDataInterface
             $this->_state->getAreaCode();
         }
         catch (\Magento\Framework\Exception\LocalizedException $ex) {
-            $this->_state->setAreaCode('adminhtml');
+            $this->_state->setAreaCode(\Magento\Framework\App\Area::AREA_ADMINHTML);
         }
 
         $setup->startSetup();

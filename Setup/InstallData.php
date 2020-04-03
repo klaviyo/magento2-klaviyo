@@ -32,6 +32,11 @@ class InstallData implements InstallDataInterface
      * @var Logger
      */
     protected $_klaviyoLogger;
+
+    /**
+     * @var \Magento\Framework\App\State 
+     */
+    protected $_state;
  
     const KLAVIYO_ROLE_NAME = 'Klaviyo';
 
@@ -41,21 +46,33 @@ class InstallData implements InstallDataInterface
      * @param RoleFactory $roleFactory
      * @param RulesFactory $rulesFactory
      * @param Logger $klaviyoLogger
+     * @param \Magento\Framework\App\State $state
      */
     public function __construct(
         RoleFactory $roleFactory,
         RulesFactory $rulesFactory,
-        Logger $klaviyoLogger
+        Logger $klaviyoLogger,
+        \Magento\Framework\App\State $state
     ) {
         $this->roleFactory = $roleFactory;
         $this->rulesFactory = $rulesFactory;
         $this->_klaviyoLogger = $klaviyoLogger;
+        $this->_state = $state;
     }
  
     public function install(
         ModuleDataSetupInterface $setup, 
         ModuleContextInterface $context
     ) {
+        try{
+            $this->_state->getAreaCode();
+        }
+        catch (\Magento\Framework\Exception\LocalizedException $ex) {
+            $this->_state->setAreaCode(\Magento\Framework\App\Area::AREA_ADMINHTML);
+        }
+
+        $setup->startSetup();
+
         //Klaviyo log file creation
         $path = $this->_klaviyoLogger->getPath();
         if (!file_exists($path)) {
@@ -82,5 +99,7 @@ class InstallData implements InstallDataInterface
         } catch (\Exception $ex) {
             $this->_klaviyoLogger->log('RULE CREATION ISSUE: ' . $ex->getMessage());
         }
+
+        $setup->endSetup();
     }
 }

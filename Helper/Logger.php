@@ -5,7 +5,7 @@ use Magento\Framework\Filesystem\DirectoryList;
 use Klaviyo\Reclaim\Logger\Logger as KlaviyoLogger;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
 
-class Logger extends \Magento\Framework\App\Helper\AbstractHelper
+class Logger
 {
     /**
      * directory list interface

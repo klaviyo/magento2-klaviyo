@@ -26,7 +26,7 @@
                     <label>Custom Media URL</label>
                     <validate>validate-url</validate>
                 </field>
-                <fieldid="logger" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="logger" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Klaviyo Logger</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>

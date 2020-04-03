@@ -43,11 +43,29 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * helper function to allow this class to be used in Setup files
+     */
+    protected function checkAreaCode()
+    {
+        //when this class is accessed from cli commands, there is no area code set
+        //(since there is no actual session running persay)
+        //this try-catch block is needed to allow this helper to be used in setup files
+        try{
+            $this->_state->getAreaCode();
+        }
+        catch (\Magento\Framework\Exception\LocalizedException $ex) {
+            $this->_state->setAreaCode(\Magento\Framework\App\Area::AREA_ADMINHTML);
+        }
+    }
+
+    /**
      * Getter method for a given scope setting
      * @param string $path
      */
     protected function getScopeSetting($path)
     {
+        $this->checkAreaCode();
+
         if ($this->_state->getAreaCode() == \Magento\Framework\App\Area::AREA_ADMINHTML) {
             $scopedStoreCode = $this->_request->getParam('store');
             $scopedWebsiteCode = $this->_request->getParam('website');
@@ -74,6 +92,8 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected function setScopeSetting($path, $value)
     {
+        $this->checkAreaCode();
+
         if ($this->_state->getAreaCode() == \Magento\Framework\App\Area::AREA_ADMINHTML) {
             $scopedStoreCode = $this->_request->getParam('store');
             $scopedWebsiteCode = $this->_request->getParam('website');
