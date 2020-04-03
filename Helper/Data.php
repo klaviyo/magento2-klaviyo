@@ -118,6 +118,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->getScopeSetting(self::PRIVATE_API_KEY);
     }
 
+    public function setPrivateApiKey($value)
+    {
+        return $this->setScopeSetting(self::PRIVATE_API_KEY, $value);
+    }
+
     public function getKlaviyoUsername()
     {
         return $this->getScopeSetting(self::KLAVIYO_USERNAME);
