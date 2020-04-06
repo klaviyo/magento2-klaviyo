@@ -2,7 +2,7 @@
 
 namespace Klaviyo\Reclaim\Block\Catalog\Product;
 
-use Klaviyo\Reclaim\Helper\Data;
+use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Magento\Catalog\Helper\Image;
 use Magento\Catalog\Model\CategoryFactory;
 use Magento\Framework\Registry;
@@ -11,7 +11,7 @@ use Magento\Framework\View\Element\Template\Context;
 
 class ViewedProduct extends Template
 {
-    protected $_helper;
+    protected $_klaviyoScopeSetting;
     protected $_registry;
     protected $_categoryFactory;
     protected $imageUrl = null;
@@ -26,7 +26,7 @@ class ViewedProduct extends Template
     /**
      * ViewedProduct constructor.
      * @param Context $context
-     * @param Data $helper
+     * @param ScopeSetting $klaviyoScopeSetting
      * @param Registry $registry
      * @param CategoryFactory $categoryFactory
      * @param Image $imageHelper
@@ -34,14 +34,14 @@ class ViewedProduct extends Template
      */
     public function __construct(
         Context $context,
-        Data $helper,
+        ScopeSetting $klaviyoScopeSetting,
         Registry $registry,
         CategoryFactory $categoryFactory,
         Image $imageHelper,
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->_helper = $helper;
+        $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
         $this->_registry = $registry;
         $this->_categoryFactory = $categoryFactory;
         $this->imageHelper = $imageHelper;
@@ -56,7 +56,7 @@ class ViewedProduct extends Template
      */
     public function getPublicApiKey()
     {
-        return $this->_helper->getPublicApiKey();
+        return $this->_klaviyoScopeSetting->getPublicApiKey();
     }
 
     /**
@@ -67,7 +67,7 @@ class ViewedProduct extends Template
      */
     public function isKlaviyoEnabled()
     {
-        return $this->_helper->getEnabled();
+        return $this->_klaviyoScopeSetting->isEnabled();
     }
 
     /**
