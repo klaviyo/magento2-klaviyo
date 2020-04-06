@@ -59,7 +59,7 @@ class Logger
      */
     public function log($message)
     {
-        if ($this->loggerEnabled) {
+        if ($this->_loggerEnabled) {
             $this->_klaviyoLogger->info($message);
         }
     }
