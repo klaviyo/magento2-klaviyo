@@ -26,9 +26,10 @@
                     <label>Custom Media URL</label>
                     <validate>validate-url</validate>
                 </field>
-                <field id="logger" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="logger" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Klaviyo Logger</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Log file is located under the standard log directory for your Magento app install. By default this will be {magento-root-directory}/var/log/klaviyo.log</comment>
                 </field>
             </group>
         </section>
