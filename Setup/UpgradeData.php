@@ -4,7 +4,6 @@ namespace Klaviyo\Reclaim\Setup;
 use Magento\Framework\Setup\UpgradeDataInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
-use \Klaviyo\Reclaim\Helper\Data as DataHelper;
 
 class UpgradeData implements UpgradeDataInterface
 {
@@ -14,9 +13,15 @@ class UpgradeData implements UpgradeDataInterface
     protected $_encryptor;
 
     /**
-     * @var DataHelper
+     * Logging helper
+     * @var \Klaviyo\Reclaim\Helper\Logger
      */
-    protected $_dataHelper;
+    protected $_klaviyoLogger;
+
+    /**
+     * @var \Klaviyo\Reclaim\Helper\ScopeSetting
+     */
+    protected $_klaviyoScopeSetting;
 
     /**
      * @var \Magento\Framework\App\State 
@@ -24,18 +29,21 @@ class UpgradeData implements UpgradeDataInterface
     protected $_state;
 
     /**
-     * @param DataHelper $dataHelper
      * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
+     * @param \Klaviyo\Reclaim\Helper\Logger $klaviyoLogger
+     * @param \Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting
      * @param \Magento\Framework\App\State $state
      */
     public function __construct(
-        DataHelper $dataHelper,
         \Magento\Framework\Encryption\EncryptorInterface $encryptor,
+        \Klaviyo\Reclaim\Helper\Logger $klaviyoLogger,
+        \Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting,
         \Magento\Framework\App\State $state
     )
     {
-        $this->_dataHelper = $dataHelper;
         $this->_encryptor = $encryptor;
+        $this->_klaviyoLogger = $klaviyoLogger;
+        $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
         $this->_state = $state;
     }
 
@@ -48,10 +56,18 @@ class UpgradeData implements UpgradeDataInterface
             $this->_state->getAreaCode();
         }
         catch (\Magento\Framework\Exception\LocalizedException $ex) {
-            $this->_state->setAreaCode('adminhtml');
+            $this->_state->setAreaCode(\Magento\Framework\App\Area::AREA_ADMINHTML);
         }
 
         $setup->startSetup();
+
+        //Klaviyo log file creation
+        $path = $this->_klaviyoLogger->getPath();
+        if (!file_exists($path)) {
+            fopen($path, 'w');
+        }
+        chmod($path, 0644);
+
         /**
          * in release 1.1.7 we started using the encrypted backend model for the private api key
          * this check ensures that when upgrading to this version the key is stored properly
@@ -59,11 +75,11 @@ class UpgradeData implements UpgradeDataInterface
          */
         if (version_compare($context->getVersion(), '1.1.7', '<')) {
             //retrieve current key (unencrypted)
-            $value = $this->_dataHelper->getPrivateApiKey();
+            $value = $this->_klaviyoScopeSetting->getPrivateApiKey();
             //encrypt the private key
             $encrypted = $this->_encryptor->encrypt($value);
             //set the private key to the encrypted value
-            $this->_dataHelper->setPrivateApiKey($encrypted);
+            $this->_klaviyoScopeSetting->setPrivateApiKey($encrypted);
         }
         $setup->endSetup();
     }

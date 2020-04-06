@@ -1,179 +1,36 @@
 <?php
-
 namespace Klaviyo\Reclaim\Helper;
-
-use Psr\Log\LoggerInterface;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
-    const MODULE_NAME = 'Klaviyo_Reclaim';
     const USER_AGENT = 'Klaviyo/1.0';
-    const KLAVIYO_HOST =  'https://a.klaviyo.com/';
+    const KLAVIYO_HOST = 'https://a.klaviyo.com/';
     const LIST_V2_API = 'api/v2/list/';
 
-    protected $_scopeConfig;
-    protected $_request;
-    protected $_state;
-    protected $_moduleList;
-    protected $_configWriter;
+    /**
+     * Klaviyo logger helper
+     * @var \Klaviyo\Reclaim\Helper\Logger $klaviyoLogger
+     */
+    protected $_klaviyoLogger;
 
     /**
-     * @var LoggerInterface
+     * Klaviyo scope setting helper
+     * @var \Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting
      */
-    private $logger;
-
-    const ENABLE = 'klaviyo_reclaim_general/general/enable';
-    const PUBLIC_API_KEY = 'klaviyo_reclaim_general/general/public_api_key';
-    const PRIVATE_API_KEY = 'klaviyo_reclaim_general/general/private_api_key';
-    const CUSTOM_MEDIA_URL = 'klaviyo_reclaim_general/general/custom_media_url';
-    const NEWSLETTER = 'klaviyo_reclaim_newsletter/newsletter/newsletter';
-    const USING_KLAVIYO_LIST_OPT_IN = 'klaviyo_reclaim_newsletter/newsletter/using_klaviyo_list_opt_in';
-
-    const KLAVIYO_NAME_DEFAULT = 'klaviyo';
-    const KLAVIYO_USERNAME = 'klaviyo_reclaim_user/klaviyo_user/username';
-    const KLAVIYO_PASSWORD = 'klaviyo_reclaim_user/klaviyo_user/password';
-    const KLAVIYO_EMAIL = 'klaviyo_reclaim_user/klaviyo_user/email';
-
-    const API_MEMBERS = '/members';
-    const API_SUBSCRIBE = '/subscribe';
+    protected $_klaviyoScopeSetting;
 
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
-        \Magento\Framework\App\State $state,
-        \Magento\Framework\ObjectManagerInterface $objectManager,
-        \Magento\Framework\Module\ModuleListInterface $moduleList,
-        \Magento\Framework\App\Config\Storage\WriterInterface $configWriter,
-        LoggerInterface $logger
+        \Klaviyo\Reclaim\Helper\Logger $klaviyoLogger,
+        \Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting
     ) {
         parent::__construct($context);
-        $this->_scopeConfig = $context->getScopeConfig();
-        $this->_request = $context->getRequest();
-        $this->_state = $state;
-        $this->_storeId = $objectManager->get('Magento\Store\Model\StoreManagerInterface')->getStore()->getId();
-        $this->_moduleList = $moduleList;
-        $this->_configWriter = $configWriter;
-        $this->logger = $logger;
-    }
-
-    protected function getScopeSetting($path)
-    {
-        if ($this->_state->getAreaCode() == \Magento\Framework\App\Area::AREA_ADMINHTML) {
-            $scopedStoreCode = $this->_request->getParam('store');
-            $scopedWebsiteCode = $this->_request->getParam('website');
-        } else {
-            // In frontend area. Only concerned with store for frontend.
-            $scopedStoreCode = $this->_storeId;
-        }
-
-        if (isset($scopedStoreCode)) {
-            $scope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
-            return $this->_scopeConfig->getValue($path, $scope, $scopedStoreCode);
-        } elseif (isset($scopedWebsiteCode)) {
-            $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE;
-            return $this->_scopeConfig->getValue($path, $scope, $scopedWebsiteCode);
-        } else {
-            return $this->_scopeConfig->getValue($path);
-        };
-    }
-
-    protected function setScopeSetting($path, $value)
-    {
-        if ($this->_state->getAreaCode() == \Magento\Framework\App\Area::AREA_ADMINHTML) {
-            $scopedStoreCode = $this->_request->getParam('store');
-            $scopedWebsiteCode = $this->_request->getParam('website');
-        } else {
-            // In frontend area. Only concerned with store for frontend.
-            $scopedStoreCode = $this->_storeId;
-        }
-
-        if (isset($scopedStoreCode)) {
-            $scope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
-            return $this->_configWriter->save($path, $value, $scope, $scopedStoreCode);
-        } elseif (isset($scopedWebsiteCode)) {
-            $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE;
-            return $this->_configWriter->save($path, $value, $scope, $scopedWebsiteCode);
-        } else {
-            return $this->_configWriter->save($path, $value);
-        };
-    }
-
-    public function getVersion()
-    {
-        return $this->_moduleList
-            ->getOne(self::MODULE_NAME)['setup_version'];
-    }
-
-    public function getEnabled()
-    {
-        return $this->getScopeSetting(self::ENABLE);
-    }
-
-    public function getPublicApiKey()
-    {
-        return $this->getScopeSetting(self::PUBLIC_API_KEY);
-    }
-
-    public function getPrivateApiKey()
-    {
-        return $this->getScopeSetting(self::PRIVATE_API_KEY);
-    }
-
-    public function setPrivateApiKey($value)
-    {
-        return $this->setScopeSetting(self::PRIVATE_API_KEY, $value);
-    }
-
-    public function getKlaviyoUsername()
-    {
-        return $this->getScopeSetting(self::KLAVIYO_USERNAME);
-    }
-
-    public function unsetKlaviyoUsername()
-    {
-        return $this->setScopeSetting(self::KLAVIYO_USERNAME, self::KLAVIYO_NAME_DEFAULT);
-    }
-
-    public function getKlaviyoPassword()
-    {
-        return $this->getScopeSetting(self::KLAVIYO_PASSWORD);
-    }
-
-    public function unsetKlaviyoPassword()
-    {
-        return $this->setScopeSetting(self::KLAVIYO_PASSWORD, "");
-    }
-
-    public function getKlaviyoEmail()
-    {
-        return $this->getScopeSetting(self::KLAVIYO_EMAIL);
-    }
-
-    public function unsetKlaviyoEmail()
-    {
-        return $this->setScopeSetting(self::KLAVIYO_EMAIL, "");
-    }
-
-    public function getCustomMediaURL()
-    {
-        return $this->getScopeSetting(self::CUSTOM_MEDIA_URL);
-    }
-
-    public function getNewsletter()
-    {
-        return $this->getScopeSetting(self::NEWSLETTER);
-    }
-
-    public function getOptInSetting()
-    {
-        if ($this->getScopeSetting(self::USING_KLAVIYO_LIST_OPT_IN)) {
-            return self::API_SUBSCRIBE;
-        } else {
-            return self::API_MEMBERS;
-        }
+        $this->_klaviyoLogger = $klaviyoLogger;
+        $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
     }
 
     public function getKlaviyoLists($api_key=null){
-        if (!$api_key) $api_key = $this->getPrivateApiKey();
+        if (!$api_key) $api_key = $this->_klaviyoScopeSetting->getPrivateApiKey();
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'https://a.klaviyo.com/api/v1/lists?api_key=' . $api_key);
@@ -223,8 +80,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function subscribeEmailToKlaviyoList($email, $firstName = null, $lastName = null, $source = null)
     {
-        $listId = $this->getNewsletter();
-        $optInSetting = $this->getOptInSetting();
+        $listId = $this->_klaviyoScopeSetting->getNewsletter();
+        $optInSetting = $this->_klaviyoScopeSetting->getOptInSetting();
 
         $properties = [];
         $properties['email'] = $email;
@@ -239,7 +96,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         try {
             $response = $this->sendApiRequest($path, $propertiesVal, 'POST');
         } catch (\Exception $e) {
-            $this->logger->warning(sprintf('Unable to subscribe %s to list %s: %s', $email, $listId, $e));
+            $this->_klaviyoLogger->log(sprintf('Unable to subscribe %s to list %s: %s', $email, $listId, $e));
             $responce = false;
         }
 
@@ -252,7 +109,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function unsubscribeEmailFromKlaviyoList($email)
     {
-        $listId = $this->getNewsletter();
+        $listId = $this->_klaviyoScopeSetting->getNewsletter();
 
         $path = self::LIST_V2_API . $listId . self::API_SUBSCRIBE;
         $fields = [
@@ -262,7 +119,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         try {
             $response = $this->sendApiRequest($path, $fields, 'DELETE');
         } catch (\Exception $e) {
-            $this->logger->warning(sprintf('Unable to unsubscribe %s from list %s: %s', $email, $listId, $e));
+            $this->_klaviyoLogger->log(sprintf('Unable to unsubscribe %s from list %s: %s', $email, $listId, $e));
             $responce = false;
         }
 
@@ -277,7 +134,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             return 'You must identify a user by email or ID.';
         }
         $params = array(
-            'token' => $this->getPublicApiKey(),
+            'token' => $this->_klaviyoScopeSetting->getPublicApiKey(),
             'event' => $event,
             'properties' => $properties,
             'customer_properties' => $customer_properties
@@ -312,7 +169,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $url = self::KLAVIYO_HOST . $path;
 
         //Add API Key to params
-        $params['api_key'] = $this->getPrivateApiKey();
+        $params['api_key'] = $this->_klaviyoScopeSetting->getPrivateApiKey();
 
         $curl = curl_init();
         $encodedParams = json_encode($params);

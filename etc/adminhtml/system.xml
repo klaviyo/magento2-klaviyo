@@ -26,6 +26,11 @@
                     <label>Custom Media URL</label>
                     <validate>validate-url</validate>
                 </field>
+                <field id="logger" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Klaviyo Logger</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Log file is located under the standard log directory for your Magento app install. By default this will be {magento-root-directory}/var/log/klaviyo.log</comment>
+                </field>
             </group>
         </section>
 
@@ -37,7 +42,7 @@
                 <label>Newsletter</label>
                 <field id="newsletter" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>List to Sync Subscribers</label>
-                    <source_model>Klaviyo\Reclaim\Helper\ListOptions</source_model>
+                    <source_model>Klaviyo\Reclaim\Model\Config\Source\ListOptions</source_model>
                     <frontend_model>Klaviyo\Reclaim\Block\System\Config\Form\Field\Newsletter</frontend_model>
                 </field>
                 <field id="using_klaviyo_list_opt_in" translate="label" type="radios" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">

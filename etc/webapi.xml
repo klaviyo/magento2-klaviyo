@@ -48,4 +48,22 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
+    <route url="/V1/klaviyo/reclaim/log" method="GET">
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="getLog"/>
+        <resources>
+            <resource ref="Magento_Backend::admin"/>
+        </resources>
+    </route>
+    <route url="/V1/klaviyo/reclaim/log" method="POST">
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="appendLog"/>
+        <resources>
+            <resource ref="Magento_Backend::admin"/>
+        </resources>
+    </route>
+    <route url="/V1/klaviyo/reclaim/log/clean" method="POST">
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="cleanLog"/>
+        <resources>
+            <resource ref="Magento_Backend::admin"/>
+        </resources>
+    </route>
 </routes>

@@ -43,13 +43,17 @@ Magento 2
     - Enable Klaviyo
     - Add 6 digit Klaviyo public API key
     - For syncing Newsletter Subscribe/Unsubscribes: also add your Klaviyo private API key
+    - To enable error logging: set "Enable Klaviyo Logger" to "Yes"
     - Save config
   - For syncing Newsletter Subscribe/Unsubscribes:
     - Open Newsletter from the sidebar
     - The page should load with your lists from Klaviyo
     - Select a list
     - Save config
-
+  - To setup API credentials for the integration
+    - Open Setup Klaviyo User from the sidebar
+    - Enter the username, password, and email for the credentials
+    - Save config
 ## Support
 
 Contact support@klaviyo.com

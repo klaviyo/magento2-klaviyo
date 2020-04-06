@@ -1,6 +1,5 @@
 <?php
-
-namespace Klaviyo\Reclaim\Helper;
+namespace Klaviyo\Reclaim\Model\Config\Source;
 
 class ListOptions implements \Magento\Framework\Option\ArrayInterface
 {
@@ -10,9 +9,11 @@ class ListOptions implements \Magento\Framework\Option\ArrayInterface
 
     public function __construct(
         \Magento\Framework\Message\ManagerInterface $messageManager,
+        \Klaviyo\Reclaim\Helper\ScopeSetting $_klaviyoScopeSetting,
         \Klaviyo\Reclaim\Helper\Data $_dataHelper
     ) {
         $this->messageManager = $messageManager;
+        $this->_klaviyoScopeSetting = $_klaviyoScopeSetting;
         $this->_dataHelper = $_dataHelper;
     }
 
@@ -25,7 +26,7 @@ class ListOptions implements \Magento\Framework\Option\ArrayInterface
         // field in Klaviyo\Reclaim\Block\System\Config\Form\Field\Newsletter, so we pass
         // it over in the options array.
 
-        if (!$this->_dataHelper->getPrivateApiKey()) {
+        if (!$this->_klaviyoScopeSetting->getPrivateApiKey()) {
             return [[
                 self::LABEL => 'To sync newsletter subscribers to Klaviyo, first save a <strong>Private Klaviyo API Key</strong> on the "General" tab.',
                 self::VALUE => 0
