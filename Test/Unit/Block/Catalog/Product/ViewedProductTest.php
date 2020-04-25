@@ -1,9 +1,9 @@
 <?php
 
-namespace \Klaviyo\Reclaim\Test\Unit\Block;
+namespace Klaviyo\Reclaim\Test\Unit\Block\Catalog\Product;
 
-use \PHPUnit\Framewok\TestCase;
-use \Klaviyo\Reclaim\Block\Catalog\Product\ViewedProduct;
+use PHPUnit\Framework\TestCase;
+use Klaviyo\Reclaim\Block\Catalog\Product\ViewedProduct;
 
 class ViewedProductTest extends TestCase
 {
@@ -12,17 +12,17 @@ class ViewedProductTest extends TestCase
      */
     private $object;
 
-    protected function setUp()
+    protected function setUp(): void
     {
-        $this->object = new Initalize();
+        $this->object = new ViewedProduct();
     }
 
-    public function testInitalizeInstance()
+    public function testViewedProductInstance()
     {
         $this->assertInstanceOf(ViewedProduct::class, $this->object);
     }
 
-    public function testInitialize()
+    public function testViewedProduct()
     {
         
     }

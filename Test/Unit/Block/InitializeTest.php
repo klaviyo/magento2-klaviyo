@@ -1,9 +1,9 @@
 <?php
 
-namespace \Klaviyo\Reclaim\Test\Unit\Block;
+namespace Klaviyo\Reclaim\Test\Unit\Block;
 
-use \PHPUnit\Framewok\TestCase;
-use \Klaviyo\Reclaim\Block\Initalize;
+use PHPUnit\Framework\TestCase;
+use Klaviyo\Reclaim\Block\Initialize;
 
 class InitializeTest extends TestCase
 {
@@ -12,12 +12,12 @@ class InitializeTest extends TestCase
      */
     private $object;
 
-    protected function setUp()
+    protected function setUp(): void
     {
-        $this->object = new Initalize();
+        $this->object = new Initialize();
     }
 
-    public function testInitalizeInstance()
+    public function testInitializeInstance()
     {
         $this->assertInstanceOf(Initialize::class, $this->object);
     }
