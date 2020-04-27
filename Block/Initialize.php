@@ -5,17 +5,17 @@ namespace Klaviyo\Reclaim\Block;
 class Initialize extends \Magento\Framework\View\Element\Template
 {
     protected $_klaviyoScopeSetting;
-    protected $_objectManager;
+    protected $_session;
 
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting,
-        \Magento\Framework\ObjectManagerInterface $objectManager,
+        \Magento\Customer\Model\Session $session,
         array $data = []
     ) {
         parent::__construct($context, $data);
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
-        $this->_objectManager = $objectManager;
+        $this->_session = $session;
     }
 
     /**
@@ -49,8 +49,7 @@ class Initialize extends \Magento\Framework\View\Element\Template
      */
     public function isLoggedIn()
     {
-        $customerSession = $this->_objectManager->create('Magento\Customer\Model\Session');
-        return $customerSession->isLoggedIn();
+        return $this->_session->isLoggedIn();
     }
 
     /**
@@ -61,8 +60,7 @@ class Initialize extends \Magento\Framework\View\Element\Template
      */
     public function getCustomerEmail()
     {
-        $customerSession = $this->_objectManager->create('Magento\Customer\Model\Session');
-        return $customerSession->getCustomerData()->getEmail();
+        return $this->_session->getCustomerData()->getEmail();
     }
 
     /**
@@ -73,8 +71,7 @@ class Initialize extends \Magento\Framework\View\Element\Template
      */
     public function getCustomerFirstname()
     {
-        $customerSession = $this->_objectManager->create('Magento\Customer\Model\Session');
-        return $customerSession->getCustomerData()->getFirstname();
+        return $this->_session->getCustomerData()->getFirstname();
     }
 
     /**
@@ -85,7 +82,6 @@ class Initialize extends \Magento\Framework\View\Element\Template
      */
     public function getCustomerLastname()
     {
-        $customerSession = $this->_objectManager->create('Magento\Customer\Model\Session');
-        return $customerSession->getCustomerData()->getLastname();
+        return $this->_session->getCustomerData()->getLastname();
     }
 }

@@ -1,5 +1,7 @@
 <?php
+
 namespace Klaviyo\Reclaim\Model;
+
 use Klaviyo\Reclaim\Api\ReclaimInterface;
 use \Magento\Framework\Exception\NotFoundException;
 
@@ -81,12 +83,19 @@ class Reclaim implements ReclaimInterface
      */
     public function getLog()
     {
-        $log = file($this->_klaviyoLogger->getPath());
-        if ($log != "") {
+        try {
+            $log = file($this->_klaviyoLogger->getPath());
+        } catch (\Exception $e) {
+            return array (
+                'message' => 'Unable to retrieve log file with error: ' . $e->getMessage()
+            );
+        }
+        
+        if ($log != ""  && $log != []) {
             return $log;
         } else {
             return array (
-                'message' => 'Unable to retrieve log file'
+                'message' => 'Log file is empty'
             );
         }
     }
@@ -323,7 +332,7 @@ class Reclaim implements ReclaimInterface
 
     public function getSubscribersCount()
     {
-        $subscriberCount =$this->_subscriberCollection->create()->getSize();
+        $subscriberCount = $this->_subscriberCollection->create()->getSize();
         return $subscriberCount;
     }
 
