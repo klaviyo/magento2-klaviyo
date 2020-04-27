@@ -1,7 +1,9 @@
 <?php
 namespace Klaviyo\Reclaim\Helper;
 
-use Psr\Log\LoggerInterface;
+use \Klaviyo\Reclaim\Helper\ScopeSetting;
+use \Magento\Framework\App\Helper\Context;
+use \Klaviyo\Reclaim\Helper\Logger;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -22,9 +24,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_klaviyoScopeSetting;
 
     public function __construct(
-        \Magento\Framework\App\Helper\Context $context,
-        \Klaviyo\Reclaim\Helper\Logger $klaviyoLogger,
-        \Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting
+        Context $context,
+        Logger $klaviyoLogger,
+        ScopeSetting $klaviyoScopeSetting
     ) {
         parent::__construct($context);
         $this->_klaviyoLogger = $klaviyoLogger;
@@ -99,7 +101,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $response = $this->sendApiRequest($path, $propertiesVal, 'POST');
         } catch (\Exception $e) {
             $this->_klaviyoLogger->log(sprintf('Unable to subscribe %s to list %s: %s', $email, $listId, $e));
-            $responce = false;
+            $response = false;
         }
 
         return $response;
@@ -113,7 +115,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $listId = $this->_klaviyoScopeSetting->getNewsletter();
 
-        $path = self::LIST_V2_API . $listId . self::API_SUBSCRIBE;
+        $path = self::LIST_V2_API . $listId . ScopeSetting::API_SUBSCRIBE;
         $fields = [
             'emails' => [(string)$email],
         ];
@@ -122,7 +124,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $response = $this->sendApiRequest($path, $fields, 'DELETE');
         } catch (\Exception $e) {
             $this->_klaviyoLogger->log(sprintf('Unable to unsubscribe %s from list %s: %s', $email, $listId, $e));
-            $responce = false;
+            $response = false;
         }
 
         return $response;
