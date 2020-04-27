@@ -1,8 +1,12 @@
-# Running Unit Tests in a Magento 2 Store
+# Prerequisites/Dependencies
+- xDebug https://xdebug.org/docs/install
+- php-xml https://stackoverflow.com/a/35722779
+- The extension needs to be installed in a Magento 2 app
 
+# Running the tests
+- cd into the root of the M2 app
+- cd into vendor/klaviyo/magento2-extension
+- run composer install
+- cd back into M2 root
+- run vendor/phpunit/phpunit/phpunit -c vendor/klaviyo/magento2-extension/phpunit.xml vendor/klaviyo/magento2-extension/Test/Unit/
 
-# Running Unit Tests Outside of a Magento 2 Store
-- Comment out all of the PHP inside of registration.php
- - This file is responsible for registering the module with the M2 component registrar, so outside of a store it will error out
-- Run composer install --dev
-- Run vendor/bin/phpunit {something-goes-here}
