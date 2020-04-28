@@ -205,7 +205,10 @@ class ViewedProduct extends Template
             'Title' => $_product->getName(),
             'ItemId' => $_product->getId(),
             'Url' => $_product->getProductUrl(),
-            'Categories' => $this->getProductCategories()
+            'Categories' => $this->getProductCategories(),
+            'Metadata' => array(
+                'Price' => $this->getPrice()
+            )
         ];
 
         if ($this->getProductImage()) {
