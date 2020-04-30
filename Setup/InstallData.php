@@ -72,13 +72,6 @@ class InstallData implements InstallDataInterface
         }
 
         $setup->startSetup();
-
-        //Klaviyo log file creation
-        $path = $this->_klaviyoLogger->getPath();
-        if (!file_exists($path)) {
-            fopen($path, 'w');
-        }
-        chmod($path, 0644);
         
         //Klaviyo role creation
         $role = $this->roleFactory->create();
