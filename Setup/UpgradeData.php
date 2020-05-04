@@ -61,13 +61,6 @@ class UpgradeData implements UpgradeDataInterface
 
         $setup->startSetup();
 
-        //Klaviyo log file creation
-        $path = $this->_klaviyoLogger->getPath();
-        if (!file_exists($path)) {
-            fopen($path, 'w');
-        }
-        chmod($path, 0644);
-
         /**
          * in release 1.1.7 we started using the encrypted backend model for the private api key
          * this check ensures that when upgrading to this version the key is stored properly
