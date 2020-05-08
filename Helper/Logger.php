@@ -35,13 +35,14 @@ class Logger
     public function __construct(
         DirectoryList $dir,
         KlaviyoLogger $klaviyoLogger,
-        ScopeSetting $klaviyoScopeSetting
+        ScopeSetting $klaviyoScopeSetting,
+        String $logPath = null
     )
     {
         $this->_dir = $dir;
         $this->_klaviyoLogger = $klaviyoLogger;
         $this->_loggerEnabled = $klaviyoScopeSetting->isLoggerEnabled();
-        $this->_logPath = $this->_dir->getPath('log') . '/klaviyo.log';
+        $this->_logPath = ($logPath != null && $logPath != "") ? $logPath : $this->_dir->getPath('log') . '/klaviyo.log';
     }
 
     /**
