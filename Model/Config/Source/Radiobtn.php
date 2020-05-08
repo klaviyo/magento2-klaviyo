@@ -8,11 +8,11 @@ class Radiobtn implements \Magento\Framework\Option\ArrayInterface
         [
             [
                 'value' => true, 
-                'label' => __('Yes, use the Klaviyo settings for this list')
+                'label' => 'Yes, use the Klaviyo settings for this list'
             ], 
             [
                 'value' => false, 
-                'label' => __('No, do not send opt-in emails from Klaviyo')
+                'label' => 'No, do not send opt-in emails from Klaviyo'
             ],
         ];
     }

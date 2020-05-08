@@ -3,7 +3,7 @@ namespace Klaviyo\Reclaim\Test\Unit\Block\System\Config\Form\Field;
 
 use PHPUnit\Framework\TestCase;
 use Klaviyo\Reclaim\Block\System\Config\Form\Field\Newsletter;
-use Magento\Framework\Data\Form\Element\AbstractElement;
+use Magento\Backend\Block\Template\Context;
 
 class NewsletterTest extends TestCase
 {
@@ -12,22 +12,26 @@ class NewsletterTest extends TestCase
      */
     protected $object;
 
-    // protected function setUp()
-    // {
-    //     $mockElement = $this->getMock(AbstractElement::class);
-    //     $mockElementValues = [['label'=>'TestValue']];
-    //     $mockElement->method('getValues')->willReturn($mockElementValues);
+    protected function setUp()
+    {
+        $contextMock = $this->createMock(Context::class);
 
-    //     $this->object = $this->getMock();
-    // }
+        $this->object = new Newsletter(
+            $contextMock
+        );
+    }
 
+    public function testNewsletterInstance()
+    {
+        $this->assertInstanceOf(Newsletter::class, $this->object);
+    }
+    
     // /**
     //  * Not sure if it is possible to test this method since it is protected
-    //  * I think we have to call one of the public methods defined in its parent
+    //  * I think we have to call one of the public methods defined in a parent
     //  */
     // public function test__GetElementHtml()
     // {
-    //     $expectedOutput = [];
-    //     $this->assertSame($expectedOutput, $this->object->__getElementHteml($mockElement));
+    //
     // }
 }
