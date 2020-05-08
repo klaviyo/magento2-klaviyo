@@ -6,7 +6,6 @@ use PHPUnit\Framework\TestCase;
 use Klaviyo\Reclaim\Block\Catalog\Product\ViewedProduct;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Magento\Catalog\Helper\Image;
-//use Magento\Catalog\Model\ResourceModel\Category\Collection\Factory as CategoryFactory;
 use Magento\Catalog\Model\CategoryFactory;
 use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
 use Magento\Catalog\Model\Category;
