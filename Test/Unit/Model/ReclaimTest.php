@@ -25,7 +25,7 @@ class ReclaimTest extends TestCase
      */
     protected $object;
 
-    //path to our temprary test log file
+    //path to our temporary test log file
     const TEST_LOG_PATH = '/var/www/html/var/log/klaviyo.test.log';
 
     //array of test log entries
