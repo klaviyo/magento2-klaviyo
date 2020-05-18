@@ -127,7 +127,7 @@ class ViewedProductTest extends TestCase
 
         $imageMock = $this->createMock(Image::class);
         $imageMock->method('init')
-            ->with($this->isInstanceOf(Product::class),$this->equalTo('product_base_image'))
+            ->with($this->isInstanceOf(Product::class), $this->equalTo('product_base_image'))
             ->willReturn($imageMock);
         $imageMock->method('getUrl')->willReturn(self::PRODUCT_IMAGE_URL);
 
