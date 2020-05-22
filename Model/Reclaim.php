@@ -132,9 +132,6 @@ class Reclaim implements ReclaimInterface
         $input = fopen($old, 'rb');
         $output = fopen($path, 'wb');
 
-        //setup permissions on log file
-        chmod($path,0644);
-
         //loop through all of the lines in the log
         while ($row = fgets($input))
         {
