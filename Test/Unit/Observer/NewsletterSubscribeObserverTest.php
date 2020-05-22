@@ -3,6 +3,8 @@
 namespace Klaviyo\Reclaim\Test\Unit\Observer;
 
 use PHPUnit\Framework\TestCase;
+use Klaviyo\Reclaim\Test\Data\SampleExtension;
+use Klaviyo\Reclaim\Test\Data\SampleCustomer;
 use Klaviyo\Reclaim\Observer\NewsletterSubscribeObserver;
 use Klaviyo\Reclaim\Helper\Data;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
@@ -16,23 +18,20 @@ class NewsletterSubscribeObserverTest extends TestCase
      */
     protected $object;
 
-    const IS_ENABLED = TRUE;
-    const SUBSCRIBER_EMAIL = 'test@example.com';
-
     protected function setUp()
     {
         $dataMock = $this->createMock(Data::class);
         $dataMock->method('subscribeEmailToKlaviyoList')
-            ->with($this->equalTo(self::SUBSCRIBER_EMAIL))
+            ->with($this->equalTo(SampleCustomer::CUSTOMER_EMAIL))
             ->willReturn(TRUE);
 
         $scopeSettingMock = $this->createMock(ScopeSetting::class);
-        $scopeSettingMock->method('isEnabled')->willReturn(self::IS_ENABLED);
+        $scopeSettingMock->method('isEnabled')->willReturn(SampleExtension::IS_ENABLED);
 
         $requestMock = $this->createMock(RequestInterface::class);
         $requestMock->method('getParam')
             ->with($this->equalTo('email'))
-            ->willReturn(self::SUBSCRIBER_EMAIL);
+            ->willReturn(SampleCustomer::CUSTOMER_EMAIL);
 
         $this->object = new NewsletterSubscribeObserver(
             $dataMock,

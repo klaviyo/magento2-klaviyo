@@ -3,6 +3,8 @@
 namespace Klaviyo\Reclaim\Test\Unit\Model\Config\Source;
 
 use PHPUnit\Framework\TestCase;
+use Klaviyo\Reclaim\Test\Data\SampleExtension;
+use Klaviyo\Reclaim\Test\Data\SampleListApiResponse;
 use Klaviyo\Reclaim\Model\Config\Source\ListOptions;
 use Magento\Framework\Message\ManagerInterface;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
@@ -13,26 +15,28 @@ class ListOptionsTest extends TestCase
     /**
      * @var ListOptions
      */
-    protected $object;
+    protected $listOptions;
 
     protected function setUp()
     {
         $messageManagerMock = $this->createMock(ManagerInterface::class);
 
         $scopeSettingMock = $this->createMock(ScopeSetting::class);
-        $scopeSettingMock->method('getPrivateApiKey')->willReturn('QWEasd');
+        $scopeSettingMock->method('getPrivateApiKey')->willReturn(SampleExtension::PRIVATE_API_KEY);
 
         $dataMock = $this->createMock(Data::class);
-        // I know this looks messy and ugly
-        // but it's the least terrible way I could come up with to mock this
-        $listsMock = json_decode("[{\"name\":\"list1\",\"id\":\"aaAAaa\"},{\"name\":\"list2\",\"id\":\"ssSSss\"},{\"name\":\"list3\",\"id\":\"ddDDdd\"}]");
+        $listsMock = [
+            new SampleListApiResponse('list1', 'aaAAaa'),
+            new SampleListApiResponse('list2', 'ssSSss'),
+            new SampleListApiResponse('list3', 'ddDDdd')
+        ];
         $resultMock = array(
             'success' => 'true',
             'lists' => $listsMock
         );
         $dataMock->method('getKlaviyoLists')->willReturn($resultMock);
 
-        $this->object = new ListOptions(
+        $this->listOptions = new ListOptions(
             $messageManagerMock,
             $scopeSettingMock,
             $dataMock
@@ -41,7 +45,7 @@ class ListOptionsTest extends TestCase
 
     public function testListOptionsInstance()
     {
-        $this->assertInstanceOf(ListOptions::class, $this->object);
+        $this->assertInstanceOf(ListOptions::class, $this->listOptions);
     }
 
     public function testToOptionArray()
@@ -65,6 +69,6 @@ class ListOptionsTest extends TestCase
                 ListOptions::VALUE => 'ddDDdd'
             )
         );
-        $this->assertSame($expectedResponse, $this->object->toOptionArray());
+        $this->assertSame($expectedResponse, $this->listOptions->toOptionArray());
     }
 }

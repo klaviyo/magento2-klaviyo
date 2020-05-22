@@ -23,7 +23,7 @@ class ReclaimTest extends TestCase
     /**
      * @var Reclaim
      */
-    protected $object;
+    protected $reclaim;
 
     //path to our temporary test log file
     const TEST_LOG_PATH = '/var/www/html/var/log/klaviyo.test.log';
@@ -41,7 +41,6 @@ class ReclaimTest extends TestCase
         /**
          * Mock Reclaim constructor arguments
          */
-        //should not be mocking this, Reclaim needs to be refactored to make a lot of it testable
         $objectManagerMock = $this->createMock(ObjectManagerInterface::class);
 
         $quoteFactoryMock = $this->getMockBuilder(QuoteFactory::class)
@@ -79,7 +78,7 @@ class ReclaimTest extends TestCase
             self::TEST_LOG_PATH
         );
         $loggerMock = new Logger(
-            "Klaviyo",
+            'Klaviyo',
             array($handlerMock)
         );
         $loggerHelperMock = new LoggerHelper(
@@ -92,7 +91,7 @@ class ReclaimTest extends TestCase
         /**
          * Create new Reclaim with mocked arguments
          */
-        $this->object = new Reclaim(
+        $this->reclaim = new Reclaim(
             $objectManagerMock,
             $quoteFactoryMock,
             $productFactoryMock,
@@ -123,12 +122,12 @@ class ReclaimTest extends TestCase
 
     public function testReclaimInstance()
     {
-        $this->assertInstanceOf(Reclaim::class, $this->object);
+        $this->assertInstanceOf(Reclaim::class, $this->reclaim);
     }
 
     public function testReclaim()
     {
-        $this->assertSame('1.1.9', $this->object->reclaim());
+        $this->assertSame('1.1.9', $this->reclaim->reclaim());
     }
 
     public function testGetLog()
@@ -137,7 +136,7 @@ class ReclaimTest extends TestCase
          * test successful retrieval
          */
         $testLog = file(self::TEST_LOG_PATH);
-        $this->assertSame($testLog, $this->object->getLog());
+        $this->assertSame($testLog, $this->reclaim->getLog());
 
         /**
          * test unsuccessful retrieval scenarios
@@ -146,7 +145,7 @@ class ReclaimTest extends TestCase
             'message' => 'Unable to retrieve log file with error: file(' . self::TEST_LOG_PATH . '): failed to open stream: No such file or directory'
         );
         unlink(self::TEST_LOG_PATH);
-        $this->assertSame($expectedResponse, $this->object->getLog());
+        $this->assertSame($expectedResponse, $this->reclaim->getLog());
 
         $testLogFile = fopen(self::TEST_LOG_PATH, 'wb');
         chmod(self::TEST_LOG_PATH, 0644);
@@ -154,10 +153,10 @@ class ReclaimTest extends TestCase
         $expectedResponse = array (
             'message' => 'Log file is empty'
         );
-        $this->assertSame($expectedResponse, $this->object->getLog());
+        $this->assertSame($expectedResponse, $this->reclaim->getLog());
     }
 
-    public function testCleanLog()
+    public function testCleanLogInvalidDateInput()
     {
         /**
          * Test when invalid date is provided
@@ -166,8 +165,11 @@ class ReclaimTest extends TestCase
         $expectedResponse = array(
             'message' => 'Unable to parse timestamp: ' . $badDateString
         );
-        $this->assertSame($expectedResponse, $this->object->cleanLog($badDateString));
+        $this->assertSame($expectedResponse, $this->reclaim->cleanLog($badDateString));
+    }
 
+    public function testCleanLogValidDateInput()
+    {
         /**
          * Test when valid date is provided
          */
@@ -175,11 +177,11 @@ class ReclaimTest extends TestCase
         $expectedResponse = $response = array(
             'message' => 'Cleaned all log entries before: ' . $validDateString
         );
-        $this->assertSame($expectedResponse, $this->object->cleanLog($validDateString));
+        $this->assertSame($expectedResponse, $this->reclaim->cleanLog($validDateString));
 
         //checking side effects
         $testLog = file(self::TEST_LOG_PATH);
-        $this->assertSame($testLog, $this->object->getLog());
+        $this->assertSame($testLog, $this->reclaim->getLog());
     }
 
     public function testAppendLog()
@@ -188,79 +190,10 @@ class ReclaimTest extends TestCase
         $expectedResponse = array(
             'message' => 'Logged message: \'' . $message . '\''
         );
-        $this->assertSame($expectedResponse, $this->object->appendLog($message));
+        $this->assertSame($expectedResponse, $this->reclaim->appendLog($message));
 
         //checking side effects
         $testLog = file(self::TEST_LOG_PATH);
-        $this->assertSame($testLog, $this->object->getLog());
+        $this->assertSame($testLog, $this->reclaim->getLog());
     }
-
-    /**
-     * These methods need to be refactored to remove ObjectManager.
-     * As is, they are basically untestable as you cannot mock some
-     * of the ObjectManager methods they use
-     */
-    // public function testStores()
-    // {
-        
-    // }
-
-    // public function testProduct()
-    // {
-        
-    // }
-
-    // public function testProductVariantInventory()
-    // {
-
-    // }
-
-    // public function testProductinspector()
-    // {
-
-    // }
-
-    // public function testGetSubscribersCount()
-    // {
-
-    // }
-
-    // public function testGetSubscribersById()
-    // {
-        
-    // }
-
-    // public function testGetSubscribersByDateRange()
-    // {
-        
-    // }
-
-    /**
-     * not sure if these need to be tested directly
-     * they probably should not be public functions
-     */
-    // public function test_PackageSubscribers()
-    // {
-        
-    // }
-
-    // public function test_StoreFilter()
-    // {
-        
-    // }
-
-    // public function test_GetImages()
-    // {
-        
-    // }
-
-    // public function testHandleMediaURL()
-    // {
-        
-    // }
-
-    // public function test_GetStockItem()
-    // {
-        
-    // }
 }

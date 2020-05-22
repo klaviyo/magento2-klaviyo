@@ -121,7 +121,7 @@ class ViewedProduct extends Template
             $_product = $this->getProduct();
             $this->price = $_product->getPrice();
 
-            if ($_product->getTypeId() == "configurable") {
+            if ($_product->getTypeId() == 'configurable') {
                 $_children = $_product->getTypeInstance()->getUsedProducts($_product);
                 foreach ($_children as $child){
                     $this->price = $child->getPrice();

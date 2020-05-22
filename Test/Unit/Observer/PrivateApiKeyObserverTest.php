@@ -3,6 +3,7 @@
 namespace Klaviyo\Reclaim\Test\Unit\Observer;
 
 use PHPUnit\Framework\TestCase;
+use Klaviyo\Reclaim\Test\Data\SampleExtension;
 use Klaviyo\Reclaim\Observer\PrivateApiKeyObserver;
 use Magento\Framework\Message\ManagerInterface as MessageManager;
 use Klaviyo\Reclaim\Helper\Data;
@@ -14,9 +15,8 @@ class PrivateApiKeyObserverTest extends TestCase
     /**
      * @var PrivateApiKeyObserver
      */
-    protected $object;
+    protected $privateApiKeyObserver;
 
-    const PRIVATE_API_KEY = 'pk_aaaassssddddffff';
     const SUCCESS_MESSAGE = 'Your Private Klaviyo API Key was successfully validated.';
     const FIELD_NAME = 'private_api_key';
 
@@ -29,10 +29,10 @@ class PrivateApiKeyObserverTest extends TestCase
 
         $dataMock = $this->createMock(Data::class);
         $dataMock->method('getKlaviyoLists')
-            ->with($this->equalTo(self::PRIVATE_API_KEY))
+            ->with($this->equalTo(SampleExtension::PRIVATE_API_KEY))
             ->willReturn(array('success'=>TRUE));
 
-        $this->object = new PrivateApiKeyObserver(
+        $this->privateApiKeyObserver = new PrivateApiKeyObserver(
             $messageManagerMock,
             $dataMock
         );
@@ -40,7 +40,7 @@ class PrivateApiKeyObserverTest extends TestCase
 
     public function testPrivateApiKeyObserverInstance()
     {
-        $this->assertInstanceOf(PrivateApiKeyObserver::class, $this->object);
+        $this->assertInstanceOf(PrivateApiKeyObserver::class, $this->privateApiKeyObserver);
     }
 
     public function testExecute()
@@ -49,7 +49,7 @@ class PrivateApiKeyObserverTest extends TestCase
         $mockDataObject->method('getData')->willReturn(
             array(
                 'field' => self::FIELD_NAME,
-                'value' => self::PRIVATE_API_KEY
+                'value' => SampleExtension::PRIVATE_API_KEY
             )
         );
         $eventMock = array('config_data' => $mockDataObject);
@@ -59,7 +59,7 @@ class PrivateApiKeyObserverTest extends TestCase
         $didNotFail = TRUE;
 
         try {
-            $this->object->execute($observerMock);
+            $this->privateApiKeyObserver->execute($observerMock);
         } catch (\Exception $ex) {
             $didNotFail = FALSE;
         }

@@ -10,28 +10,19 @@ class NewsletterTest extends TestCase
     /**
      * @var Newsletter
      */
-    protected $object;
+    protected $newsletter;
 
     protected function setUp()
     {
         $contextMock = $this->createMock(Context::class);
 
-        $this->object = new Newsletter(
+        $this->newsletter = new Newsletter(
             $contextMock
         );
     }
 
     public function testNewsletterInstance()
     {
-        $this->assertInstanceOf(Newsletter::class, $this->object);
+        $this->assertInstanceOf(Newsletter::class, $this->newsletter);
     }
-    
-    // /**
-    //  * Not sure if it is possible to test this method since it is protected
-    //  * I think we have to call one of the public methods defined in a parent
-    //  */
-    // public function test__GetElementHtml()
-    // {
-    //
-    // }
 }

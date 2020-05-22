@@ -3,6 +3,7 @@
 namespace Klaviyo\Reclaim\Test\Unit\Plugin\Customer\Model;
 
 use PHPUnit\Framework\TestCase;
+use Klaviyo\Reclaim\Test\Data\SampleCustomer;
 use Magento\Customer\CustomerData\Customer;
 use Magento\Customer\Helper\Session\CurrentCustomer;
 use Magento\Customer\Api\Data\CustomerInterface;
@@ -13,37 +14,37 @@ class CustomerDataTest extends TestCase
     /**
      * @var Customer
      */
-    protected $object;
+    protected $customerData;
 
     protected function setUp()
     {
         $customerInterfaceMock = $this->createMock(CustomerInterface::class);
-        $customerInterfaceMock->method('getLastname')->willReturn('Smith');
-        $customerInterfaceMock->method('getEmail')->willReturn('test@example.com');
+        $customerInterfaceMock->method('getLastname')->willReturn(SampleCustomer::CUSTOMER_LAST_NAME);
+        $customerInterfaceMock->method('getEmail')->willReturn(SampleCustomer::CUSTOMER_EMAIL);
 
         $currentCustomerMock = $this->createMock(CurrentCustomer::class);
-        $currentCustomerMock->method('getCustomerId')->willReturn(12345);
+        $currentCustomerMock->method('getCustomerId')->willReturn(SampleCustomer::CUSTOMER_ID);
         $currentCustomerMock->method('getCustomer')->willReturn($customerInterfaceMock);
 
-        $this->object = new CustomerData(
+        $this->customerData = new CustomerData(
             $currentCustomerMock
         );
     }
 
     public function testCustomerDataInstance()
     {
-        $this->assertInstanceOf(CustomerData::class, $this->object);
+        $this->assertInstanceOf(CustomerData::class, $this->customerData);
     }
 
     public function testAfterGetSectionData()
     {
         $result = array();
         $expectedResult = array(
-            'lastname' => 'Smith',
-            'email' => 'test@example.com'
+            'lastname' => SampleCustomer::CUSTOMER_LAST_NAME,
+            'email' => SampleCustomer::CUSTOMER_EMAIL
         );
         $customerMock = $this->createMock(Customer::class);
-        $actualResult = $this->object->afterGetSectionData($customerMock, $result);
+        $actualResult = $this->customerData->afterGetSectionData($customerMock, $result);
         $this->assertSame($expectedResult['lastname'], $actualResult['lastname']);
         $this->assertSame($expectedResult['email'], $actualResult['email']);
     }

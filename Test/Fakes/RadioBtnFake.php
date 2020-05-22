@@ -1,6 +1,10 @@
 <?php
-namespace Klaviyo\Reclaim\Model\Config\Source;
-class Radiobtn implements \Magento\Framework\Option\ArrayInterface 
+
+namespace Klaviyo\Reclaim\Test\Fakes;
+
+use Klaviyo\Reclaim\Model\Config\Source\RadioBtn;
+
+class RadioBtnFake extends RadioBtn
 {
     public function toOptionArray()
     { 
@@ -16,4 +20,9 @@ class Radiobtn implements \Magento\Framework\Option\ArrayInterface
             ],
         ];
     }
+}
+
+function __($string)
+{
+    return $string;
 }

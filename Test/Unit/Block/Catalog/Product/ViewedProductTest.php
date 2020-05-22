@@ -3,6 +3,8 @@
 namespace Klaviyo\Reclaim\Test\Unit\Block\Catalog\Product;
 
 use PHPUnit\Framework\TestCase;
+use Klaviyo\Reclaim\Test\Data\SampleExtension;
+use Klaviyo\Reclaim\Test\Data\SampleProduct;
 use Klaviyo\Reclaim\Block\Catalog\Product\ViewedProduct;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Magento\Catalog\Helper\Image;
@@ -21,31 +23,12 @@ class ViewedProductTest extends TestCase
     /**
      * @var ViewedProduct
      */
-    protected $object;
+    protected $viewedProduct;
 
     /**
      * @var array
      */
     protected $categoryMocks;
-
-    const IS_ENABLED = TRUE;
-    const PUBLIC_API_KEY = 'QWEasd';
-    const PRODUCT_ID = 1234;
-    const PRODUCT_NAME = 'Test Product';
-    const PRODUCT_SKU = 'TEST_PRODUCT_1234';
-    const PRODUCT_URL = 'https://www.example.com/test-product-1234';
-    const PRODUCT_IMAGE_URL = 'https://www.example.com/media/catalog/product/cache/image/698x900/asdf/placeholder/default/base.jpg';
-    const PRODUCT_PRICE = 543.21;
-    const PRODUCT_PRICE_FINAL = 123.45;
-    const PRODUCT_CATEGORY_IDS = array(111, 222, 333, 444, 555);
-    const PRODUCT_CATEGORY_NAMES = [
-        "Category1",
-        "Category2",
-        "Category3",
-        "Category4",
-        "Category5"
-    ];
-
 
     protected function setUp()
     {
@@ -53,62 +36,62 @@ class ViewedProductTest extends TestCase
         $contextMock = $this->createMock(Context::class);
 
         $scopeSettingMock = $this->createMock(ScopeSetting::class);
-        $scopeSettingMock->method('getPublicApiKey')->willReturn(self::PUBLIC_API_KEY);
-        $scopeSettingMock->method('isEnabled')->willReturn(self::IS_ENABLED);
+        $scopeSettingMock->method('getPublicApiKey')->willReturn(SampleExtension::PUBLIC_API_KEY);
+        $scopeSettingMock->method('isEnabled')->willReturn(SampleExtension::IS_ENABLED);
 
         $productMock = $this->createMock(Product::class);
-        $productMock->method('getId')->willReturn(self::PRODUCT_ID);
-        $productMock->method('getName')->willReturn(self::PRODUCT_NAME);
-        $productMock->method('getSku')->willReturn(self::PRODUCT_SKU);
-        $productMock->method('getProductUrl')->willReturn(self::PRODUCT_URL);
+        $productMock->method('getId')->willReturn(SampleProduct::PRODUCT_ID);
+        $productMock->method('getName')->willReturn(SampleProduct::PRODUCT_NAME);
+        $productMock->method('getSku')->willReturn(SampleProduct::PRODUCT_SKU);
+        $productMock->method('getProductUrl')->willReturn(SampleProduct::PRODUCT_URL);
         $productMock->method('getTypeId')->willReturn('simple');
 
         $priceInterfaceMock = $this->createMock(PriceInterface::class);
-        $priceInterfaceMock->method('getValue')->willReturn(self::PRODUCT_PRICE_FINAL);
+        $priceInterfaceMock->method('getValue')->willReturn(SampleProduct::PRODUCT_PRICE_FINAL);
         $priceInfoMock = $this->createMock(PriceInfo::class);
         $priceInfoMock->method('getPrice')
             ->with($this->equalTo('final_price'))
             ->willReturn($priceInterfaceMock);
-        $productMock->method('getPrice')->willReturn(self::PRODUCT_PRICE);
+        $productMock->method('getPrice')->willReturn(SampleProduct::PRODUCT_PRICE);
         $productMock->method('getPriceInfo')->willReturn($priceInfoMock);
 
         $categoryMock0 = $this->createMock(Category::class);
-        $categoryMock0->method('getName')->willReturn(self::PRODUCT_CATEGORY_NAMES[0]);
+        $categoryMock0->method('getName')->willReturn(SampleProduct::PRODUCT_CATEGORY_NAMES[0]);
         $this->categoryMocks[0] = $categoryMock0;
 
         $categoryMock1 = $this->createMock(Category::class);
-        $categoryMock1->method('getName')->willReturn(self::PRODUCT_CATEGORY_NAMES[1]);
+        $categoryMock1->method('getName')->willReturn(SampleProduct::PRODUCT_CATEGORY_NAMES[1]);
         $this->categoryMocks[1] = $categoryMock1;
 
         $categoryMock2 = $this->createMock(Category::class);
-        $categoryMock2->method('getName')->willReturn(self::PRODUCT_CATEGORY_NAMES[2]);
+        $categoryMock2->method('getName')->willReturn(SampleProduct::PRODUCT_CATEGORY_NAMES[2]);
         $this->categoryMocks[2] = $categoryMock2;
 
         $categoryMock3 = $this->createMock(Category::class);
-        $categoryMock3->method('getName')->willReturn(self::PRODUCT_CATEGORY_NAMES[3]);
+        $categoryMock3->method('getName')->willReturn(SampleProduct::PRODUCT_CATEGORY_NAMES[3]);
         $this->categoryMocks[3] = $categoryMock3;
 
         $categoryMock4 = $this->createMock(Category::class);
-        $categoryMock4->method('getName')->willReturn(self::PRODUCT_CATEGORY_NAMES[4]);
+        $categoryMock4->method('getName')->willReturn(SampleProduct::PRODUCT_CATEGORY_NAMES[4]);
         $this->categoryMocks[4] = $categoryMock4;
 
         $categoryCollectionMock = $this->createMock(CategoryCollection::class);
         $categoryCollectionMock->method('load')->will($this->returnCallback(
             function ($id) {
                 switch ($id) {
-                    case self::PRODUCT_CATEGORY_IDS[0];
+                    case SampleProduct::PRODUCT_CATEGORY_IDS[0];
                         return $this->categoryMocks[0];
                         break;
-                    case self::PRODUCT_CATEGORY_IDS[1];
+                    case SampleProduct::PRODUCT_CATEGORY_IDS[1];
                         return $this->categoryMocks[1];
                         break;
-                    case self::PRODUCT_CATEGORY_IDS[2];
+                    case SampleProduct::PRODUCT_CATEGORY_IDS[2];
                         return $this->categoryMocks[2];
                         break;
-                    case self::PRODUCT_CATEGORY_IDS[3];
+                    case SampleProduct::PRODUCT_CATEGORY_IDS[3];
                         return $this->categoryMocks[3];
                         break;
-                    case self::PRODUCT_CATEGORY_IDS[4];
+                    case SampleProduct::PRODUCT_CATEGORY_IDS[4];
                         return $this->categoryMocks[4];
                         break;
                 }
@@ -120,7 +103,7 @@ class ViewedProductTest extends TestCase
             ->getMock();
         $categoryFactoryMock->method('create')->willReturn($categoryCollectionMock);
 
-        $productMock->method('getCategoryIds')->willReturn(self::PRODUCT_CATEGORY_IDS);
+        $productMock->method('getCategoryIds')->willReturn(SampleProduct::PRODUCT_CATEGORY_IDS);
 
         $registryMock = $this->createMock(Registry::class);
         $registryMock->method('registry')->willReturn($productMock);
@@ -129,9 +112,9 @@ class ViewedProductTest extends TestCase
         $imageMock->method('init')
             ->with($this->isInstanceOf(Product::class), $this->equalTo('product_base_image'))
             ->willReturn($imageMock);
-        $imageMock->method('getUrl')->willReturn(self::PRODUCT_IMAGE_URL);
+        $imageMock->method('getUrl')->willReturn(SampleProduct::PRODUCT_IMAGE_URL);
 
-        $this->object = new ViewedProduct(
+        $this->viewedProduct = new ViewedProduct(
             $contextMock,
             $scopeSettingMock,
             $registryMock,
@@ -142,82 +125,82 @@ class ViewedProductTest extends TestCase
 
     protected function tearDown()
     {
-        $this->categoryMocks = array();
+        $this->categoryMocks = [];
     }
 
     public function testViewedProductInstance()
     {
-        $this->assertInstanceOf(ViewedProduct::class, $this->object);
+        $this->assertInstanceOf(ViewedProduct::class, $this->viewedProduct);
     }
 
     public function testGetPublicApiKey()
     {
-        $this->assertSame(self::PUBLIC_API_KEY, $this->object->getPublicApiKey());
+        $this->assertSame(SampleExtension::PUBLIC_API_KEY, $this->viewedProduct->getPublicApiKey());
     }
 
     public function testIsKlaviyoEnabled()
     {
-        $this->assertSame(self::IS_ENABLED, $this->object->isKlaviyoEnabled());
+        $this->assertSame(SampleExtension::IS_ENABLED, $this->viewedProduct->isKlaviyoEnabled());
     }
 
     public function testGetProduct()
     {
-        $this->assertInstanceOf(Product::class, $this->object->getProduct());
+        $this->assertInstanceOf(Product::class, $this->viewedProduct->getProduct());
     }
 
     public function testGetProductCategories()
     {
-        $this->assertSame(self::PRODUCT_CATEGORY_NAMES, $this->object->getProductCategories());
+        $this->assertSame(SampleProduct::PRODUCT_CATEGORY_NAMES, $this->viewedProduct->getProductCategories());
     }
 
     public function testGetProductCategoriesAsJson()
     {
-        $this->assertSame(json_encode(self::PRODUCT_CATEGORY_NAMES), $this->object->getProductCategoriesAsJson());
+        $this->assertSame(json_encode(SampleProduct::PRODUCT_CATEGORY_NAMES), $this->viewedProduct->getProductCategoriesAsJson());
     }
 
     public function testGetPrice()
     {
-        $this->assertSame(number_format(self::PRODUCT_PRICE, 2), $this->object->getPrice());
+        $this->assertSame(number_format(SampleProduct::PRODUCT_PRICE, 2), $this->viewedProduct->getPrice());
     }
 
     public function testGetFinalPrice()
     {
-        $this->assertSame(number_format(self::PRODUCT_PRICE_FINAL, 2), $this->object->getFinalPrice());
+        $this->assertSame(number_format(SampleProduct::PRODUCT_PRICE_FINAL, 2), $this->viewedProduct->getFinalPrice());
     }
 
     public function testGetProductImage()
     {
-        $this->assertSame(self::PRODUCT_IMAGE_URL, $this->object->getProductImage());
+        $this->assertSame(SampleProduct::PRODUCT_IMAGE_URL, $this->viewedProduct->getProductImage());
     }
 
     public function testGetViewedProductJson()
     {
         $expectedResponse = [
-            'ProductID' => self::PRODUCT_ID,
-            'Name' => self::PRODUCT_NAME,
-            'SKU' => self::PRODUCT_SKU,
-            'URL' => self::PRODUCT_URL,
-            'Price' => number_format(self::PRODUCT_PRICE, 2),
-            'FinalPrice' => number_format(self::PRODUCT_PRICE_FINAL, 2),
-            'Categories' => self::PRODUCT_CATEGORY_NAMES,
-            'ImageURL' => self::PRODUCT_IMAGE_URL
+            'ProductID' => SampleProduct::PRODUCT_ID,
+            'Name' => SampleProduct::PRODUCT_NAME,
+            'SKU' => SampleProduct::PRODUCT_SKU,
+            'URL' => SampleProduct::PRODUCT_URL,
+            'Price' => number_format(SampleProduct::PRODUCT_PRICE, 2),
+            'FinalPrice' => number_format(SampleProduct::PRODUCT_PRICE_FINAL, 2),
+            'Categories' => SampleProduct::PRODUCT_CATEGORY_NAMES,
+            'ImageURL' => SampleProduct::PRODUCT_IMAGE_URL
         ];
         $expectedResponse = json_encode($expectedResponse);
-        $this->assertSame($expectedResponse, $this->object->getViewedProductJson());
+        $this->assertSame($expectedResponse, $this->viewedProduct->getViewedProductJson());
     }
 
     public function getViewedItemJson()
     {
         $expectedResponse = [
-            'Title' => self::PRODUCT_NAME,
-            'ItemId' => self::PRODUCT_ID,
-            'Url' => self::PRODUCT_URL,
-            'Categories' => self::PRODUCT_CATEGORY_NAMES,
-            'Metadata' => array(
-                    'Price' => number_format(self::PRODUCT_PRICE, 2)
-            )
+            'Title' => SampleProduct::PRODUCT_NAME,
+            'ItemId' => SampleProduct::PRODUCT_ID,
+            'Url' => SampleProduct::PRODUCT_URL,
+            'Categories' => SampleProduct::PRODUCT_CATEGORY_NAMES,
+            'Metadata' => [
+                    'Price' => number_format(SampleProduct::PRODUCT_PRICE, 2)
+            ]
         ];
         $expectedResponse = json_encode($expectedResponse);
-        $this->assertSame($expectedResponse, $this->object->getViewedItemJson());
+        $this->assertSame($expectedResponse, $this->viewedProduct->getViewedItemJson());
     }
 }

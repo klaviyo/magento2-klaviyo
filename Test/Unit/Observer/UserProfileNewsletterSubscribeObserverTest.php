@@ -3,6 +3,8 @@
 namespace Klaviyo\Reclaim\Test\Unit\Observer;
 
 use PHPUnit\Framework\TestCase;
+use Klaviyo\Reclaim\Test\Data\SampleExtension;
+use Klaviyo\Reclaim\Test\Data\SampleCustomer;
 use Klaviyo\Reclaim\Observer\UserProfileNewsletterSubscribeObserver;
 use Klaviyo\Reclaim\Helper\Data;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
@@ -17,40 +19,34 @@ class UserProfileNewsletterSubscribeObserverTest extends TestCase
     /**
     * @var UserProfileNewsletterSubscribeObserver
     */
-    protected $object;
-
-    const IS_ENABLED = TRUE;
-    const CUSTOMER_ID = 12345;
-    const CUSTOMER_EMAIL = 'test@example.com';
-    const CUSTOMER_FIRST_NAME = 'Joe';
-    const CUSTOMER_LAST_NAME = 'Smith';
+    protected $userProfileNewsletterSubscribeObserver;
 
     public function setUp()
     {
         $dataMock = $this->createMock(Data::class);
         $dataMock->method('subscribeEmailToKlaviyoList')
             ->with(
-                $this->equalTo(self::CUSTOMER_EMAIL),
-                $this->equalTo(self::CUSTOMER_FIRST_NAME),
-                $this->equalTo(self::CUSTOMER_LAST_NAME)
+                $this->equalTo(SampleCustomer::CUSTOMER_EMAIL),
+                $this->equalTo(SampleCustomer::CUSTOMER_FIRST_NAME),
+                $this->equalTo(SampleCustomer::CUSTOMER_LAST_NAME)
             )
             ->willReturn(TRUE);
 
         $scopeSettingMock = $this->createMock(ScopeSetting::class);
-        $scopeSettingMock->method('isEnabled')->willReturn(self::IS_ENABLED);
+        $scopeSettingMock->method('isEnabled')->willReturn(SampleExtension::IS_ENABLED);
 
         $requestMock = $this->createMock(RequestInterface::class);
 
         $customerMock = $this->createMock(CustomerInterface::class);
-        $customerMock->method('getEmail')->willReturn(self::CUSTOMER_EMAIL);
-        $customerMock->method('getFirstname')->willReturn(self::CUSTOMER_FIRST_NAME);
-        $customerMock->method('getLastname')->willReturn(self::CUSTOMER_LAST_NAME);
+        $customerMock->method('getEmail')->willReturn(SampleCustomer::CUSTOMER_EMAIL);
+        $customerMock->method('getFirstname')->willReturn(SampleCustomer::CUSTOMER_FIRST_NAME);
+        $customerMock->method('getLastname')->willReturn(SampleCustomer::CUSTOMER_LAST_NAME);
         $customerRepositoryInterfaceMock = $this->createMock(CustomerRepositoryInterface::class);
         $customerRepositoryInterfaceMock->method('getById')
-            ->with($this->equalTo(self::CUSTOMER_ID))
+            ->with($this->equalTo(SampleCustomer::CUSTOMER_ID))
             ->willReturn($customerMock);
 
-        $this->object = new UserProfileNewsletterSubscribeObserver(
+        $this->userProfileNewsletterSubscribeObserver = new UserProfileNewsletterSubscribeObserver(
             $dataMock,
             $scopeSettingMock,
             $requestMock,
@@ -59,7 +55,7 @@ class UserProfileNewsletterSubscribeObserverTest extends TestCase
     }
     public function testNewsletterSubscribeObserverInstance()
     {
-        $this->assertInstanceOf(UserProfileNewsletterSubscribeObserver::class, $this->object);
+        $this->assertInstanceOf(UserProfileNewsletterSubscribeObserver::class, $this->userProfileNewsletterSubscribeObserver);
     }
 
     public function testExecute()
@@ -68,13 +64,13 @@ class UserProfileNewsletterSubscribeObserverTest extends TestCase
 
         $subscriberMock = $this->createMock(Subscriber::class);
         $subscriberMock->method('isStatusChanged')->willReturn(TRUE);
-        $subscriberMock->method('getCustomerId')->willReturn(self::CUSTOMER_ID);
+        $subscriberMock->method('getCustomerId')->willReturn(SampleCustomer::CUSTOMER_ID);
         $subscriberMock->method('isSubscribed')->willReturn(TRUE);
         $observerMock = $this->createMock(Observer::class);
         $observerMock->method('getDataObject')->willReturn($subscriberMock);
 
         try {
-            $this->object->execute($observerMock);
+            $this->userProfileNewsletterSubscribeObserver->execute($observerMock);
         } catch (\Exception $ex) {
             $didNotFail = FALSE;
         }

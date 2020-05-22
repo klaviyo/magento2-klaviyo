@@ -2,18 +2,18 @@
 
 namespace Klaviyo\Reclaim\Test\Unit\Model\Config\Source;
 use PHPUnit\Framework\TestCase;
-use Klaviyo\Reclaim\Model\Config\Source\RadioBtn;
+use Klaviyo\Reclaim\Test\Fakes\RadioBtnFake as RadioBtn;
 
 class RadioBtnTest extends TestCase
 {
     /**
      * @var RadioBtn
      */
-    protected $object;
+    protected $radioBtn;
 
     protected function setUp()
     {
-        $this->object = new RadioBtn();
+        $this->radioBtn = new RadioBtn();
     }
 
     public function testToOptionArray()
@@ -28,6 +28,6 @@ class RadioBtnTest extends TestCase
                 'label' => 'No, do not send opt-in emails from Klaviyo'
             ],
         ];
-        $this->assertSame($expectedResponse, $this->object->toOptionArray());
+        $this->assertSame($expectedResponse, $this->radioBtn->toOptionArray());
     }
 }

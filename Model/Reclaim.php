@@ -114,23 +114,23 @@ class Reclaim implements ReclaimInterface
 
         //check if we were able to parse the timestamp
         //if no timestamp, return failure message
-        if ($cursor == "")
+        if ($cursor == '')
         {
             $response = array(
                 'message' => 'Unable to parse timestamp: ' . $date
             );
-            $this->_klaviyoLogger->log("cleanLog failed: unable to parse timestamp from: " . $date);
+            $this->_klaviyoLogger->log('cleanLog failed: unable to parse timestamp from: ' . $date);
             return $response;
         }
 
         //get log file path and do the old switcheroo in preparation for cleaning
         $path = $this->_klaviyoLogger->getPath();
-        $old = $path . ".old";
+        $old = $path . '.old';
         rename($path, $old);
 
         //open file streams
-        $input = fopen($old, "rb");
-        $output = fopen($path, "wb");
+        $input = fopen($old, 'rb');
+        $output = fopen($path, 'wb');
 
         //setup permissions on log file
         chmod($path,0644);
@@ -158,7 +158,7 @@ class Reclaim implements ReclaimInterface
         unlink($old);
 
         //log cleaning success
-        $this->_klaviyoLogger->log("Cleaned all log entries before: " . $date);
+        $this->_klaviyoLogger->log('Cleaned all log entries before: ' . $date);
 
         //return success message
         $response = array(
@@ -432,7 +432,7 @@ class Reclaim implements ReclaimInterface
     {
         $custom_media_url = $this->_klaviyoScopeSetting->getCustomMediaURL();
         if ($custom_media_url){
-            return $custom_media_url . "/media/catalog/product" . $image->getFile();
+            return $custom_media_url . '/media/catalog/product' . $image->getFile();
         }
         return $image->getUrl();
     }

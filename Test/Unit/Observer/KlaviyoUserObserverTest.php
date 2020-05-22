@@ -3,6 +3,7 @@
 namespace Klaviyo\Reclaim\Test\Unit\Observer;
 
 use PHPUnit\Framework\TestCase;
+use Klaviyo\Reclaim\Test\Data\SampleExtension;
 use Klaviyo\Reclaim\Observer\KlaviyoUserObserver;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Magento\Framework\Message\ManagerInterface as MessageManager;
@@ -18,18 +19,15 @@ class KlaviyoUserObserverTest extends TestCase
     /**
      * @var KlaviyoUserObserver
      */
-    protected $object;
+    protected $klaviyoUserObserver;
 
-    const KLAVIYO_USERNAME = 'Klaviyo';
-    const KLAVIYO_PASSWORD = 'password';
-    const KLAVIYO_EMAIL = 'test@example.com';
     const ADMIN_INFO = [
         'role_id' => 4,
-        'username' => self::KLAVIYO_USERNAME,
+        'username' => SampleExtension::KLAVIYO_USERNAME,
         'firstname' => KlaviyoUserObserver::KLAVIYO_FIRST_NAME,
         'lastname'    => KlaviyoUserObserver::KLAVIYO_LAST_NAME,
-        'email'     => self::KLAVIYO_EMAIL,
-        'password'  => self::KLAVIYO_PASSWORD,
+        'email'     => SampleExtension::KLAVIYO_EMAIL,
+        'password'  => SampleExtension::KLAVIYO_PASSWORD,
         'interface_locale' => KlaviyoUserObserver::DEFAULT_LOCALE,
         'is_active' => 1
     ];
@@ -49,9 +47,9 @@ class KlaviyoUserObserverTest extends TestCase
     protected function setUp()
     {
         $scopeSettingMock = $this->createMock(ScopeSetting::class);
-        $scopeSettingMock->method('getKlaviyoUsername')->willReturn(self::KLAVIYO_USERNAME);
-        $scopeSettingMock->method('getKlaviyoPassword')->willReturn(self::KLAVIYO_PASSWORD);
-        $scopeSettingMock->method('getKlaviyoEmail')->willReturn(self::KLAVIYO_EMAIL);
+        $scopeSettingMock->method('getKlaviyoUsername')->willReturn(SampleExtension::KLAVIYO_USERNAME);
+        $scopeSettingMock->method('getKlaviyoPassword')->willReturn(SampleExtension::KLAVIYO_PASSWORD);
+        $scopeSettingMock->method('getKlaviyoEmail')->willReturn(SampleExtension::KLAVIYO_EMAIL);
         $scopeSettingMock->method('unsetKlaviyoUsername')->willReturn(ScopeSetting::KLAVIYO_NAME_DEFAULT);
         $scopeSettingMock->method('unsetKlaviyoPassword')->willReturn('');
         $scopeSettingMock->method('unsetKlaviyoEmail')->willReturn('');
@@ -78,7 +76,7 @@ class KlaviyoUserObserverTest extends TestCase
         $userFactoryMock->method('create')->willReturn($userMock);
 
 
-        $this->object = new KlaviyoUserObserver(
+        $this->klaviyoUserObserver = new KlaviyoUserObserver(
             $scopeSettingMock,
             $messageManagerMock,
             $roleCollectionFactoryMock,
@@ -88,7 +86,7 @@ class KlaviyoUserObserverTest extends TestCase
 
     public function testKlaviyoUserObserverInstance()
     {
-        $this->assertInstanceOf(KlaviyoUserObserver::class, $this->object);
+        $this->assertInstanceOf(KlaviyoUserObserver::class, $this->klaviyoUserObserver);
     }
 
     public function testExecute()
@@ -98,7 +96,7 @@ class KlaviyoUserObserverTest extends TestCase
         $observerMock = $this->createMock(Observer::class);
 
         try {
-            $this->object->execute($observerMock);
+            $this->klaviyoUserObserver->execute($observerMock);
         } catch (\Exception $ex) {
             $didNotFail = FALSE;
         }

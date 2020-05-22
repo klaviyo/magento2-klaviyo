@@ -17,12 +17,12 @@ class Handler extends \Magento\Framework\Logger\Handler\Base
      * File name
      * @var string
      */
-    protected $_filePath;
+    protected $filePath;
 
     /**
      * @var DirectoryList
      */
-    protected $_dir;
+    protected $dir;
 
     /**
      * @var DriverInterface
@@ -35,12 +35,12 @@ class Handler extends \Magento\Framework\Logger\Handler\Base
         String $filePath = null
     ) {
         $this->filesystem = $filesystem;
-        $this->_dir = $dir;
-        $this->_filePath = ($filePath != null && $filePath != "") ? $filePath : $this->_dir->getPath('log') . '/klaviyo.log';
+        $this->dir = $dir;
+        $this->filePath = ($filePath != null && $filePath != '') ? $filePath : $this->dir->getPath('log') . '/klaviyo.log';
 
         parent::__construct(
             $this->filesystem,
-            $this->_filePath
+            $this->filePath
         );
     }
 }
