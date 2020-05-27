@@ -31,18 +31,18 @@ class KlaviyoUserObserverTest extends TestCase
         'interface_locale' => KlaviyoUserObserver::DEFAULT_LOCALE,
         'is_active' => 1
     ];
-    const AVAILABLE_ROLES = array(
-        array(
+    const AVAILABLE_ROLES = [
+        [
             'role_name' => 'Not Klaviyo',
             'role_type' => RoleGroup::ROLE_TYPE,
             'role_id' => 3
-        ),
-        array(
+        ],
+        [
             'role_name' => KlaviyoUserObserver::KLAVIYO_ROLE_NAME,
             'role_type' => RoleGroup::ROLE_TYPE,
             'role_id' => 4
-        )
-    );
+        ]
+    ];
 
     protected function setUp()
     {

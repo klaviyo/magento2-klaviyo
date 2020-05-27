@@ -30,10 +30,10 @@ class ListOptionsTest extends TestCase
             new SampleListApiResponse('list2', 'ssSSss'),
             new SampleListApiResponse('list3', 'ddDDdd')
         ];
-        $resultMock = array(
+        $resultMock = [
             'success' => 'true',
             'lists' => $listsMock
-        );
+        ];
         $dataMock->method('getKlaviyoLists')->willReturn($resultMock);
 
         $this->listOptions = new ListOptions(
@@ -51,24 +51,24 @@ class ListOptionsTest extends TestCase
     public function testToOptionArray()
     {
         //test when everything goes right
-        $expectedResponse = array(
-            array(
+        $expectedResponse = [
+            [
                 ListOptions::LABEL => 'Select a list...',
                 ListOptions::VALUE => 0
-            ),
-            array(
+            ],
+            [
                 ListOptions::LABEL => 'list1',
                 ListOptions::VALUE => 'aaAAaa'
-            ),
-            array(
+            ],
+            [
                 ListOptions::LABEL => 'list2',
                 ListOptions::VALUE => 'ssSSss'
-            ),
-            array(
+            ],
+            [
                 ListOptions::LABEL => 'list3',
                 ListOptions::VALUE => 'ddDDdd'
-            )
-        );
+            ]
+        ];
         $this->assertSame($expectedResponse, $this->listOptions->toOptionArray());
     }
 }

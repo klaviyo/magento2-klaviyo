@@ -79,7 +79,7 @@ class ReclaimTest extends TestCase
         );
         $loggerMock = new Logger(
             'Klaviyo',
-            array($handlerMock)
+            [$handlerMock]
         );
         $loggerHelperMock = new LoggerHelper(
             $directoryListMock,
@@ -162,9 +162,9 @@ class ReclaimTest extends TestCase
          * Test when invalid date is provided
          */
         $badDateString = 'asdf123asdfa';
-        $expectedResponse = array(
+        $expectedResponse = [
             'message' => 'Unable to parse timestamp: ' . $badDateString
-        );
+        ];
         $this->assertSame($expectedResponse, $this->reclaim->cleanLog($badDateString));
     }
 
@@ -174,9 +174,9 @@ class ReclaimTest extends TestCase
          * Test when valid date is provided
          */
         $validDateString = '2020-01-01 00:00:00';
-        $expectedResponse = $response = array(
+        $expectedResponse = [
             'message' => 'Cleaned all log entries before: ' . $validDateString
-        );
+        ];
         $this->assertSame($expectedResponse, $this->reclaim->cleanLog($validDateString));
 
         //checking side effects
@@ -187,9 +187,9 @@ class ReclaimTest extends TestCase
     public function testAppendLog()
     {
         $message = 'This is a test message';
-        $expectedResponse = array(
+        $expectedResponse = [
             'message' => 'Logged message: \'' . $message . '\''
-        );
+        ];
         $this->assertSame($expectedResponse, $this->reclaim->appendLog($message));
 
         //checking side effects

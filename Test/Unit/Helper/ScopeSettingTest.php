@@ -93,7 +93,7 @@ class ScopeSettingTest extends TestCase
         $storeManagerMock->method('getStore')->willReturn($storeMock);
 
         $moduleListMock = $this->createMock(ModuleListInterface::class);
-        $moduleListMock->method('getOne')->willReturn(array('setup_version'=>SampleExtension::RECLAIM_VERSION));
+        $moduleListMock->method('getOne')->willReturn(['setup_version'=>SampleExtension::RECLAIM_VERSION]);
 
         $configWriterMock = $this->createMock(WriterInterface::class);
         $configWriterMock->method('save')

@@ -38,11 +38,11 @@ class CustomerDataTest extends TestCase
 
     public function testAfterGetSectionData()
     {
-        $result = array();
-        $expectedResult = array(
+        $result = [];
+        $expectedResult = [
             'lastname' => SampleCustomer::CUSTOMER_LAST_NAME,
             'email' => SampleCustomer::CUSTOMER_EMAIL
-        );
+        ];
         $customerMock = $this->createMock(Customer::class);
         $actualResult = $this->customerData->afterGetSectionData($customerMock, $result);
         $this->assertSame($expectedResult['lastname'], $actualResult['lastname']);

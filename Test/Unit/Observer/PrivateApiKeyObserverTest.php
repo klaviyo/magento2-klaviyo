@@ -30,7 +30,7 @@ class PrivateApiKeyObserverTest extends TestCase
         $dataMock = $this->createMock(Data::class);
         $dataMock->method('getKlaviyoLists')
             ->with($this->equalTo(SampleExtension::PRIVATE_API_KEY))
-            ->willReturn(array('success'=>TRUE));
+            ->willReturn(['success'=>TRUE]);
 
         $this->privateApiKeyObserver = new PrivateApiKeyObserver(
             $messageManagerMock,
@@ -47,12 +47,12 @@ class PrivateApiKeyObserverTest extends TestCase
     {
         $mockDataObject = $this->createMock(DataObject::class);
         $mockDataObject->method('getData')->willReturn(
-            array(
+            [
                 'field' => self::FIELD_NAME,
                 'value' => SampleExtension::PRIVATE_API_KEY
-            )
+            ]
         );
-        $eventMock = array('config_data' => $mockDataObject);
+        $eventMock = ['config_data' => $mockDataObject];
         $observerMock = $this->createMock(Observer::class);
         $observerMock->method('getEvent')->willReturn($eventMock);
 
