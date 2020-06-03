@@ -5,8 +5,8 @@ namespace Klaviyo\Reclaim\Test\Unit\Observer;
 use PHPUnit\Framework\TestCase;
 use Klaviyo\Reclaim\Test\Data\SampleExtension;
 use Klaviyo\Reclaim\Observer\PrivateApiKeyObserver;
-use Magento\Framework\Message\ManagerInterface as MessageManager;
 use Klaviyo\Reclaim\Helper\Data;
+use Magento\Framework\Message\ManagerInterface as MessageManager;
 use Magento\Framework\DataObject;
 use Magento\Framework\Event\Observer;
 

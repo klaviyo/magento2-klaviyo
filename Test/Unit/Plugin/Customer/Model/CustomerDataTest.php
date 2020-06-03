@@ -4,10 +4,10 @@ namespace Klaviyo\Reclaim\Test\Unit\Plugin\Customer\Model;
 
 use PHPUnit\Framework\TestCase;
 use Klaviyo\Reclaim\Test\Data\SampleCustomer;
+use Klaviyo\Reclaim\Plugin\Customer\Model\CustomerData;
 use Magento\Customer\CustomerData\Customer;
 use Magento\Customer\Helper\Session\CurrentCustomer;
 use Magento\Customer\Api\Data\CustomerInterface;
-use Klaviyo\Reclaim\Plugin\Customer\Model\CustomerData;
 
 class CustomerDataTest extends TestCase
 {
@@ -15,6 +15,9 @@ class CustomerDataTest extends TestCase
      * @var Customer
      */
     protected $customerData;
+
+    const LASTNAME = 'lastname';
+    const EMAIL = 'email';
 
     protected function setUp()
     {
@@ -40,12 +43,12 @@ class CustomerDataTest extends TestCase
     {
         $result = [];
         $expectedResult = [
-            'lastname' => SampleCustomer::CUSTOMER_LAST_NAME,
-            'email' => SampleCustomer::CUSTOMER_EMAIL
+            self::LASTNAME => SampleCustomer::CUSTOMER_LAST_NAME,
+            self::EMAIL=> SampleCustomer::CUSTOMER_EMAIL
         ];
         $customerMock = $this->createMock(Customer::class);
         $actualResult = $this->customerData->afterGetSectionData($customerMock, $result);
-        $this->assertSame($expectedResult['lastname'], $actualResult['lastname']);
-        $this->assertSame($expectedResult['email'], $actualResult['email']);
+        $this->assertSame($expectedResult[self::LASTNAME], $actualResult[self::LASTNAME]);
+        $this->assertSame($expectedResult[self::EMAIL], $actualResult[self::EMAIL]);
     }
 }

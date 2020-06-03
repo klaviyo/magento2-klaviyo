@@ -2,9 +2,9 @@
 
 namespace Klaviyo\Reclaim\Observer;
 
+use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer;
-use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Magento\Framework\Message\ManagerInterface as MessageManager;
 use Magento\Authorization\Model\ResourceModel\Role\CollectionFactory;
 use Magento\User\Model\UserFactory;

@@ -5,14 +5,14 @@ namespace Klaviyo\Reclaim\Test\Unit\Observer;
 use PHPUnit\Framework\TestCase;
 use Klaviyo\Reclaim\Test\Data\SampleExtension;
 use Klaviyo\Reclaim\Test\Data\SampleCustomer;
+use Klaviyo\Reclaim\Test\Fakes\SubscriberFake as Subscriber;
+use Klaviyo\Reclaim\Test\Fakes\ObserverFake as Observer;
 use Klaviyo\Reclaim\Observer\UserProfileNewsletterSubscribeObserver;
 use Klaviyo\Reclaim\Helper\Data;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Magento\Framework\App\RequestInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
-use Klaviyo\Reclaim\Test\Fakes\SubscriberFake as Subscriber;
-use Klaviyo\Reclaim\Test\Fakes\ObserverFake as Observer;
 
 class UserProfileNewsletterSubscribeObserverTest extends TestCase
 {

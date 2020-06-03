@@ -69,10 +69,13 @@ class UpgradeData implements UpgradeDataInterface
         if (version_compare($context->getVersion(), '1.1.7', '<')) {
             //retrieve current key (unencrypted)
             $value = $this->_klaviyoScopeSetting->getPrivateApiKey();
-            //encrypt the private key
-            $encrypted = $this->_encryptor->encrypt($value);
-            //set the private key to the encrypted value
-            $this->_klaviyoScopeSetting->setPrivateApiKey($encrypted);
+            //check if there is a private key to encrypt
+            if (!empty($value)) {
+                //encrypt the private key
+                $encrypted = $this->_encryptor->encrypt($value);
+                //set the private key to the encrypted value
+                $this->_klaviyoScopeSetting->setPrivateApiKey($encrypted);
+            }
         }
         $setup->endSetup();
     }

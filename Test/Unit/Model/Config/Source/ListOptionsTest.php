@@ -5,10 +5,11 @@ namespace Klaviyo\Reclaim\Test\Unit\Model\Config\Source;
 use PHPUnit\Framework\TestCase;
 use Klaviyo\Reclaim\Test\Data\SampleExtension;
 use Klaviyo\Reclaim\Test\Data\SampleListApiResponse;
-use Klaviyo\Reclaim\Model\Config\Source\ListOptions;
-use Magento\Framework\Message\ManagerInterface;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Klaviyo\Reclaim\Helper\Data;
+use Klaviyo\Reclaim\Model\Config\Source\ListOptions;
+use Magento\Framework\Message\ManagerInterface;
+
 
 class ListOptionsTest extends TestCase
 {
@@ -16,6 +17,13 @@ class ListOptionsTest extends TestCase
      * @var ListOptions
      */
     protected $listOptions;
+
+    const LIST1_ID = 'aaAAaa';
+    const LIST1_NAME = 'list1';
+    const LIST2_ID = 'ssSSss';
+    const LIST2_NAME = 'list2';
+    const LIST3_ID = 'ddDDdd';
+    const LIST3_NAME = 'list3';
 
     protected function setUp()
     {
@@ -26,9 +34,9 @@ class ListOptionsTest extends TestCase
 
         $dataMock = $this->createMock(Data::class);
         $listsMock = [
-            new SampleListApiResponse('list1', 'aaAAaa'),
-            new SampleListApiResponse('list2', 'ssSSss'),
-            new SampleListApiResponse('list3', 'ddDDdd')
+            new SampleListApiResponse(self::LIST1_NAME, self::LIST1_ID),
+            new SampleListApiResponse(self::LIST2_NAME, self::LIST2_ID),
+            new SampleListApiResponse(self::LIST3_NAME, self::LIST3_ID)
         ];
         $resultMock = [
             'success' => 'true',
@@ -57,16 +65,16 @@ class ListOptionsTest extends TestCase
                 ListOptions::VALUE => 0
             ],
             [
-                ListOptions::LABEL => 'list1',
-                ListOptions::VALUE => 'aaAAaa'
+                ListOptions::LABEL => self::LIST1_NAME,
+                ListOptions::VALUE => self::LIST1_ID
             ],
             [
-                ListOptions::LABEL => 'list2',
-                ListOptions::VALUE => 'ssSSss'
+                ListOptions::LABEL => self::LIST2_NAME,
+                ListOptions::VALUE => self::LIST2_ID
             ],
             [
-                ListOptions::LABEL => 'list3',
-                ListOptions::VALUE => 'ddDDdd'
+                ListOptions::LABEL => self::LIST3_NAME,
+                ListOptions::VALUE => self::LIST3_ID
             ]
         ];
         $this->assertSame($expectedResponse, $this->listOptions->toOptionArray());

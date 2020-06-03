@@ -6,8 +6,8 @@ use PHPUnit\Framework\TestCase;
 use Klaviyo\Reclaim\Test\Data\SampleExtension;
 use Klaviyo\Reclaim\Test\Data\SampleCustomer;
 use Klaviyo\Reclaim\Block\Initialize;
-use Magento\Framework\View\Element\Template\Context;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
+use Magento\Framework\View\Element\Template\Context;
 use Magento\Customer\Model\Session;
 use Magento\Customer\Api\Data\CustomerInterface;
 

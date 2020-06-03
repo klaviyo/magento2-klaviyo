@@ -91,7 +91,7 @@ class Reclaim implements ReclaimInterface
             );
         }
         
-        if ($log != ''  && $log != []) {
+        if (!empty($log)) {
             return $log;
         } else {
             return array (

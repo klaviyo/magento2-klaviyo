@@ -36,7 +36,7 @@ class Handler extends \Magento\Framework\Logger\Handler\Base
     ) {
         $this->filesystem = $filesystem;
         $this->dir = $dir;
-        $this->filePath = ($filePath != null && $filePath != '') ? $filePath : $this->dir->getPath('log') . '/klaviyo.log';
+        $this->filePath = (!empty($filePath)) ? $filePath : $this->dir->getPath('log') . '/klaviyo.log';
 
         parent::__construct(
             $this->filesystem,

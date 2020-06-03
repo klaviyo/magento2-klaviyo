@@ -6,13 +6,13 @@ use PHPUnit\Framework\TestCase;
 use Klaviyo\Reclaim\Test\Data\SampleExtension;
 use Klaviyo\Reclaim\Observer\KlaviyoUserObserver;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
+use Magento\Framework\Event\Observer;
 use Magento\Framework\Message\ManagerInterface as MessageManager;
 use Magento\Authorization\Model\ResourceModel\Role\CollectionFactory as RoleCollectionFactory;
+use Magento\Authorization\Model\Acl\Role\Group as RoleGroup;
 use Magento\Authorization\Model\ResourceModel\Role\Collection as RoleCollection;
 use Magento\User\Model\UserFactory;
 use Magento\User\Model\User;
-use Magento\Authorization\Model\Acl\Role\Group as RoleGroup;
-use \Magento\Framework\Event\Observer;
 
 class KlaviyoUserObserverTest extends TestCase
 {

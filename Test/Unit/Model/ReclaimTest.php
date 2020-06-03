@@ -3,7 +3,12 @@
 namespace Klaviyo\Reclaim\Test\Unit\Model;
 
 use PHPUnit\Framework\TestCase;
+use Klaviyo\Reclaim\Test\Data\SampleExtension;
 use Klaviyo\Reclaim\Model\Reclaim;
+use Klaviyo\Reclaim\Helper\ScopeSetting;
+use Klaviyo\Reclaim\Helper\Logger as LoggerHelper;
+use Klaviyo\Reclaim\Logger\Logger;
+use Klaviyo\Reclaim\Logger\Handler;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Quote\Model\QuoteFactory;
 use Magento\Catalog\Model\ProductFactory;
@@ -11,12 +16,8 @@ use Magento\CatalogInventory\Api\StockStateInterface;
 use Magento\CatalogInventory\Model\Stock\StockItemRepository;
 use Magento\Newsletter\Model\Subscriber;
 use Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory as SubscriberCollectionFactory;
-use Klaviyo\Reclaim\Helper\ScopeSetting;
-use Klaviyo\Reclaim\Helper\Logger as LoggerHelper;
 use Magento\Framework\Filesystem\DriverInterface;
 use Magento\Framework\Filesystem\DirectoryList;
-use Klaviyo\Reclaim\Logger\Logger;
-use Klaviyo\Reclaim\Logger\Handler;
 
 class ReclaimTest extends TestCase
 {
@@ -62,7 +63,7 @@ class ReclaimTest extends TestCase
             ->getMock();
 
         $scopeSettingMock = $this->createMock(ScopeSetting::class);
-        $scopeSettingMock->method('getVersion')->willReturn('1.1.9');
+        $scopeSettingMock->method('getVersion')->willReturn(SampleExtension::RECLAIM_VERSION);
         $scopeSettingMock->method('isLoggerEnabled')->willReturn(TRUE);
 
         /**
@@ -107,7 +108,6 @@ class ReclaimTest extends TestCase
          * create test log file with dummy entries
          */
         $testLogFile = fopen(self::TEST_LOG_PATH, 'wb');
-        chmod(self::TEST_LOG_PATH, 0644);
         foreach (self::TEST_ENTRIES as $entry)
         {
             fwrite($testLogFile, $entry . "\r\n");
@@ -127,7 +127,7 @@ class ReclaimTest extends TestCase
 
     public function testReclaim()
     {
-        $this->assertSame('1.1.9', $this->reclaim->reclaim());
+        $this->assertSame(SampleExtension::RECLAIM_VERSION, $this->reclaim->reclaim());
     }
 
     public function testGetLog()
@@ -148,7 +148,6 @@ class ReclaimTest extends TestCase
         $this->assertSame($expectedResponse, $this->reclaim->getLog());
 
         $testLogFile = fopen(self::TEST_LOG_PATH, 'wb');
-        chmod(self::TEST_LOG_PATH, 0644);
         fclose($testLogFile);
         $expectedResponse = array (
             'message' => 'Log file is empty'
