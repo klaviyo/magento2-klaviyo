@@ -2,8 +2,12 @@
 
 namespace Klaviyo\Reclaim\Observer;
 
+use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer;
+use Magento\Framework\Message\ManagerInterface as MessageManager;
+use Magento\Authorization\Model\ResourceModel\Role\CollectionFactory;
+use Magento\User\Model\UserFactory;
 use Magento\Authorization\Model\Acl\Role\Group as RoleGroup;
 
 class KlaviyoUserObserver implements ObserverInterface
@@ -49,10 +53,10 @@ class KlaviyoUserObserver implements ObserverInterface
      * @param UserFactory $userFactory
      */
     public function __construct(
-        \Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting,
-        \Magento\Framework\Message\ManagerInterface $messageManager,
-        \Magento\Authorization\Model\ResourceModel\Role\CollectionFactory $roleCollectionFactory,
-        \Magento\User\Model\UserFactory $userFactory
+        ScopeSetting $klaviyoScopeSetting,
+        MessageManager $messageManager,
+        CollectionFactory $roleCollectionFactory,
+        UserFactory $userFactory
     ) {
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
         $this->_messageManager = $messageManager;

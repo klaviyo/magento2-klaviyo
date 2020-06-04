@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpunit
+    bootstrap="vendor/autoload.php"
+    colors="true"
+    verbose="true"
+>
+    <testsuites>
+        <testsuite name="default">
+            <directory>Test/Unit/</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./Block</directory>
+            <directory suffix=".php">./Controller</directory>
+            <directory suffix=".php">./Helper</directory>
+            <directory suffix=".php">./Model</directory>
+            <directory suffix=".php">./Observer</directory>
+            <directory suffix=".php">./Plugin</directory>
+            <directory suffix=".php">./Setup</directory>
+        </whitelist>
+    </filter>
+
+    <logging>
+        <log type="coverage-html" target="Test/log/report" lowUpperBound="35" highLowerBound="70"/>
+        <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
+        <log type="testdox-html" target="Test/log/testdox.html"/>
+        <log type="testdox-text" target="Test/log/testdox.txt"/>
+    </logging>
+
+</phpunit>

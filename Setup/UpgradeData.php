@@ -61,13 +61,6 @@ class UpgradeData implements UpgradeDataInterface
 
         $setup->startSetup();
 
-        //Klaviyo log file creation
-        $path = $this->_klaviyoLogger->getPath();
-        if (!file_exists($path)) {
-            fopen($path, 'w');
-        }
-        chmod($path, 0644);
-
         /**
          * in release 1.1.7 we started using the encrypted backend model for the private api key
          * this check ensures that when upgrading to this version the key is stored properly
@@ -76,10 +69,13 @@ class UpgradeData implements UpgradeDataInterface
         if (version_compare($context->getVersion(), '1.1.7', '<')) {
             //retrieve current key (unencrypted)
             $value = $this->_klaviyoScopeSetting->getPrivateApiKey();
-            //encrypt the private key
-            $encrypted = $this->_encryptor->encrypt($value);
-            //set the private key to the encrypted value
-            $this->_klaviyoScopeSetting->setPrivateApiKey($encrypted);
+            //check if there is a private key to encrypt
+            if (!empty($value)) {
+                //encrypt the private key
+                $encrypted = $this->_encryptor->encrypt($value);
+                //set the private key to the encrypted value
+                $this->_klaviyoScopeSetting->setPrivateApiKey($encrypted);
+            }
         }
         $setup->endSetup();
     }
