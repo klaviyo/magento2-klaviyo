@@ -168,7 +168,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @return bool|string
      * @throws \Exception
      */
-    private function sendApiRequest(string $path, array $params, string $method = 'POST')
+    private function sendApiRequest(string $path, array $params, string $method = null)
     {
         $url = self::KLAVIYO_HOST . $path;
 
@@ -181,7 +181,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         curl_setopt_array($curl, [
             CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => $method,
+            CURLOPT_CUSTOMREQUEST => (!empty($method)) ? $method : 'POST',
             CURLOPT_POSTFIELDS => $encodedParams,
             CURLOPT_USERAGENT => self::USER_AGENT,
             CURLOPT_HTTPHEADER => [
