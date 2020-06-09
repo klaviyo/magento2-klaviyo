@@ -36,7 +36,7 @@ class Logger
         DirectoryList $dir,
         KlaviyoLogger $klaviyoLogger,
         ScopeSetting $klaviyoScopeSetting,
-        string $logPath = null
+        $logPath = null
     )
     {
         $this->_dir = $dir;

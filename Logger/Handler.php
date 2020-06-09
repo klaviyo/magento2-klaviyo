@@ -32,7 +32,7 @@ class Handler extends \Magento\Framework\Logger\Handler\Base
     public function __construct(
         DriverInterface $filesystem,
         DirectoryList $dir,
-        String $filePath = null
+        $filePath = null
     ) {
         $this->filesystem = $filesystem;
         $this->dir = $dir;
