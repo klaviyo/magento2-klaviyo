@@ -41,7 +41,7 @@ class Cart extends \Magento\Framework\App\Action\Action
         }
 
         $redirect = $this->resultRedirectFactory->create();
-        $redirect->setPath('checkout/cart');
+        $redirect->setPath('checkout/cart', ['_current' => true]);
         return $redirect;
     }
 }
