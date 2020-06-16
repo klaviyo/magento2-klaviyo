@@ -4,6 +4,8 @@ namespace Klaviyo\Reclaim\Controller\Checkout;
 
 class Cart extends \Magento\Framework\App\Action\Action
 {
+    const CART_QUOTE_ID = 'quote_id';
+
     protected $quoteRepository;
     protected $resultRedirectFactory;
     protected $cart;
@@ -31,7 +33,9 @@ class Cart extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-        $quoteId = $this->request->getParam('quote_id');
+        $params = $this->request->getParams();
+        $quoteId = $params[Cart::CART_QUOTE_ID];
+        unset($params[Cart::CART_QUOTE_ID]);
 
         try {
           $quote = $this->quoteRepository->get($quoteId);
@@ -41,7 +45,7 @@ class Cart extends \Magento\Framework\App\Action\Action
         }
 
         $redirect = $this->resultRedirectFactory->create();
-        $redirect->setPath('checkout/cart');
+        $redirect->setPath('checkout/cart', $params);
         return $redirect;
     }
 }
