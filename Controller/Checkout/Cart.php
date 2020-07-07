@@ -33,7 +33,7 @@ class Cart extends \Magento\Framework\App\Action\Action
     {
         $params = $this->request->getParams();
         $quoteId = $params['quote_id'];
-        unset($quoteId);
+        unset($params['quote_id']);
 
         try {
           $quote = $this->quoteRepository->get($quoteId);
