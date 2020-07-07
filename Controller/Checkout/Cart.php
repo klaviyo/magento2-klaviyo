@@ -43,7 +43,7 @@ class Cart extends \Magento\Framework\App\Action\Action
         }
 
         $redirect = $this->resultRedirectFactory->create();
-        $redirect->setPath('checkout/cart',['_query'=>$params]);
+        $redirect->setPath('checkout/cart', ['_query'=>$params]);
         return $redirect;
     }
 }
