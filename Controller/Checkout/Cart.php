@@ -31,7 +31,9 @@ class Cart extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-        $quoteId = $this->request->getParam('quote_id');
+        $params = $this->request->getParams();
+        $quoteId = $params['quote_id'];
+        unset($params['quote_id']);
 
         try {
           $quote = $this->quoteRepository->get($quoteId);
@@ -41,7 +43,7 @@ class Cart extends \Magento\Framework\App\Action\Action
         }
 
         $redirect = $this->resultRedirectFactory->create();
-        $redirect->setPath('checkout/cart');
+        $redirect->setPath('checkout/cart', ['_query' => $params]);
         return $redirect;
     }
 }
