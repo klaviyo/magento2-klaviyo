@@ -32,7 +32,7 @@ class Cart extends \Magento\Framework\App\Action\Action
     public function execute()
     {
         $params = $this->request->getParams();
-        $quoteId = $params['quote_id'] ?? 0;
+        $quoteId = isset($params['quote_id']) ? $params['quote_id'] : 0;
         unset($params['quote_id']);
 
         try {
