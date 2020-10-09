@@ -18,11 +18,6 @@ class Reclaim implements ReclaimInterface
     /**
      * 
      */
-    protected $_subscriber;
-
-    /**
-     * 
-     */
     protected $_stockItemRepository;
 
     /**
@@ -47,7 +42,6 @@ class Reclaim implements ReclaimInterface
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Magento\CatalogInventory\Api\StockStateInterface $stockItem,
         \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository,
-        \Magento\Newsletter\Model\Subscriber $subscriber,
         \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection,
         \Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting,
         \Klaviyo\Reclaim\Helper\Logger $klaviyoLogger
@@ -58,7 +52,6 @@ class Reclaim implements ReclaimInterface
         $this->_objectManager = $objectManager;
         $this->_stockItem = $stockItem;
         $this->_stockItemRepository = $stockItemRepository;
-        $this->_subscriber= $subscriber;
         $this->_subscriberCollection = $subscriberCollection;
         $this->_klaviyoLogger = $klaviyoLogger;
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
