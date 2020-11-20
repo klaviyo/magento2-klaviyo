@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ##### Fixed
 
 
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/1.2.3...HEAD
+[1.2.3]: https://github.com/klaviyo/magento2-klaviyo/compare/1.2.2...1.2.3
+
   
 #### NOTE
-- The CHANGELOG was creeated on 2020-11-20 and does not contain information about earlier releases
+- The CHANGELOG was created on 2020-11-20 and does not contain information about earlier releases
