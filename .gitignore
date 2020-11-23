@@ -1,3 +1,5 @@
 .DS_Store
 Test/log
 vendor
+
+.idea
