@@ -34,16 +34,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     public function getKlaviyoLists($api_key=null){
+        file_put_contents('/Users/remingtonstone/Desktop/m2.txt', "\nhere\n");
         if (!$api_key) $api_key = $this->_klaviyoScopeSetting->getPrivateApiKey();
 
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://a.klaviyo.com/api/v1/lists?api_key=' . $api_key);
+        curl_setopt($ch, CURLOPT_URL, 'https://a.klaviyo.com/api/v2/lists?api_key=' . $api_key);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
+
         $output = json_decode(curl_exec($ch));
+        $statusCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         curl_close($ch);
 
-        if (property_exists($output, 'status')) {
+        if ($statusCode !== 200) {
             $status = $output->status;
             if ($status === 403) {
                 $reason = 'The Private Klaviyo API Key you have set is invalid.';
@@ -58,17 +61,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 'reason' => $reason
             ];
         } else {
-            $static_groups = array_filter($output->data, function($list) {
-                return $list->list_type === 'list';
-            });
-
-            usort($static_groups, function($a, $b) {
-                return strtolower($a->name) > strtolower($b->name) ? 1 : -1;
+            usort($output, function($a, $b) {
+                return strtolower($a->list_name) > strtolower($b->list_name) ? 1 : -1;
             });
 
             $result = [
                 'success' => true,
-                'lists' => $static_groups
+                'lists' => $output
             ];
         }
 
