@@ -10,6 +10,12 @@
         <policy id="connect-src">
             <values>
                 <value id="klaviyo" type="host">https://static.klaviyo.com</value>
+                <value id="klaviyo-cdn" type="host">https://fast.a.klaviyo.com</value>
+            </values>
+        </policy>
+        <policy id="img-src">
+            <values>
+                <value id="klaviyo" type="host">https://a.klaviyo.com</value>
             </values>
         </policy>
     </policies>
