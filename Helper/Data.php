@@ -34,7 +34,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     public function getKlaviyoLists($api_key=null){
-        file_put_contents('/Users/remingtonstone/Desktop/m2.txt', "\nhere\n");
         if (!$api_key) $api_key = $this->_klaviyoScopeSetting->getPrivateApiKey();
 
         $ch = curl_init();
