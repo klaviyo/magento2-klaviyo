@@ -1,7 +1,6 @@
 define([
   'uiComponent',
   'jquery',
-  'jquery/ui',
   'domReady!'
 ], function (Component) {
   'use strict';
