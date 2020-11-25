@@ -10,6 +10,7 @@ Added
 
 Changed
 - Update to README.md to share contribution guidelines
+- Use List API V2 for fetching newsletter lists
 
 Fixed
 - Remove JQuery UI as a dependency since it is unused
