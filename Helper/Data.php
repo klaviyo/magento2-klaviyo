@@ -46,10 +46,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         curl_close($ch);
 
         if ($statusCode !== 200) {
-            $status = $output->status;
-            if ($status === 403) {
+            if ($statusCode === 403) {
                 $reason = 'The Private Klaviyo API Key you have set is invalid.';
-            } elseif ($status === 401) {
+            } elseif ($statusCode === 401) {
                 $reason = 'The Private Klaviyo API key you have set is no longer valid.';
             } else {
                 $reason = 'Unable to verify Klaviyo Private API Key.';
