@@ -8,7 +8,7 @@ use \Klaviyo\Reclaim\Helper\ScopeSetting;
 class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const USER_AGENT = 'Klaviyo/Webhook/1.0';
-    const WEBHOOK_URL = 'http://www.klaviyo.com/api/webhook/integration/magento_two';
+    const WEBHOOK_URL = 'https://www.klaviyo.com/api/webhook/integration/magento_two';
 
     /**
      * Klaviyo scope setting helper
@@ -23,14 +23,14 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @param string $eventName
+     * @param string $webhookType
      * @param array $data
      * @return string
      * @throws Exception
      */
     public function makeWebhookRequest(string $webhookType, array $data)
     {
-        $data['webhooky_type'] = $webhookType;
+        $data['webhook_type'] = $webhookType;
 
         $url = self::WEBHOOK_URL . '?c=' . $this->_klaviyoScopeSetting->getPublicApiKey();
 
