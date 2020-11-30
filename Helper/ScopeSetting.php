@@ -20,6 +20,9 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     const KLAVIYO_PASSWORD = 'klaviyo_reclaim_user/klaviyo_user/password';
     const KLAVIYO_EMAIL = 'klaviyo_reclaim_user/klaviyo_user/email';
 
+    const WEBHOOK_SECRET = 'klaviyo_reclaim_webhook/klaviyo_webhooks/webhook_secret';
+    const PRODUCT_DELETE_AFTER = 'klaviyo_reclaim_webhook/klaviyo_webhooks/using_product_update_webhook';
+
     protected $_scopeConfig;
     protected $_request;
     protected $_state;
@@ -121,6 +124,11 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
             ->getOne(self::MODULE_NAME)['setup_version'];
     }
 
+    public function getWebhookSecret()
+    {
+        return $this->getScopeSetting(self::WEBHOOK_SECRET);
+    }
+
     public function isEnabled()
     {
         return $this->getScopeSetting(self::ENABLE);
@@ -194,4 +202,10 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
             return self::API_MEMBERS;
         }
     }
+
+    public function getProductDeleteAfterSetting()
+    {
+        return $this->getScopeSetting(self::PRODUCT_DELETE_AFTER);
+    }
 }
+

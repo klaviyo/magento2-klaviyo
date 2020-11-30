@@ -48,6 +48,12 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
+    <route url="/V1/klaviyo/reclaim/webhook-secret/" method="GET">
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="getWebhookSecret"/>
+        <resources>
+            <resource ref="Magento_Backend::store"/>
+        </resources>
+    </route>
     <route url="/V1/klaviyo/reclaim/log" method="GET">
         <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="getLog"/>
         <resources>

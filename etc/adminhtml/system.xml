@@ -26,7 +26,7 @@
                     <label>Custom Media URL</label>
                     <validate>validate-url</validate>
                 </field>
-                <field id="logger" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="logger" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Klaviyo Logger</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Log file is located under the standard log directory for your Magento app install. By default this will be {magento-root-directory}/var/log/klaviyo.log</comment>
@@ -68,6 +68,22 @@
                 </field>
                 <field id="email" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Email</label>
+                </field>
+            </group>
+        </section>
+        <section id="klaviyo_reclaim_webhook" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Webhooks</label>
+            <tab>klaviyo</tab>
+            <resource>Klaviyo_Reclaim::klaviyo_reclaim</resource>
+            <group id="klaviyo_webhooks" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Setup Klaviyo Webhooks</label>
+                <field id="webhook_secret" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Webhook Secret</label>
+                </field>
+                <field id="using_product_update_webhook" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Use Product Delete Webhook?</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>This will remove deleted products from the Klaviyo catalog.</comment>
                 </field>
             </group>
         </section>
