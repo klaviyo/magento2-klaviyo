@@ -15,26 +15,26 @@ class ProductDeleteAfter implements ObserverInterface
     protected $_klaviyoScopeSetting;
 
     /**
-     * @var WebhookHelper
+     * @var \Klaviyo\Reclaim\Helper\Webhook $webhookHelper
      */
     protected  $_webhookHelper;
 
     /**
-     * @var ObjectManagerInterface
+     * @var \Magento\Framework\ObjectManagerInterface $objectManagerInterface
      */
     protected $_objectManager;
 
     /**
-     * @param \Klaviyo\Reclaim\Helper\Webhook $_webhookHelper
+     * @param \Klaviyo\Reclaim\Helper\Webhook $webhookHelper
      * @param \Magento\Framework\ObjectManagerInterface $objectManager
      * @param ScopeSetting $klaviyoScopeSetting
      */
     public function __construct(
-        \Klaviyo\Reclaim\Helper\Webhook $_webhookHelper,
+        \Klaviyo\Reclaim\Helper\Webhook $webhookHelper,
         \Magento\Framework\ObjectManagerInterface $objectManager,
         ScopeSetting $klaviyoScopeSetting
     ) {
-        $this->_webhookHelper = $_webhookHelper;
+        $this->_webhookHelper = $webhookHelper;
         $this->_objectManager = $objectManager;
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
     }
@@ -44,6 +44,7 @@ class ProductDeleteAfter implements ObserverInterface
      *
      * @param \Magento\Framework\Event\Observer $observer
      * @return void
+     * @throws \Exception
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {

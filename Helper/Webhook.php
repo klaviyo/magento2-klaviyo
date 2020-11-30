@@ -28,9 +28,9 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
      * @return string
      * @throws Exception
      */
-    public function makeWebhookRequest(string $eventName, array $data)
+    public function makeWebhookRequest(string $webhookType, array $data)
     {
-        $data['event_name'] = $eventName;
+        $data['webhooky_type'] = $webhookType;
 
         $url = self::WEBHOOK_URL . '?c=' . $this->_klaviyoScopeSetting->getPublicApiKey();
 
