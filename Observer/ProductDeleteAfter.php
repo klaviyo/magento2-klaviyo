@@ -2,36 +2,41 @@
 
 namespace Klaviyo\Reclaim\Observer;
 
-use \Klaviyo\Reclaim\Helper\ScopeSetting;
+use Exception;
+use Klaviyo\Reclaim\Helper\ScopeSetting;
+use Klaviyo\Reclaim\Helper\Webhook;
+
+use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\ObjectManagerInterface;
 
 
 class ProductDeleteAfter implements ObserverInterface
 {
     /**
      * Klaviyo scope setting helper
-     * @var \Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting
+     * @var ScopeSetting $klaviyoScopeSetting
      */
     protected $_klaviyoScopeSetting;
 
     /**
-     * @var \Klaviyo\Reclaim\Helper\Webhook $webhookHelper
+     * @var Webhook $webhookHelper
      */
     protected  $_webhookHelper;
 
     /**
-     * @var \Magento\Framework\ObjectManagerInterface $objectManagerInterface
+     * @var ObjectManagerInterface $objectManagerInterface
      */
     protected $_objectManager;
 
     /**
-     * @param \Klaviyo\Reclaim\Helper\Webhook $webhookHelper
-     * @param \Magento\Framework\ObjectManagerInterface $objectManager
+     * @param Webhook $webhookHelper
+     * @param ObjectManagerInterface $objectManager
      * @param ScopeSetting $klaviyoScopeSetting
      */
     public function __construct(
-        \Klaviyo\Reclaim\Helper\Webhook $webhookHelper,
-        \Magento\Framework\ObjectManagerInterface $objectManager,
+        Webhook $webhookHelper,
+        ObjectManagerInterface $objectManager,
         ScopeSetting $klaviyoScopeSetting
     ) {
         $this->_webhookHelper = $webhookHelper;
@@ -42,11 +47,11 @@ class ProductDeleteAfter implements ObserverInterface
     /**
      * customer register event handler
      *
-     * @param \Magento\Framework\Event\Observer $observer
+     * @param Observer $observer
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
+    public function execute(Observer $observer)
     {
         if (!$this->_klaviyoScopeSetting->getWebhookSecret() || !$this->_klaviyoScopeSetting->getProductDeleteAfterSetting()) {
             return;
