@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 
+#### Added
+- Product delete observer webhook to send to Klaviyo catalog
+- Webhook secret form field for webhook validation
+
 ### [1.2.4] - 2020-12-01
 
 #### Added
