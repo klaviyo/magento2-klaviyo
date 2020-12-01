@@ -21,7 +21,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     const KLAVIYO_EMAIL = 'klaviyo_reclaim_user/klaviyo_user/email';
 
     const WEBHOOK_SECRET = 'klaviyo_reclaim_webhook/klaviyo_webhooks/webhook_secret';
-    const PRODUCT_DELETE_AFTER = 'klaviyo_reclaim_webhook/klaviyo_webhooks/using_product_update_webhook';
+    const PRODUCT_DELETE_AFTER = 'klaviyo_reclaim_webhook/klaviyo_webhooks/using_product_delete_after_webhook';
 
     protected $_scopeConfig;
     protected $_request;
