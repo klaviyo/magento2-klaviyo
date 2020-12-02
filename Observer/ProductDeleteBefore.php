@@ -11,7 +11,7 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\ObjectManagerInterface;
 
 
-class ProductDeleteAfter implements ObserverInterface
+class ProductDeleteBefore implements ObserverInterface
 {
     /**
      * Klaviyo scope setting helper
@@ -44,6 +44,12 @@ class ProductDeleteAfter implements ObserverInterface
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
     }
 
+    public function writer($txt) {
+        $fp = fopen('/Users/remingtonstone/Desktop/webhook.txt', 'a');
+        fwrite($fp, json_encode($txt) . "\n");
+        fclose($fp);
+    }
+
     /**
      * customer register event handler
      *
@@ -53,11 +59,24 @@ class ProductDeleteAfter implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        if (!$this->_klaviyoScopeSetting->getWebhookSecret() || !$this->_klaviyoScopeSetting->getProductDeleteAfterSetting()) {
-            return;
+        $product = $observer->getEvent()->getProduct();
+        $websiteIds = $product->getWebsiteIds();
+        $storeIdKlaviyoMap = $this->_klaviyoScopeSetting->getStoredIdKlaviyoAccountSetMap($websiteIds);
+
+        foreach ($storeIdKlaviyoMap as $klaviyoId => $storeIds) {
+            if (empty($storeIds)) {
+                continue;
+            }
+
+            if ($this->_klaviyoScopeSetting->getWebhookSecret($storeIds[0]) && $this->_klaviyoScopeSetting->getProductDeleteAfterSetting($storeIds[0])) {
+                $data = array (
+                    'store_ids' => $storeIds,
+                    'product_id' => $product->getId(),
+                );
+
+                $this->_webhookHelper->makeWebhookRequest('product/delete', $data, $klaviyoId);
+            }
         }
-        $_product = $observer->getEvent()->getProduct();
-        $this->_webhookHelper->makeWebhookRequest('product/delete', $_product->getData());
     }
 }
 

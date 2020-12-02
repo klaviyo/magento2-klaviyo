@@ -8,7 +8,8 @@ use \Klaviyo\Reclaim\Helper\ScopeSetting;
 class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const USER_AGENT = 'Klaviyo/MagentoTwo/Webhook';
-    const WEBHOOK_URL = 'https://www.klaviyo.com/api/webhook/integration/magento_two';
+//    const WEBHOOK_URL = 'https://www.klaviyo.com/api/webhook/integration/magento_two';
+    const WEBHOOK_URL = 'https://rem-klaviyo.ngrok.io/test';
 
     /**
      * Klaviyo scope setting helper
@@ -25,14 +26,13 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @param string $webhookType
      * @param array $data
+     * @param string $klaviyoId
      * @return string
      * @throws Exception
      */
-    public function makeWebhookRequest(string $webhookType, array $data)
+    public function makeWebhookRequest($webhookType, $data, $klaviyoId)
     {
-        $data['webhook_type'] = $webhookType;
-
-        $url = self::WEBHOOK_URL . '?c=' . $this->_klaviyoScopeSetting->getPublicApiKey();
+        $url = self::WEBHOOK_URL . '?c=' . $klaviyoId;
 
         $curl = curl_init();
 
@@ -45,7 +45,8 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json',
                 'Magento-two-signature: ' . $this->createWebhookSecurity($data),
-                'Content-Length: '. strlen(json_encode($data))
+                'Content-Length: '. strlen(json_encode($data)),
+                'Topic: ' . $webhookType
             ),
         ]);
 
