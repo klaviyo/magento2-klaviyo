@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Added
 - Create CHANGELOG.md
+- Added a.fast.klaviyo.com to img-src csp whitelist
 
 #### Changed
 - Update to README.md to share contribution guidelines
