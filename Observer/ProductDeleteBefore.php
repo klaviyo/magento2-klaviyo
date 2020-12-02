@@ -44,12 +44,6 @@ class ProductDeleteBefore implements ObserverInterface
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
     }
 
-    public function writer($txt) {
-        $fp = fopen('/Users/remingtonstone/Desktop/webhook.txt', 'a');
-        fwrite($fp, json_encode($txt) . "\n");
-        fclose($fp);
-    }
-
     /**
      * customer register event handler
      *
@@ -73,7 +67,6 @@ class ProductDeleteBefore implements ObserverInterface
                     'store_ids' => $storeIds,
                     'product_id' => $product->getId(),
                 );
-
                 $this->_webhookHelper->makeWebhookRequest('product/delete', $data, $klaviyoId);
             }
         }
