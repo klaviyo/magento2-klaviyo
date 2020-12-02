@@ -12,17 +12,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Changed
 - Removed CSP setting
+- Removed csp mode from config.xml
+- Added a.fast.klaviyo.com to img-src csp whitelist
+
 
 ### [1.2.4] - 2020-12-01
 
 #### Added
 - Create CHANGELOG.md
-- Added a.fast.klaviyo.com to img-src csp whitelist
 
 #### Changed
 - Update to README.md to share contribution guidelines
 - Use List API V2 for fetching newsletter lists
-- Removed CSP section from config.xml
 
 #### Fixed
 - Remove JQuery UI as a dependency since it is unused
