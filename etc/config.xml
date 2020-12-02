@@ -17,15 +17,5 @@
                 <webhook_secret backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
             </klaviyo_webhooks>
         </klaviyo_reclaim_webhook>
-                <csp>
-            <mode>
-                <storefront>
-                    <report_only>1</report_only>
-                </storefront>
-                <admin>
-                    <report_only>1</report_only>
-                </admin>
-            </mode>
-        </csp>
     </default>
 </config>
