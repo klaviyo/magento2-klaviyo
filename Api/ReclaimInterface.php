@@ -22,10 +22,11 @@ interface ReclaimInterface
     /**
      * Returns the webhook secret
      *
-     * @api
+     * @param int|null $store_id
      * @return string
+     * @api
      */
-    public function getWebhookSecret();
+    public function getWebhookSecret($store_id=null);
 
     /**
      * Returns the Klaviyo log file

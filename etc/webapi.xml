@@ -48,7 +48,7 @@
             <resource ref="Magento_Backend::admin"/>
         </resources>
     </route>
-    <route url="/V1/klaviyo/reclaim/webhook-secret/" method="GET">
+    <route url="/V1/klaviyo/reclaim/webhook-secret" method="GET">
         <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="getWebhookSecret"/>
         <resources>
             <resource ref="Magento_Backend::admin"/>
