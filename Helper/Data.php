@@ -164,7 +164,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param string $method
      * @throws \Exception
      */
-
     private function sendApiRequest(string $path, array $params, string $method = null)
     {
         $url = self::KLAVIYO_HOST . $path;

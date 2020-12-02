@@ -21,7 +21,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     const KLAVIYO_EMAIL = 'klaviyo_reclaim_user/klaviyo_user/email';
 
     const WEBHOOK_SECRET = 'klaviyo_reclaim_webhook/klaviyo_webhooks/webhook_secret';
-    const PRODUCT_DELETE_AFTER = 'klaviyo_reclaim_webhook/klaviyo_webhooks/using_product_delete_after_webhook';
+    const PRODUCT_DELETE_BEFORE = 'klaviyo_reclaim_webhook/klaviyo_webhooks/using_product_delete_before_webhook';
 
     protected $_scopeConfig;
     protected $_request;
@@ -207,11 +207,12 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
         }
     }
 
-    /** This maps a klaviyo account to all the store ids its scoped too.
+    /**
+     * This maps a klaviyo account to all the store ids its scoped too.
      * @param $storeIds
      * @return array
      */
-    public function getStoredIdKlaviyoAccountSetMap($storeIds)
+    public function getStoreIdKlaviyoAccountSetMap($storeIds)
     {
 
         $storeMap = array();
@@ -227,9 +228,9 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
         return $storeMap;
     }
 
-    public function getProductDeleteAfterSetting($storeId = null)
+    public function getProductDeleteBeforeSetting($storeId = null)
     {
-        return $this->getScopeSetting(self::PRODUCT_DELETE_AFTER, $storeId);
+        return $this->getScopeSetting(self::PRODUCT_DELETE_BEFORE, $storeId);
     }
 
 }

@@ -8,8 +8,7 @@ use \Klaviyo\Reclaim\Helper\ScopeSetting;
 class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const USER_AGENT = 'Klaviyo/MagentoTwo/Webhook';
-//    const WEBHOOK_URL = 'https://www.klaviyo.com/api/webhook/integration/magento_two';
-    const WEBHOOK_URL = 'https://rem-klaviyo.ngrok.io/test';
+    const WEBHOOK_URL = 'https://www.klaviyo.com/api/webhook/integration/magento_two';
 
     /**
      * Klaviyo scope setting helper
