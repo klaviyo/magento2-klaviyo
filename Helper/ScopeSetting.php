@@ -128,9 +128,9 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
             ->getOne(self::MODULE_NAME)['setup_version'];
     }
 
-    public function getWebhookSecret($storeId = null)
+    public function getWebhookSecret()
     {
-        return $this->getScopeSetting(self::WEBHOOK_SECRET, $storeId);
+        return $this->getScopeSetting(self::WEBHOOK_SECRET);
     }
 
     public function isEnabled()

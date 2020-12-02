@@ -62,7 +62,7 @@ class ProductDeleteBefore implements ObserverInterface
                 continue;
             }
 
-            if ($this->_klaviyoScopeSetting->getWebhookSecret($storeIds[0]) && $this->_klaviyoScopeSetting->getProductDeleteAfterSetting($storeIds[0])) {
+            if ($this->_klaviyoScopeSetting->getWebhookSecret() && $this->_klaviyoScopeSetting->getProductDeleteAfterSetting($storeIds[0])) {
                 $data = array (
                     'store_ids' => $storeIds,
                     'product_id' => $product->getId(),

@@ -68,9 +68,9 @@ class Reclaim implements ReclaimInterface
         return $this->_klaviyoScopeSetting->getVersion();
     }
 
-    public function getWebhookSecret($store_id=null)
+    public function getWebhookSecret()
     {
-        return $this->_klaviyoScopeSetting->getWebhookSecret($store_id);
+        return $this->_klaviyoScopeSetting->getWebhookSecret();
     }
 
     /**

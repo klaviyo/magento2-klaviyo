@@ -30,8 +30,11 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
      * @return string
      * @throws Exception
      */
-    public function makeWebhookRequest($webhookType, $data, $klaviyoId)
+    public function makeWebhookRequest($webhookType, $data, $klaviyoId=null)
     {
+        if (!$klaviyoId) {
+            $klaviyoId = $this->_klaviyoScopeSetting->getPublicApiKey();
+        }
         $url = self::WEBHOOK_URL . '?c=' . $klaviyoId;
 
         $curl = curl_init();

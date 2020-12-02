@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Product delete observer webhook to send to Klaviyo catalog
 - Webhook secret form field for webhook validation
 
+#### Changed
+- Removed CSP setting
+
 ### [1.2.4] - 2020-12-01
 
 #### Added
