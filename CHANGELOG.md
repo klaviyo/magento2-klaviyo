@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Webhook secret form field for webhook validation
 
 #### Changed
-- Removed CSP setting
+- Removed csp setting
 - Removed csp mode from config.xml
 - Added a.fast.klaviyo.com to img-src csp whitelist
 

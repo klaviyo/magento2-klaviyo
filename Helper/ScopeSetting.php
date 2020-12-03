@@ -228,7 +228,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
         return $storeMap;
     }
 
-    public function getProductDeleteBeforeSetting($storeId = null)
+    public function getProductDeleteBeforeSetting($storeId)
     {
         return $this->getScopeSetting(self::PRODUCT_DELETE_BEFORE, $storeId);
     }
