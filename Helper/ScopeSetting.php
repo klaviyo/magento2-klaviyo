@@ -34,6 +34,8 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     const WEBHOOK_SECRET = 'klaviyo_reclaim_webhook/klaviyo_webhooks/webhook_secret';
     const PRODUCT_DELETE_BEFORE = 'klaviyo_reclaim_webhook/klaviyo_webhooks/using_product_delete_before_webhook';
 
+    const KLAVIYO_OAUTH_NAME = 'klaviyo_reclaim_oauth/klaviyo_oauth/name';
+
     protected $_scopeConfig;
     protected $_request;
     protected $_state;
@@ -197,6 +199,16 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     public function unsetKlaviyoEmail()
     {
         return $this->setScopeSetting(self::KLAVIYO_EMAIL, '');
+    }
+
+    public function getKlaviyoOauthName()
+    {
+        return $this->getScopeSetting(self::KLAVIYO_OAUTH_NAME);
+    }
+
+    public function unsetKlaviyoOauthName()
+    {
+        return $this->setScopeSetting(self::KLAVIYO_OAUTH_NAME, '');
     }
 
     public function getCustomMediaURL()

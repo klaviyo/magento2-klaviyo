@@ -12,4 +12,7 @@
     <event name="catalog_product_delete_before">
         <observer name="klaviyo_reclaim" instance="Klaviyo\Reclaim\Observer\ProductDeleteBefore" />
     </event>
+    <event name="admin_system_config_changed_section_klaviyo_reclaim_oauth">
+        <observer name="custom_admin_system_config_changed_section_klaviyo_reclaim_oauth" instance="Klaviyo\Reclaim\Observer\KlaviyoOauthObserver"/>
+    </event>
 </config>
