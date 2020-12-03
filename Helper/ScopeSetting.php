@@ -206,11 +206,6 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->getScopeSetting(self::KLAVIYO_OAUTH_NAME);
     }
 
-    public function unsetKlaviyoOauthName()
-    {
-        return $this->setScopeSetting(self::KLAVIYO_OAUTH_NAME, '');
-    }
-
     public function getCustomMediaURL()
     {
         return $this->getScopeSetting(self::CUSTOM_MEDIA_URL);

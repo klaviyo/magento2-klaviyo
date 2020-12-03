@@ -19,10 +19,6 @@ class KlaviyoOauthObserver implements ObserverInterface
      */
     protected $_klaviyoScopeSetting;
 
-    /**
-     * @var ManagerInterface $messageManager
-     */
-    protected $_messageManager;
 
     /**
      * @var IntegrationFactory $integrationFactory
@@ -39,13 +35,11 @@ class KlaviyoOauthObserver implements ObserverInterface
      */
     public function __construct(
         ScopeSetting $klaviyoScopeSetting,
-        MessageManager $messageManager,
         IntegrationFactory $integrationFactory,
         AuthorizationService $authorizationService,
         OauthService $oauthService
     ) {
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
-        $this->_messageManager = $messageManager;
         $this->_integrationFactory = $integrationFactory;
         $this->_authorizationService = $authorizationService;
         $this->_oauthService = $oauthService;
@@ -59,7 +53,7 @@ class KlaviyoOauthObserver implements ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         if (empty($this->_klaviyoScopeSetting->getPublicApiKey())) {
-         throw new \Magento\Framework\Exception\StateException(__('To set up Oauth for Klaviyo, first save a <strong>Public Klaviyo API Key</strong> on the "General" tab.'));
+         throw new \Magento\Framework\Exception\StateException(__('To set up Oauth for Klaviyo, first obtain a <strong>Public Klaviyo API Key</strong> using instructions from <a href="https://help.klaviyo.com/hc/en-us/articles/115005062267-Manage-Your-Account-s-API-Keys#your-public-api-key-site-id2">here</a> and save it on the "General" tab.'));
         }
         try {
             $integrationData = array(
@@ -85,11 +79,9 @@ class KlaviyoOauthObserver implements ObserverInterface
 
             // Code to grant permission
             $this->_authorizationService->grantAllPermissions($integrationId);
-
-            //reset the details in the store config
-            $this->_klaviyoScopeSetting->unsetKlaviyoOauthName();
+            
         }catch(Exception $e){
-            throw new \Magento\Framework\Exception\StateException(__('Error creating Oauth Integration: '.$e->getMessage()));
+            throw new \Magento\Framework\Exception\StateException(__('Error creating OAuth Integration: '.$e->getMessage()));
         }
 
     }
