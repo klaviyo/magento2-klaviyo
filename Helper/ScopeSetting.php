@@ -224,7 +224,6 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
                 array_push( $storeMap[$klaviyoAccount], $storeId);
             }
         }
-
         return $storeMap;
     }
 
@@ -232,6 +231,4 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return $this->getScopeSetting(self::PRODUCT_DELETE_BEFORE, $storeId);
     }
-
 }
-

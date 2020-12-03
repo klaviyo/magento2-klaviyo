@@ -162,6 +162,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param string $path
      * @param array $params
      * @param string $method
+     * @return mixed[]
      * @throws \Exception
      */
     private function sendApiRequest(string $path, array $params, string $method = null)
