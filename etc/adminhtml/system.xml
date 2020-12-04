@@ -131,13 +131,13 @@
         </section>
 
         <section id="klaviyo_reclaim_oauth" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-            <label>Setup Oauth</label>
+            <label>Setup OAuth</label>
             <tab>klaviyo</tab>
             <resource>Klaviyo_Reclaim::klaviyo_reclaim</resource>
             <group id="klaviyo_oauth" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Setup Oauth</label>
-                <field id="name" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" required="true">
-                    <label>Name</label>
+                <field id="integration_name" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" required="true">
+                    <label>Integration Name</label>
                     <validate>required-entry validate-no-empty</validate>
 
                 </field>

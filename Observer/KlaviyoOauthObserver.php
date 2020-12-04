@@ -3,19 +3,18 @@
 namespace Klaviyo\Reclaim\Observer;
 
 use Klaviyo\Reclaim\Helper\ScopeSetting;
-use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer;
-use Magento\Framework\Message\ManagerInterface as MessageManager;
-use Magento\Integration\Model\IntegrationFactory;
+use Magento\Framework\Event\ObserverInterface;
 use Magento\Integration\Model\AuthorizationService;
+use Magento\Integration\Model\IntegrationFactory;
 use Magento\Integration\Model\OauthService;
 
 
-class KlaviyoOauthObserver implements ObserverInterface
+class KlaviyoOAuthObserver implements ObserverInterface
 {
     /**
      * Klaviyo scope setting helper
-     * @var \Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting
+     * @var ScopeSetting $klaviyoScopeSetting
      */
     protected $_klaviyoScopeSetting;
 
@@ -28,7 +27,6 @@ class KlaviyoOauthObserver implements ObserverInterface
 
     /**
      * @param ScopeSetting $klaviyoScopeSetting
-     * @param MessageManager $messageManager
      * @param IntegrationFactory $integrationFactory
      * @param AuthorizationService $authorizationService
      * @param OauthService $oauthService
@@ -45,7 +43,7 @@ class KlaviyoOauthObserver implements ObserverInterface
         $this->_oauthService = $oauthService;
     }
 
-    /*
+    /**
      * @param Observer $observer
      * @return void
      * @throws Exception
@@ -80,7 +78,7 @@ class KlaviyoOauthObserver implements ObserverInterface
             // Code to grant permission
             $this->_authorizationService->grantAllPermissions($integrationId);
             
-        }catch(Exception $e){
+        } catch(Exception $e) {
             throw new \Magento\Framework\Exception\StateException(__('Error creating OAuth Integration: '.$e->getMessage()));
         }
 

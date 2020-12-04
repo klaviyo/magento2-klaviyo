@@ -31,10 +31,11 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     const KLAVIYO_PASSWORD = 'klaviyo_reclaim_user/klaviyo_user/password';
     const KLAVIYO_EMAIL = 'klaviyo_reclaim_user/klaviyo_user/email';
 
+
     const WEBHOOK_SECRET = 'klaviyo_reclaim_webhook/klaviyo_webhooks/webhook_secret';
     const PRODUCT_DELETE_BEFORE = 'klaviyo_reclaim_webhook/klaviyo_webhooks/using_product_delete_before_webhook';
-
-    const KLAVIYO_OAUTH_NAME = 'klaviyo_reclaim_oauth/klaviyo_oauth/name';
+    
+    const KLAVIYO_OAUTH_NAME = 'klaviyo_reclaim_oauth/klaviyo_oauth/integration_name';
 
     protected $_scopeConfig;
     protected $_request;
