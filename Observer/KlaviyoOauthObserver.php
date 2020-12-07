@@ -14,22 +14,22 @@ class KlaviyoOAuthObserver implements ObserverInterface
 {
     /**
      * Klaviyo scope setting helper
-     * @var ScopeSetting $klaviyoScopeSetting
+     * @var Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting
      */
     protected $_klaviyoScopeSetting;
 
 
     /**
-     * @var IntegrationFactory $integrationFactory
+     * @var Magento\Integration\Model\IntegrationFactory $integrationFactory
      */
     protected $_integrationFactory;
 
 
     /**
-     * @param ScopeSetting $klaviyoScopeSetting
-     * @param IntegrationFactory $integrationFactory
-     * @param AuthorizationService $authorizationService
-     * @param OauthService $oauthService
+     * @param Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting
+     * @param Magento\Integration\Model\IntegrationFactory $integrationFactory
+     * @param Magento\Integration\Model\AuthorizationService $authorizationService
+     * @param Magento\Integration\Model\OauthService $oauthService
      */
     public function __construct(
         ScopeSetting $klaviyoScopeSetting,
@@ -44,7 +44,7 @@ class KlaviyoOAuthObserver implements ObserverInterface
     }
 
     /**
-     * @param Observer $observer
+     * @param Magento\Framework\Event\Observer $observer
      * @return void
      * @throws Exception
      */
