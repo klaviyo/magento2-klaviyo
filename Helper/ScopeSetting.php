@@ -208,7 +208,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * This maps a klaviyo account to all the store ids its scoped too.
+     * This maps a klaviyo account to all the store ids it's scoped to.
      * @param $storeIds
      * @return array
      */
@@ -224,11 +224,14 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
                 array_push( $storeMap[$klaviyoAccount], $storeId);
             }
         }
+
         return $storeMap;
     }
 
-    public function getProductDeleteBeforeSetting($storeId)
+    public function getProductDeleteBeforeSetting($storeId = null)
     {
         return $this->getScopeSetting(self::PRODUCT_DELETE_BEFORE, $storeId);
     }
+
 }
+
