@@ -250,7 +250,7 @@ class Reclaim implements ReclaimInterface
         if (!$product_id){
             throw new NotFoundException(_('A product id is required'));
         }
-        // if store_id is specificed, use it
+        // if store_id is specified, use it
         if ($store_id){
             $product = $this->_productFactory->create()->setStoreId($store_id)->load($product_id);
         } else {
