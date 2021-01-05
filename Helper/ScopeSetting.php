@@ -73,7 +73,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $this->checkAreaCode();
 
-        if ($storeId) {
+        if (isset($storeId)) {
             $scopedStoreCode = $storeId;
         } elseif ($this->_state->getAreaCode() == \Magento\Framework\App\Area::AREA_ADMINHTML) {
             $scopedStoreCode = $this->_request->getParam('store');
