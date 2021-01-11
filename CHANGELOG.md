@@ -7,10 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### [Unreleased]
 
 #### Added
-- Added a.fast.klaviyo.com to img-src csp whitelist
+- Product delete observer webhook to send to Klaviyo catalog
+- Webhook secret form field for webhook validation
 
 #### Changed
+- Removed csp setting
 - Removed csp mode from config.xml
+- Added a.fast.klaviyo.com to img-src csp whitelist
+
 
 ### [1.2.4] - 2020-12-01
 
