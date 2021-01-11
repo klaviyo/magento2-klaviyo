@@ -38,7 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CSP now uses report-only mode
 
 
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/1.2.4...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/2.0.0...HEAD
 [2.0.0]: https://github.com/klaviyo/magento2-klaviyo/compare/1.2.4...2.0.0
 [1.2.4]: https://github.com/klaviyo/magento2-klaviyo/compare/1.2.3...1.2.4
 [1.2.3]: https://github.com/klaviyo/magento2-klaviyo/compare/1.2.2...1.2.3
