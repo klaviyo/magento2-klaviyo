@@ -8,7 +8,7 @@ class SampleExtension
      * sample extension data to be used in tests
      */
     const IS_ENABLED = TRUE;
-    const RECLAIM_VERSION = '1.2.4';
+    const RECLAIM_VERSION = '2.0.0';
     const PUBLIC_API_KEY = 'QWEasd';
     const PRIVATE_API_KEY = 'pk_aaaassssddddffff';
     const USING_KLAVIYO_LOGGER = FALSE;

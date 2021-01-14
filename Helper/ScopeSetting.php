@@ -20,6 +20,9 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     const KLAVIYO_PASSWORD = 'klaviyo_reclaim_user/klaviyo_user/password';
     const KLAVIYO_EMAIL = 'klaviyo_reclaim_user/klaviyo_user/email';
 
+    const WEBHOOK_SECRET = 'klaviyo_reclaim_webhook/klaviyo_webhooks/webhook_secret';
+    const PRODUCT_DELETE_BEFORE = 'klaviyo_reclaim_webhook/klaviyo_webhooks/using_product_delete_before_webhook';
+
     protected $_scopeConfig;
     protected $_request;
     protected $_state;
@@ -63,12 +66,16 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Getter method for a given scope setting
      * @param string $path
+     * @param int $storeId
+     * @return
      */
-    protected function getScopeSetting($path)
+    protected function getScopeSetting($path, $storeId = null)
     {
         $this->checkAreaCode();
 
-        if ($this->_state->getAreaCode() == \Magento\Framework\App\Area::AREA_ADMINHTML) {
+        if (isset($storeId)) {
+            $scopedStoreCode = $storeId;
+        } elseif ($this->_state->getAreaCode() == \Magento\Framework\App\Area::AREA_ADMINHTML) {
             $scopedStoreCode = $this->_request->getParam('store');
             $scopedWebsiteCode = $this->_request->getParam('website');
         } else {
@@ -121,14 +128,19 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
             ->getOne(self::MODULE_NAME)['setup_version'];
     }
 
+    public function getWebhookSecret()
+    {
+        return $this->getScopeSetting(self::WEBHOOK_SECRET);
+    }
+
     public function isEnabled()
     {
         return $this->getScopeSetting(self::ENABLE);
     }
 
-    public function getPublicApiKey()
+    public function getPublicApiKey($storeId = null)
     {
-        return $this->getScopeSetting(self::PUBLIC_API_KEY);
+        return $this->getScopeSetting(self::PUBLIC_API_KEY, $storeId);
     }
 
     public function getPrivateApiKey()
@@ -194,4 +206,32 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
             return self::API_MEMBERS;
         }
     }
+
+    /**
+     * This maps a klaviyo account to all the store ids it's scoped to.
+     * @param $storeIds
+     * @return array
+     */
+    public function getStoreIdKlaviyoAccountSetMap($storeIds)
+    {
+
+        $storeMap = array();
+        foreach ($storeIds as $storeId) {
+            $klaviyoAccount = $this->getPublicApiKey($storeId);
+            if (!array_key_exists($klaviyoAccount, $storeMap)) {
+                $storeMap[$klaviyoAccount] = array($storeId);
+            } else {
+                array_push( $storeMap[$klaviyoAccount], $storeId);
+            }
+        }
+
+        return $storeMap;
+    }
+
+    public function getProductDeleteBeforeSetting($storeId = null)
+    {
+        return $this->getScopeSetting(self::PRODUCT_DELETE_BEFORE, $storeId);
+    }
+
 }
+

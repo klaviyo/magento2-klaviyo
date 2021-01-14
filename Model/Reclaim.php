@@ -16,17 +16,17 @@ class Reclaim implements ReclaimInterface
     protected $_objectManager = null;
 
     /**
-     * 
+     *
      */
     protected $_stockItemRepository;
 
     /**
-     * 
+     *
      */
     protected $subscriberCollection;
 
     /**
-     * 
+     *
      */
     public $response;
 
@@ -37,7 +37,7 @@ class Reclaim implements ReclaimInterface
     const SUBSCRIBER_BATCH_SIZE = 500;
 
     public function __construct(
-        \Magento\Framework\ObjectManagerInterface $objectManager, 
+        \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Magento\CatalogInventory\Api\StockStateInterface $stockItem,
@@ -68,9 +68,14 @@ class Reclaim implements ReclaimInterface
         return $this->_klaviyoScopeSetting->getVersion();
     }
 
+    public function getWebhookSecret()
+    {
+        return $this->_klaviyoScopeSetting->getWebhookSecret();
+    }
+
     /**
      * Returns the Klaviyo log file
-     * 
+     *
      * @api
      * @return string
      */
@@ -83,7 +88,7 @@ class Reclaim implements ReclaimInterface
                 'message' => 'Unable to retrieve log file with error: ' . $e->getMessage()
             );
         }
-        
+
         if (!empty($log)) {
             return $log;
         } else {
@@ -95,7 +100,7 @@ class Reclaim implements ReclaimInterface
 
     /**
      * Cleans the Klaviyo log file
-     * 
+     *
      * @api
      * @param string $date
      * @return boolean
@@ -159,7 +164,7 @@ class Reclaim implements ReclaimInterface
 
     /**
      * Appends a message to the Klaviyo log file
-     * 
+     *
      * @api
      * @param string $message
      * @return mixed[]
@@ -245,9 +250,9 @@ class Reclaim implements ReclaimInterface
         if (!$product_id){
             throw new NotFoundException(_('A product id is required'));
         }
-        // if store_id is specificed, use it
+        // if store_id is specified, use it
         if ($store_id){
-            $product = $this->_productFactory->create()->setStoreId($store_id)->load($product_id);    
+            $product = $this->_productFactory->create()->setStoreId($store_id)->load($product_id);
         } else {
             $product = $this->_productFactory->create()->load($product_id);
         }
@@ -274,7 +279,7 @@ class Reclaim implements ReclaimInterface
         } catch (\Error $e) {
             return $response;
         }
-        
+
         foreach ($_children as $child){
             $response['variants'][] = array(
                 'id' => $child->getId(),
@@ -328,7 +333,7 @@ class Reclaim implements ReclaimInterface
 
     public function getSubscribersById($start_id, $end_id, $storeId=null)
     {
-        if (!$start_id || !$end_id ){ 
+        if (!$start_id || !$end_id ){
             throw new NotFoundException(__('Please provide start_id and end_id'));
         }
 
@@ -354,8 +359,8 @@ class Reclaim implements ReclaimInterface
 
     public function getSubscribersByDateRange($start, $until, $storeId=null)
     {
-        
-        if (!$start || !$until ){ 
+
+        if (!$start || !$until ){
             throw new NotFoundException(__('Please provide start and until param'));
         }
         // start and until date formats
@@ -376,7 +381,7 @@ class Reclaim implements ReclaimInterface
         }
 
         $storeIdFilter = $this->_storeFilter($storeId);
-        
+
         $subscriberCollection =$this->_subscriberCollection->create()
             ->addFieldToFilter('change_status_at', ['gteq' => $start])
             ->addFieldToFilter('change_status_at', ['lteq' => $until])
@@ -412,7 +417,7 @@ class Reclaim implements ReclaimInterface
     {
         $images = $product->getMediaGalleryImages();
         $image_array = array();
-        
+
         foreach($images as $image) {
             $image_array[] = $this->handleMediaURL($image);
         }
