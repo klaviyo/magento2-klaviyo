@@ -89,6 +89,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         if ($firstName) $properties['$first_name'] = $firstName;
         if ($lastName) $properties['$last_name'] = $lastName;
         if ($source) $properties['$source'] = $source;
+        if ($optInSetting == ScopeSetting::API_SUBSCRIBE) $properties['$consent'] = ['email'];
 
         $propertiesVal = ['profiles' => $properties];
 
