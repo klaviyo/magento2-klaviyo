@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 
+### Fixed
+- Email consent now recorded when Klaviyo list opt-in settings are used
+
 ### [2.0.0] - 2021-01-11
 
 #### Added
