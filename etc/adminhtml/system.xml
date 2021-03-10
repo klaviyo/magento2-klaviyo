@@ -53,7 +53,48 @@
             </group>
         </section>
 
-        <section id="klaviyo_reclaim_user" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+        <section id="klaviyo_reclaim_consent_at_checkout" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Consent at Checkout</label>
+            <tab>klaviyo</tab>
+            <resource>Klaviyo_Reclaim::klaviyo_reclaim</resource>
+            <group id="email_consent" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Email</label>
+                <field id="is_active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Email Consent at Checkout</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>This will enable email consent at checkout</comment>
+                </field>
+                <field id="list_id" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>List to Sync Subscribers to at email consent</label>
+                    <source_model>Klaviyo\Reclaim\Model\Config\Source\ListOptions</source_model>
+                    <frontend_model>Klaviyo\Reclaim\Block\System\Config\Form\Field\Newsletter</frontend_model>
+                </field>
+                <field id="consent_text" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Subscribe to newsletter checkout text</label>
+                </field>
+            </group>
+            <group id="sms_consent" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>SMS</label>
+                <field id="is_active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable SMS Consent at Checkout</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>This will enable sms consent at checkout</comment>
+                </field>
+                <field id="list_id" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>List to Sync Subscribers to at sms consent</label>
+                    <source_model>Klaviyo\Reclaim\Model\Config\Source\ListOptions</source_model>
+                    <frontend_model>Klaviyo\Reclaim\Block\System\Config\Form\Field\Newsletter</frontend_model>
+                </field>
+                <field id="consent_text" translate="label comment" type="textarea" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Subscribe to newsletter checkout text</label>
+                </field>
+                <field id="sort_order" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sort Order</label>
+                </field>
+            </group>
+        </section>
+
+        <section id="klaviyo_reclaim_user" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Setup Klaviyo User</label>
             <tab>klaviyo</tab>
             <resource>Klaviyo_Reclaim::klaviyo_reclaim</resource>
@@ -71,7 +112,7 @@
                 </field>
             </group>
         </section>
-        <section id="klaviyo_reclaim_webhook" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+        <section id="klaviyo_reclaim_webhook" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Webhooks</label>
             <tab>klaviyo</tab>
             <resource>Klaviyo_Reclaim::klaviyo_reclaim</resource>
