@@ -28,7 +28,7 @@ define([
         saveShippingInformation: function() {
             var payload;
             var kl_sms_consent = $('[name="custom_attributes[kl_sms_consent]"]').is(':checked');
-            // var email_consent = $('[name="custom_attributes[email_consent]"]').val();
+            var kl_email_consent = $('[name="custom_attributes[kl_email_consent]"]').is(':checked');
 
             if(!quote.billingAddress()) {
                 selectBillingAddressAction(quote.shippingAddress());
@@ -42,13 +42,14 @@ define([
                     shipping_carrier_code: quote.shippingMethod().carrier_code,
                     extension_attributes: {
                         kl_sms_consent: kl_sms_consent,
-                        // email_consent: email_consent,
+                        kl_email_consent: kl_email_consent,
                     }
                 }
             };
 
             //TODO Remove
-            console.log('debug customvar', kl_sms_consent);
+            console.log('debug sms', kl_sms_consent);
+            console.log('debug email', kl_email_consent);
 
             fullScreenLoader.startLoader();
 

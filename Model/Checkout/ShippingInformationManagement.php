@@ -27,5 +27,6 @@ class ShippingInformationManagement
         $quote = $this->quoteRepository->getActive($cartId);
 
         $quote->setKlSmsConsent($extAttributes->getKlSmsConsent());
+        $quote->setKlEmailConsent($extAttributes->getKlEmailConsent());
     }
 }

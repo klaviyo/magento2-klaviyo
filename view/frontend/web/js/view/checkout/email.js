@@ -2,7 +2,7 @@ define([
   'uiComponent',
   'jquery',
   'domReady!'
-], function (Component) {
+], function (Component, $) {
   'use strict';
   // initialize the customerData prior to returning the component
   var _klaviyoCustomerData = window.customerData;
@@ -13,8 +13,18 @@ define([
       this._klaviyoCustomerData = _klaviyoCustomerData;
       this._email;
       this.handleCheckout();
+      this.displayNewsletter();
       return this;
     },
+  displayNewsletter: function() {
+      console.log('here');
+      document.getElementsByName('shippingAddress.custom_attributes.kl_email_consent')[0].style.display = 'none'
+
+      // if (this.isUserLoggedIn()) {
+        //     $('div[name="shippingAddress.custom_attributes.kl_email_consent"]').css('display', 'none');
+        // }
+
+  },
     handleCheckout: function () {
       if (this.isUserLoggedIn() && this._email) {
         this.postUserEmail(this._email);
@@ -39,7 +49,7 @@ define([
         if (!self.isKlaviyoActive()) {
           return;
         }
-        
+
         self._email = jQuery(this).val();
         if (!window._learnq.identify().email) {
           window._learnq.push(['identify', {
@@ -57,7 +67,7 @@ define([
 
       var url = window.location.protocol + '//' + window.location.host + path.substring(0, path.lastIndexOf("/"));
 
-      jQuery.ajax({
+      $.ajax({
         url: url + '/reclaim/checkout/email',
         method: 'POST',
         data: {

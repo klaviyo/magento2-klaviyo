@@ -48,7 +48,8 @@ class SaveOrderMarketingConsent implements ObserverInterface
         $order = $observer->getEvent()->getOrder();
         $quote = $observer->getEvent()->getQuote();
 
-        $order->setData('kl_sms_consent', json_encode($quote->getKlSmsConsent()));
+        $order->setData("kl_sms_consent", json_encode($quote->getKlSmsConsent()));
+        $order->setData("kl_email_consent", json_encode($quote->getKlEmailConsent()));
 
         $shippingInfo = $quote->getShippingAddress();
 
