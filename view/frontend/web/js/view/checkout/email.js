@@ -13,18 +13,8 @@ define([
       this._klaviyoCustomerData = _klaviyoCustomerData;
       this._email;
       this.handleCheckout();
-      this.displayNewsletter();
       return this;
     },
-  displayNewsletter: function() {
-      console.log('here');
-      document.getElementsByName('shippingAddress.custom_attributes.kl_email_consent')[0].style.display = 'none'
-
-      // if (this.isUserLoggedIn()) {
-        //     $('div[name="shippingAddress.custom_attributes.kl_email_consent"]').css('display', 'none');
-        // }
-
-  },
     handleCheckout: function () {
       if (this.isUserLoggedIn() && this._email) {
         this.postUserEmail(this._email);
