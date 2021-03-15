@@ -63,7 +63,7 @@ class CheckoutLayoutPlugin
                 'visible' => true,
                 'checked' => false,
                 'validation' => [],
-                'sortOrder' => 0,
+                'sortOrder' => $this->_klaviyoScopeSetting->getConsentAtCheckoutEmailConsentSortOrder(),
                 'id' => 'kl_email_consent',
             ];
 

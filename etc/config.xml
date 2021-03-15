@@ -27,5 +27,10 @@
                 <sort_order>200</sort_order>
             </sms_consent>
         </klaviyo_reclaim_consent_at_checkout>
+        <klaviyo_reclaim_consent_at_checkout>
+            <email_consent>
+                <sort_order>0</sort_order>
+            </email_consent>
+        </klaviyo_reclaim_consent_at_checkout>
     </default>
 </config>

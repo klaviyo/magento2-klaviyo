@@ -18,6 +18,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     const CONSENT_AT_CHECKOUT_EMAIL_IS_ACTIVE = 'klaviyo_reclaim_consent_at_checkout/email_consent/is_active';
     const CONSENT_AT_CHECKOUT_EMAIL_LIST_ID = 'klaviyo_reclaim_consent_at_checkout/email_consent/list_id';
     const CONSENT_AT_CHECKOUT_EMAIL_CONSENT_TEXT = 'klaviyo_reclaim_consent_at_checkout/email_consent/consent_text';
+    const CONSENT_AT_CHECKOUT_EMAIL_SORT_ORDER = 'klaviyo_reclaim_consent_at_checkout/email_consent/sort_order';
 
     const CONSENT_AT_CHECKOUT_SMS_IS_ACTIVE = 'klaviyo_reclaim_consent_at_checkout/sms_consent/is_active';
     const CONSENT_AT_CHECKOUT_SMS_LIST_ID = 'klaviyo_reclaim_consent_at_checkout/sms_consent/list_id';
@@ -228,6 +229,10 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     public function getConsentAtCheckoutEmailConsentText()
     {
         return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_EMAIL_CONSENT_TEXT);
+    }
+    public function getConsentAtCheckoutEmailConsentSortOrder()
+    {
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_EMAIL_SORT_ORDER);
     }
 
 

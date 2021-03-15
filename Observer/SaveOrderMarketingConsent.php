@@ -52,7 +52,7 @@ class SaveOrderMarketingConsent implements ObserverInterface
         $order->setData("kl_email_consent", json_encode($quote->getKlEmailConsent()));
 
         $shippingInfo = $quote->getShippingAddress();
-
+        $data = array("data" => array());
         if (
             $this->_klaviyoScopeSetting->getWebhookSecret()
             && $this->_klaviyoScopeSetting->getConsentAtCheckoutSMSIsActive()
