@@ -6,8 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 
-### Fixed
+#### Added
+- SMS Consent at checkout
+- Email consent at checkout
+- Concent at checkout admin tab
+
+#### Fixed
 - Email consent now recorded when Klaviyo list opt-in settings are used
+- Escaped html for public api key
 
 ### [2.0.0] - 2021-01-11
 

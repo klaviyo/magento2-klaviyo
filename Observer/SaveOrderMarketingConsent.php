@@ -52,27 +52,44 @@ class SaveOrderMarketingConsent implements ObserverInterface
         $order->setData("kl_email_consent", json_encode($quote->getKlEmailConsent()));
 
         $shippingInfo = $quote->getShippingAddress();
+        $webhookSecret = $this->_klaviyoScopeSetting->getWebhookSecret();
+        $updatedAt = $quote->getUpdatedAt();
+
         $data = array("data" => array());
+
         if (
-            $this->_klaviyoScopeSetting->getWebhookSecret()
+            $webhookSecret
             && $this->_klaviyoScopeSetting->getConsentAtCheckoutSMSIsActive()
         ) {
-            $data = array(
-                "data" => array(
-                    array(
-                        "customer" => array(
-                            "email" => $quote->getCustomerEmail(),
-                            "country" => $shippingInfo->getCountry(),
-                            "phone" => $shippingInfo->getTelephone(),
-                        ),
-                        "consent" => true,
-                        "consent_type" => "sms",
-                        "group_id" => $this->_klaviyoScopeSetting->getConsentAtCheckoutSMSListId(),
-                        "updated_at" => $quote->getUpdatedAt(),
-
-                    )
-                )
+            $data["data"][] = array(
+                "customer" => array(
+                    "email" => $quote->getCustomerEmail(),
+                    "country" => $shippingInfo->getCountry(),
+                    "phone" => $shippingInfo->getTelephone(),
+                ),
+                "consent" => true,
+                "consent_type" => "sms",
+                "group_id" => $this->_klaviyoScopeSetting->getConsentAtCheckoutSMSListId(),
+                "updated_at" => $quote->getUpdatedAt(),
             );
+        }
+        if (
+            $webhookSecret
+            && $this->_klaviyoScopeSetting->getConsentAtCheckoutEmailIsActive()
+        ) {
+            $data["data"][] = array(
+                "customer" => array(
+                    "email" => $quote->getCustomerEmail(),
+                    "phone" => $shippingInfo->getTelephone(),
+                ),
+                "consent" => true,
+                "consent_type" => "email",
+                "group_id" => $this->_klaviyoScopeSetting->getConsentAtCheckoutEmailListId(),
+                "updated_at" => $updatedAt,
+            );
+        }
+
+        if (count($data["data"]) > 0) {
             $this->_webhookHelper->makeWebhookRequest('custom/consent', $data);
         }
 
