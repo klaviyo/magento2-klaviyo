@@ -60,17 +60,17 @@
             <group id="email_consent" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Email</label>
                 <field id="is_active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Enable Email Consent at Checkout</label>
+                    <label>Subscribe contacts to email marketing at checkout</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>This will enable email consent at checkout</comment>
+                    <comment>Adds a checkbox to the checkout page for opt in</comment>
                 </field>
                 <field id="list_id" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>List to Sync Subscribers to at email consent</label>
+                    <label>Email list to sync</label>
                     <source_model>Klaviyo\Reclaim\Model\Config\Source\ListOptions</source_model>
-                    <frontend_model>Klaviyo\Reclaim\Block\System\Config\Form\Field\Newsletter</frontend_model>
+                    <frontend_model>Klaviyo\Reclaim\Block\System\Config\Form\Field\EmailConsent</frontend_model>
                 </field>
                 <field id="consent_text" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Subscribe to newsletter checkout text</label>
+                    <label>Email opt-in checkbox text</label>
                 </field>
                 <field id="sort_order" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Sort Order</label>
@@ -79,17 +79,17 @@
             <group id="sms_consent" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>SMS</label>
                 <field id="is_active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Enable SMS Consent at Checkout</label>
+                    <label>Subscribe contacts to SMS marketing at checkout</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>This will enable sms consent at checkout</comment>
                 </field>
                 <field id="list_id" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>List to Sync Subscribers to at sms consent</label>
+                    <label>SMS list to sync</label>
                     <source_model>Klaviyo\Reclaim\Model\Config\Source\ListOptions</source_model>
-                    <frontend_model>Klaviyo\Reclaim\Block\System\Config\Form\Field\Newsletter</frontend_model>
+                    <frontend_model>Klaviyo\Reclaim\Block\System\Config\Form\Field\EmailConsent</frontend_model>
                 </field>
                 <field id="consent_text" translate="label comment" type="textarea" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Subscribe to newsletter checkout text</label>
+                    <label>SMS consent text</label>
                 </field>
                 <field id="sort_order" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Sort Order</label>

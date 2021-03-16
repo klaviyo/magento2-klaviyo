@@ -47,10 +47,6 @@ define([
                 }
             };
 
-            //TODO Remove
-            console.log('debug sms', kl_sms_consent);
-            console.log('debug email', kl_email_consent);
-
             fullScreenLoader.startLoader();
 
             return storage.post(
