@@ -136,7 +136,7 @@
             <resource>Klaviyo_Reclaim::klaviyo_reclaim</resource>
             <group id="klaviyo_oauth" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Setup Oauth</label>
-                <field id="integration_name" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" required="true">
+                <field id="integration_name" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Integration Name</label>
                     <validate>required-entry validate-no-empty</validate>
                 </field>
