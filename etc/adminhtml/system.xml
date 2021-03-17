@@ -139,12 +139,11 @@
                 <field id="integration_name" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" required="true">
                     <label>Integration Name</label>
                     <validate>required-entry validate-no-empty</validate>
-
                 </field>
             </group>
         </section>
-        
-        <section id="klaviyo_reclaim_webhook" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+
+        <section id="klaviyo_reclaim_webhook" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Webhooks</label>
             <tab>klaviyo</tab>
             <resource>Klaviyo_Reclaim::klaviyo_reclaim</resource>

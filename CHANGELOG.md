@@ -4,13 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-### [2.2.0] - 2021-04-21
+### [Unreleased]
+
+### [3.0.3] - 2021-06-01
 
 #### Added
-
 - OAuth observer to create Magento2 Integration OAuth configuration
 
+### Removed
+- Section about Setup Klaviyo User
+
 ### [3.0.2] - 2021-05-26
+
 #### Fixed
 - Missing quote in module
 
@@ -32,7 +37,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Fixes
 - Update checkout to not use quote for rebuilding
-
 
 ### [2.1.1] - 2021-05-17
 
@@ -83,8 +87,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CSP now uses report-only mode
 
 
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.2...HEAD
-[3.0.1]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.1...3.0.2
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.3...HEAD
+[3.0.3]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.2...3.0.3
+[3.0.2]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.1...3.0.2
 [3.0.1]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.0...3.0.1
 [3.0.0]: https://github.com/klaviyo/magento2-klaviyo/compare/2.2.0...3.0.0
 [2.2.0]: https://github.com/klaviyo/magento2-klaviyo/compare/2.1.1...2.2.0

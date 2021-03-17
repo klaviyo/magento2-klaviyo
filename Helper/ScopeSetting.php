@@ -27,10 +27,6 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     const CONSENT_AT_CHECKOUT_SMS_LABEL_TEXT = 'klaviyo_reclaim_consent_at_checkout/sms_consent/label_text';
 
     const KLAVIYO_NAME_DEFAULT = 'klaviyo';
-    const KLAVIYO_USERNAME = 'klaviyo_reclaim_user/klaviyo_user/username';
-    const KLAVIYO_PASSWORD = 'klaviyo_reclaim_user/klaviyo_user/password';
-    const KLAVIYO_EMAIL = 'klaviyo_reclaim_user/klaviyo_user/email';
-
 
     const WEBHOOK_SECRET = 'klaviyo_reclaim_webhook/klaviyo_webhooks/webhook_secret';
     const PRODUCT_DELETE_BEFORE = 'klaviyo_reclaim_webhook/klaviyo_webhooks/using_product_delete_before_webhook';
@@ -170,36 +166,6 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     public function isLoggerEnabled()
     {
         return $this->getScopeSetting(self::USING_KLAVIYO_LOGGER);
-    }
-
-    public function getKlaviyoUsername()
-    {
-        return $this->getScopeSetting(self::KLAVIYO_USERNAME);
-    }
-
-    public function unsetKlaviyoUsername()
-    {
-        return $this->setScopeSetting(self::KLAVIYO_USERNAME, self::KLAVIYO_NAME_DEFAULT);
-    }
-
-    public function getKlaviyoPassword()
-    {
-        return $this->getScopeSetting(self::KLAVIYO_PASSWORD);
-    }
-
-    public function unsetKlaviyoPassword()
-    {
-        return $this->setScopeSetting(self::KLAVIYO_PASSWORD, '');
-    }
-
-    public function getKlaviyoEmail()
-    {
-        return $this->getScopeSetting(self::KLAVIYO_EMAIL);
-    }
-
-    public function unsetKlaviyoEmail()
-    {
-        return $this->setScopeSetting(self::KLAVIYO_EMAIL, '');
     }
 
     public function getKlaviyoOauthName()
