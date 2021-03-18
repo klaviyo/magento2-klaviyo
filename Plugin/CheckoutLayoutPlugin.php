@@ -57,13 +57,12 @@ class CheckoutLayoutPlugin
                     'id' => 'kl_email_consent',
                 ],
                 'dataScope' => 'shippingAddress.custom_attributes.kl_email_consent',
-                'label' => $this->_klaviyoScopeSetting->getConsentAtCheckoutEmailConsentLabelText(),
-                'description' => $this->_klaviyoScopeSetting->getConsentAtCheckoutEmailConsentText(),
+                'description' => $this->_klaviyoScopeSetting->getConsentAtCheckoutEmailText(),
                 'provider' => 'checkoutProvider',
                 'visible' => true,
                 'checked' => false,
                 'validation' => [],
-                'sortOrder' => $this->_klaviyoScopeSetting->getConsentAtCheckoutEmailConsentSortOrder(),
+                'sortOrder' => $this->_klaviyoScopeSetting->getConsentAtCheckoutEmailSortOrder(),
                 'id' => 'kl_email_consent',
             ];
 
