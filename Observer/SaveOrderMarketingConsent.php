@@ -59,6 +59,7 @@ class SaveOrderMarketingConsent implements ObserverInterface
 
         if (
             $webhookSecret
+            && $quote->getKlSmsConsent()
             && $this->_klaviyoScopeSetting->getConsentAtCheckoutSMSIsActive()
         ) {
             $data["data"][] = array(
@@ -75,6 +76,7 @@ class SaveOrderMarketingConsent implements ObserverInterface
         }
         if (
             $webhookSecret
+            && $quote->getKlEmailConsent()
             && $this->_klaviyoScopeSetting->getConsentAtCheckoutEmailIsActive()
         ) {
             $data["data"][] = array(
