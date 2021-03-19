@@ -42,6 +42,7 @@
                 <label>Newsletter</label>
                 <field id="newsletter" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>List to Sync Subscribers</label>
+                    <comment>Sync subscribers from Magento forms and account opt-ins to a Klaviyo list</comment>
                     <source_model>Klaviyo\Reclaim\Model\Config\Source\ListOptions</source_model>
                     <frontend_model>Klaviyo\Reclaim\Block\System\Config\Form\Field\Newsletter</frontend_model>
                 </field>
@@ -83,7 +84,7 @@
                 <field id="is_active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Subscribe contacts to SMS marketing at checkout</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Adds a checkbox to the checkout page for SMS opt in</comment>
+                    <comment><![CDATA[Adds a checkbox to the checkout page for SMS opt in. <a target="_blank" href="https://help.klaviyo.com/hc/en-us/articles/360039190611-On-Demand-Training-Getting-Started-with-Klaviyo-SMS">Set up SMS in Klaviyo</a>]]></comment>
                 </field>
                 <field id="list_id" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>SMS list to sync</label>
