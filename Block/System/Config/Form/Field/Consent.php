@@ -2,7 +2,7 @@
 namespace Klaviyo\Reclaim\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 
-class EmailConsent extends \Magento\Config\Block\System\Config\Form\Field
+class Consent extends \Magento\Config\Block\System\Config\Form\Field
 {
     protected function _getElementHtml(AbstractElement $element)
     {

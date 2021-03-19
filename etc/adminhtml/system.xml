@@ -68,7 +68,8 @@
                 <field id="list_id" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Email list to sync</label>
                     <source_model>Klaviyo\Reclaim\Model\Config\Source\ListOptions</source_model>
-                    <frontend_model>Klaviyo\Reclaim\Block\System\Config\Form\Field\EmailConsent</frontend_model>
+                    <frontend_model>Klaviyo\Reclaim\Block\System\Config\Form\Field\Consent</frontend_model>
+                    <validate>validate-length minimum-length-5</validate>
                     <depends>
                         <field id="is_active">1</field>
                     </depends>
@@ -98,7 +99,8 @@
                 <field id="list_id" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>SMS list to sync</label>
                     <source_model>Klaviyo\Reclaim\Model\Config\Source\ListOptions</source_model>
-                    <frontend_model>Klaviyo\Reclaim\Block\System\Config\Form\Field\EmailConsent</frontend_model>
+                    <frontend_model>Klaviyo\Reclaim\Block\System\Config\Form\Field\Consent</frontend_model>
+                    <validate>validate-length minimum-length-5</validate>
                     <depends>
                         <field id="is_active">1</field>
                     </depends>
