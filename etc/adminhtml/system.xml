@@ -72,6 +72,7 @@
                 <field id="consent_text" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Email opt-in checkbox text</label>
                     <comment>This is the text that will appear next to the checkbox for email marketing</comment>
+                    <validate>required-entry no-whitespace</validate>
                 </field>
                 <field id="sort_order" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Sort Order</label>
@@ -92,9 +93,11 @@
                 <field id="label_text" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>SMS opt-in checkbox text</label>
                     <comment>This is the text that will appear next to the checkbox for SMS marketing</comment>
+                    <validate>required-entry no-whitespace</validate>
                 </field>
                 <field id="consent_text" translate="label comment" type="textarea" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>SMS consent text</label>
+                    <validate>required-entry no-whitespace</validate>
                 </field>
                 <field id="sort_order" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Sort Order</label>
