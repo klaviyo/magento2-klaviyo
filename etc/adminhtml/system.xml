@@ -97,8 +97,8 @@
                 </field>
                 <field id="consent_text" translate="label comment" type="textarea" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>SMS disclosure text</label>
-                    <comment>You must include disclosure language for TCPA compliance. You should also update your Terms of Service and Privacy Policy to include the terms of your SMS marketing program.
-                        And link to help center article to “Learn more about SMS consent and compliance” - https://help.klaviyo.com/hc/en-us/articles/360035055312-About-US-SMS-Compliance-Laws</comment>
+                    <comment><![CDATA[You must include disclosure language for TCPA compliance. You should also update your Terms of Service and Privacy Policy to include the terms of your SMS marketing program.
+                        And link to help center article to <a target="_blank" href="https://help.klaviyo.com/hc/en-us/articles/360035055312-About-US-SMS-Compliance-Laws">“Learn more about SMS consent and compliance”</a>]]></comment>
                     <validate>required-entry</validate>
                 </field>
                 <field id="sort_order" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
