@@ -39,7 +39,7 @@
         </klaviyo_reclaim_consent_at_checkout>
         <klaviyo_reclaim_consent_at_checkout>
             <sms_consent>
-                <label_text>Subscribe for SMS updates</label_text>
+                <label_text>Subscribe for SMS updates**</label_text>
             </sms_consent>
         </klaviyo_reclaim_consent_at_checkout>
     </default>
