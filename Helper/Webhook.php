@@ -71,7 +71,6 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
 
         // Close cURL session handle
         curl_close($curl);
-
         return $response;
     }
 

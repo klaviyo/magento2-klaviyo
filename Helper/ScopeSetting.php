@@ -15,6 +15,17 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     const API_MEMBERS = '/members';
     const API_SUBSCRIBE = '/subscribe';
 
+    const CONSENT_AT_CHECKOUT_EMAIL_IS_ACTIVE = 'klaviyo_reclaim_consent_at_checkout/email_consent/is_active';
+    const CONSENT_AT_CHECKOUT_EMAIL_LIST_ID = 'klaviyo_reclaim_consent_at_checkout/email_consent/list_id';
+    const CONSENT_AT_CHECKOUT_EMAIL_CONSENT_TEXT = 'klaviyo_reclaim_consent_at_checkout/email_consent/consent_text';
+    const CONSENT_AT_CHECKOUT_EMAIL_SORT_ORDER = 'klaviyo_reclaim_consent_at_checkout/email_consent/sort_order';
+
+    const CONSENT_AT_CHECKOUT_SMS_IS_ACTIVE = 'klaviyo_reclaim_consent_at_checkout/sms_consent/is_active';
+    const CONSENT_AT_CHECKOUT_SMS_LIST_ID = 'klaviyo_reclaim_consent_at_checkout/sms_consent/list_id';
+    const CONSENT_AT_CHECKOUT_SMS_CONSENT_TEXT = 'klaviyo_reclaim_consent_at_checkout/sms_consent/consent_text';
+    const CONSENT_AT_CHECKOUT_SMS_SORT_ORDER = 'klaviyo_reclaim_consent_at_checkout/sms_consent/sort_order';
+    const CONSENT_AT_CHECKOUT_SMS_LABEL_TEXT = 'klaviyo_reclaim_consent_at_checkout/sms_consent/label_text';
+
     const KLAVIYO_NAME_DEFAULT = 'klaviyo';
     const KLAVIYO_USERNAME = 'klaviyo_reclaim_user/klaviyo_user/username';
     const KLAVIYO_PASSWORD = 'klaviyo_reclaim_user/klaviyo_user/password';
@@ -206,6 +217,47 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
             return self::API_MEMBERS;
         }
     }
+
+
+    public function getConsentAtCheckoutEmailIsActive()
+    {
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_EMAIL_IS_ACTIVE);
+    }
+    public function getConsentAtCheckoutEmailListId()
+    {
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_EMAIL_LIST_ID);
+    }
+    public function getConsentAtCheckoutEmailText()
+    {
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_EMAIL_CONSENT_TEXT);
+    }
+    public function getConsentAtCheckoutEmailSortOrder()
+    {
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_EMAIL_SORT_ORDER);
+    }
+
+
+    public function getConsentAtCheckoutSMSIsActive()
+    {
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_IS_ACTIVE);
+    }
+    public function getConsentAtCheckoutSMSListId()
+    {
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_LIST_ID);
+    }
+    public function getConsentAtCheckoutSMSConsentText()
+    {
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_CONSENT_TEXT);
+    }
+    public function getConsentAtCheckoutSMSConsentSortOrder()
+    {
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_SORT_ORDER);
+    }
+    public function getConsentAtCheckoutSMSConsentLabelText()
+    {
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_LABEL_TEXT);
+    }
+
 
     /**
      * This maps a klaviyo account to all the store ids it's scoped to.

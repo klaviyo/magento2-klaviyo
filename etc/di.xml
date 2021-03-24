@@ -15,4 +15,7 @@
             </argument>
         </arguments>
     </type>
+    <type name="Magento\Checkout\Model\ShippingInformationManagement">
+        <plugin name="save-sms-consent" type="Klaviyo\Reclaim\Model\Checkout\ShippingInformationManagement" sortOrder="10"/>
+    </type>
 </config>

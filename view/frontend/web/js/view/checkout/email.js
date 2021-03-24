@@ -2,7 +2,7 @@ define([
   'uiComponent',
   'jquery',
   'domReady!'
-], function (Component) {
+], function (Component, $) {
   'use strict';
   // initialize the customerData prior to returning the component
   var _klaviyoCustomerData = window.customerData;
@@ -39,7 +39,7 @@ define([
         if (!self.isKlaviyoActive()) {
           return;
         }
-        
+
         self._email = jQuery(this).val();
         if (!window._learnq.identify().email) {
           window._learnq.push(['identify', {
@@ -57,7 +57,7 @@ define([
 
       var url = window.location.protocol + '//' + window.location.host + path.substring(0, path.lastIndexOf("/"));
 
-      jQuery.ajax({
+      $.ajax({
         url: url + '/reclaim/checkout/email',
         method: 'POST',
         data: {

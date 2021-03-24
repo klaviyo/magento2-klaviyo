@@ -6,8 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 
-### Fixed
+### [2.1.0] - 2021-03-22
+
+#### Added
+- SMS Consent at checkout
+- Email consent at checkout
+- Consent at checkout admin tab
+
+#### Fixed
 - Email consent now recorded when Klaviyo list opt-in settings are used
+- Escaped html for public api key
 
 ### [2.0.0] - 2021-01-11
 
@@ -41,7 +49,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CSP now uses report-only mode
 
 
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/2.0.0...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/2.1.0...HEAD
+[2.0.0]: https://github.com/klaviyo/magento2-klaviyo/compare/2.0.0...2.1.0
 [2.0.0]: https://github.com/klaviyo/magento2-klaviyo/compare/1.2.4...2.0.0
 [1.2.4]: https://github.com/klaviyo/magento2-klaviyo/compare/1.2.3...1.2.4
 [1.2.3]: https://github.com/klaviyo/magento2-klaviyo/compare/1.2.2...1.2.3

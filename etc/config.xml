@@ -17,5 +17,30 @@
                 <webhook_secret backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
             </klaviyo_webhooks>
         </klaviyo_reclaim_webhook>
+        <klaviyo_reclaim_consent_at_checkout>
+            <email_consent>
+                <consent_text>Subscribe for email updates</consent_text>
+            </email_consent>
+        </klaviyo_reclaim_consent_at_checkout>
+        <klaviyo_reclaim_consent_at_checkout>
+            <sms_consent>
+                <consent_text>**By checking this box and entering your phone number above, you consent to receive marketing text messages at the number provided from [company name], including messages sent by autodialer. Consent is not a condition of any purchase. Message and data rates may apply. Message frequency varies. Reply HELP for help or STOP to cancel. View our Privacy Policy and Terms of Service.</consent_text>
+            </sms_consent>
+        </klaviyo_reclaim_consent_at_checkout>
+        <klaviyo_reclaim_consent_at_checkout>
+            <sms_consent>
+                <sort_order>200</sort_order>
+            </sms_consent>
+        </klaviyo_reclaim_consent_at_checkout>
+        <klaviyo_reclaim_consent_at_checkout>
+            <email_consent>
+                <sort_order>0</sort_order>
+            </email_consent>
+        </klaviyo_reclaim_consent_at_checkout>
+        <klaviyo_reclaim_consent_at_checkout>
+            <sms_consent>
+                <label_text>Subscribe for SMS updates**</label_text>
+            </sms_consent>
+        </klaviyo_reclaim_consent_at_checkout>
     </default>
 </config>
