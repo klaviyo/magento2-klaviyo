@@ -54,8 +54,8 @@ class ProductDeleteBefore implements ObserverInterface
     public function execute(Observer $observer)
     {
         $product = $observer->getEvent()->getProduct();
-        $websiteIds = $product->getWebsiteIds();
-        $storeIdKlaviyoMap = $this->_klaviyoScopeSetting->getStoreIdKlaviyoAccountSetMap($websiteIds);
+        $storeIds = $product->getStoreIds();
+        $storeIdKlaviyoMap = $this->_klaviyoScopeSetting->getStoreIdKlaviyoAccountSetMap($storeIds);
 
         foreach ($storeIdKlaviyoMap as $klaviyoId => $storeIds) {
             if (empty($storeIds)) {
@@ -72,5 +72,3 @@ class ProductDeleteBefore implements ObserverInterface
         }
     }
 }
-
-

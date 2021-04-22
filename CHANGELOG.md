@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 
+### [2.1.1] - 2021-04-21
+
+#### Fixes
+- Use store ids instead of website ids in the ProductDeleteBefore Observer
+
 ### [2.1.0] - 2021-03-22
 
 #### Added
@@ -55,6 +60,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [1.2.4]: https://github.com/klaviyo/magento2-klaviyo/compare/1.2.3...1.2.4
 [1.2.3]: https://github.com/klaviyo/magento2-klaviyo/compare/1.2.2...1.2.3
 
-  
+
 #### NOTE
 - The CHANGELOG was created on 2020-11-20 and does not contain information about earlier releases
