@@ -71,6 +71,7 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
 
         if ($err) {
             $this->_klaviyoLogger->log(sprintf('Unable to send webhook to %s with data: %s', $url, json_encode($data)));
+            $this->_klaviyoLogger->log(sprintf('Error %s json encoded as: %s', $err, json_encode($err)));
         } else {
             $this->_klaviyoLogger->log($response);
         }

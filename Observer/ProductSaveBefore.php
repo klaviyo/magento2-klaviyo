@@ -29,8 +29,7 @@ class ProductSaveBefore implements ObserverInterface
     /**
      * @var Webhook $webhookHelper
      */
-    protected  $_webhookHelper;
-
+    protected $_webhookHelper;
     protected $_categoryFactory;
     protected $product_category_names = [];
 
@@ -64,7 +63,7 @@ class ProductSaveBefore implements ObserverInterface
     {
         $product = $observer->getEvent()->getProduct();
         $product_type = $product->getTypeId();
-        if ($product_type == 'grouped' || $product_type == 'bundle' || $product_type == 'downloadable' || $product_type == 'virtual') {
+        if ($product_type == 'grouped' || $product_type == 'bundle' || $product_type == 'downloadable') {
           return;
         }
 
@@ -78,6 +77,8 @@ class ProductSaveBefore implements ObserverInterface
 
             if ($this->_klaviyoScopeSetting->getWebhookSecret() && $this->_klaviyoScopeSetting->getProductSaveBeforeSetting($storeIds[0])) {
 
+              $product_id = $product->getId();
+
               $product_category_ids = $product->getCategoryIds();
               $cat_factory = $this->_categoryFactory->create();
               foreach ($product_category_ids as $category_id) {
@@ -85,28 +86,47 @@ class ProductSaveBefore implements ObserverInterface
                 $this->categories[] = $category->getName();
               }
 
-              $data = array (
-                  'store_ids' => $storeIds,
-                  'id' => $product->getId(),
-                  'title' => $product->getName(),
-                  'price' => $product->getPrice(),
-                  'special_price' => $product->getSpecialPrice(),
-                  'special_from_date' => $product->getSpecialFromDate(),
-                  'special_to_date' => $product->getSpecialToDate(),
-                  'categories' => $this->categories,
-                  'sku' => $product->getSku(),
-                  'qty' => $product->getExtensionAttributes()->getStockItem()->getQty(),
-                  'visibility' => $product->getVisibility(),
-                  'isInStock' => $product->isInStock(),
-                  'createdAt' => $product->getCreatedAt(),
-                  'updatedAt' => $product->getUpdatedAt(),
-                  'status' => $product->getStatus(),
-                  'url' => $product->getUrlKey(),
-                  'image_url' => $product->getImage(),
-                  'image_thumbnail' => $product->getThumbnail()
-              );
+            $metadata = array(
+              'price' => $product->getPrice(),
+              'sku' => $product->getSku()
+            );
 
-              // If Item Visibility is 1 DON'T SEND THAT SHIT?? or do and unpublish?
+            if ($product->getSpecialPrice()) {
+              $metadata['special_price'] = $product->getSpecialPrice();
+              $metadata['special_from_date'] = $product->getSpecialFromDate();
+              $metadata['special_to_date'] = $product->getSpecialToDate();
+
+            }
+
+            $data = array(
+              'store_ids' => $storeIds,
+              'product_id' => $product_id,
+              'product_type' => $product_type,
+              'title' => $product->getName(),
+              'metadata' => $metadata,
+              'categories' => $this->categories,
+              'qty' => $product->getExtensionAttributes()->getStockItem()->getQty(),
+              'visibility' => $product->getVisibility(),
+              'isInStock' => $product->isInStock(),
+              'createdAt' => $product->getCreatedAt(),
+              'updatedAt' => $product->getUpdatedAt(),
+              'status' => $product->getStatus(),
+              'image_url_path' => $product->getImage(),
+              'image_thumbnail_path' => $product->getThumbnail()
+            );
+
+            if ($product_type == 'simple') {
+              $parent_product = $product->getTypeInstance()->getParentIdsByChild($product_id);
+              $data['parent_product'] = $parent_product;
+            } elseif ($product_type == 'configurable') {
+              $get_used_products = $product->getTypeInstance()->getUsedProducts($product);
+              foreach ($get_used_products as $simple_prod) {
+                $this->_klaviyoLogger->log('configurable product saved');
+                $simple_id = $simple_prod->getId();
+                $this->_klaviyoLogger->log(sprintf('Simple product: %s %s', $simple_id, json_encode($simple_prod)));
+              }
+            }
+
 
               $this->_webhookHelper->makeWebhookRequest('product/save', $data, $klaviyoId);
             }
