@@ -2,7 +2,7 @@
 
 namespace Klaviyo\Reclaim\Controller\Checkout;
 
-use Magento\Quote\Model\quoteIdMaskFactory;
+use ;
 
 class Cart extends \Magento\Framework\App\Action\Action
 {
@@ -20,7 +20,7 @@ class Cart extends \Magento\Framework\App\Action\Action
         \Magento\Checkout\Model\Cart $cart,
         \Magento\Framework\App\Action\Context $context,
         \Magento\Quote\Model\QuoteRepository $quoteRepository,
-        quoteIdMaskFactory $quoteIdMaskFactory
+        Magento\Quote\Model\quoteIdMaskFactory $quoteIdMaskFactory
     ) {
         $this->quoteRepository = $quoteRepository;
         $this->resultRedirectFactory = $context->getResultRedirectFactory();
