@@ -15,6 +15,7 @@
         "optimize-autoloader": true
     },
     "require": {
+        "magento/module-quote": ">=101.1.0",
         "ext-curl": "*"
     }
 }
