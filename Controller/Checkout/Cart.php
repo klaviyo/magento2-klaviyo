@@ -40,7 +40,7 @@ class Cart extends \Magento\Framework\App\Action\Action
     public function execute()
     {
         $params = $this->request->getParams();
-        $quoteId = isset($params["quote_id"]) ? $params['quote_id'] : "";
+        $quoteId = isset($params['quote_id']) ? $params['quote_id'] : "";
 
         unset($params['quote_id']);
 
