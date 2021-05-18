@@ -6,9 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 
+#### Fixed
+- Utilize masked quote ids.
+- Extend cart/search getList api to contain masked Ids.
+
 ### [2.1.1] - 2021-05-17
 
-#### Fixes
+#### Fixed
 - Use store ids instead of website ids in the ProductDeleteBefore Observer
 - Check for versions older than 2.0.0 in UpgradeSchema
 
