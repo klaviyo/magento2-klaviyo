@@ -2,7 +2,6 @@
 
 namespace Klaviyo\Reclaim\Controller\Checkout;
 
-use ;
 
 class Cart extends \Magento\Framework\App\Action\Action
 {
