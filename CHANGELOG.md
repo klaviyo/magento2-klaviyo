@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 
-### [2.2.0] - 2021-05-18
+### [3.0.0] - 2021-05-18
 
 #### Added
 - Only support Magento 2.3.* + 
@@ -64,8 +64,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CSP now uses report-only mode
 
 
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/2.2.0...HEAD
-[2.2.0]: https://github.com/klaviyo/magento2-klaviyo/compare/2.1.1...2.2.0
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.0...HEAD
+[2.2.0]: https://github.com/klaviyo/magento2-klaviyo/compare/2.1.1...3.0.0
 [2.1.1]: https://github.com/klaviyo/magento2-klaviyo/compare/2.1.0...2.1.1
 [2.1.0]: https://github.com/klaviyo/magento2-klaviyo/compare/2.0.0...2.1.0
 [2.0.0]: https://github.com/klaviyo/magento2-klaviyo/compare/1.2.4...2.0.0
