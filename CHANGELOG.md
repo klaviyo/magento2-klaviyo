@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Added
 - OAuth observer to create Magento2 Integration OAuth configuration
 
-### Removed
+#### Removed
 - Section about Setup Klaviyo User
 
 ### [3.0.2] - 2021-05-26
