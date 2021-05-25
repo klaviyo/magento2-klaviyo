@@ -32,15 +32,6 @@ class Cart extends \Magento\Framework\App\Action\Action
     public function execute()
     {
         $params = $this->request->getParams();
-        $quoteId = isset($params['quote_id']) ? $params['quote_id'] : 0;
-        unset($params['quote_id']);
-
-        try {
-          $quote = $this->quoteRepository->get($quoteId);
-          $this->cart->setQuote($quote);
-          $this->cart->save();
-        } catch (\Magento\Framework\Exception\NoSuchEntityException $ex) {
-        }
 
         $redirect = $this->resultRedirectFactory->create();
         $redirect->setPath('checkout/cart', ['_query' => $params]);
