@@ -6,14 +6,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 
+### [3.0.0] - 2021-05-25
+
+#### Added
+- Only support Magento 2.3.* + 
+
+#### Fixed
+- Utilize masked quote ids.
+- Extend cart/search getList api to contain masked Ids.
+
 ### [2.2.0] - 2021-05-17
 
 #### Fixes
 - Update checkout to not use quote for rebuilding
 
+
 ### [2.1.1] - 2021-05-17
 
-#### Fixes
+#### Fixed
 - Use store ids instead of website ids in the ProductDeleteBefore Observer
 - Check for versions older than 2.0.0 in UpgradeSchema
 
@@ -60,7 +70,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CSP now uses report-only mode
 
 
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/2.1.1...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.0...HEAD
+[3.0.0]: https://github.com/klaviyo/magento2-klaviyo/compare/2.2.0...3.0.0
+[2.2.0]: https://github.com/klaviyo/magento2-klaviyo/compare/2.1.1...2.2.0
 [2.1.1]: https://github.com/klaviyo/magento2-klaviyo/compare/2.1.0...2.1.1
 [2.1.0]: https://github.com/klaviyo/magento2-klaviyo/compare/2.0.0...2.1.0
 [2.0.0]: https://github.com/klaviyo/magento2-klaviyo/compare/1.2.4...2.0.0
