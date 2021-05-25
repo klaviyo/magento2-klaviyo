@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 
-### [3.0.0] - 2021-05-18
+### [3.0.0] - 2021-05-25
 
 #### Added
 - Only support Magento 2.3.* + 
@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Fixed
 - Utilize masked quote ids.
 - Extend cart/search getList api to contain masked Ids.
+
+### [2.2.0] - 2021-05-17
+
+#### Fixes
+- Update checkout to not use quote for rebuilding
+
 
 ### [2.1.1] - 2021-05-17
 
@@ -65,7 +71,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 [Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.0...HEAD
-[2.2.0]: https://github.com/klaviyo/magento2-klaviyo/compare/2.1.1...3.0.0
+[3.0.0]: https://github.com/klaviyo/magento2-klaviyo/compare/2.2.0...3.0.0
+[2.2.0]: https://github.com/klaviyo/magento2-klaviyo/compare/2.1.1...2.2.0
 [2.1.1]: https://github.com/klaviyo/magento2-klaviyo/compare/2.1.0...2.1.1
 [2.1.0]: https://github.com/klaviyo/magento2-klaviyo/compare/2.0.0...2.1.0
 [2.0.0]: https://github.com/klaviyo/magento2-klaviyo/compare/1.2.4...2.0.0
