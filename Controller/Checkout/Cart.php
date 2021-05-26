@@ -19,7 +19,7 @@ class Cart extends \Magento\Framework\App\Action\Action
         \Magento\Checkout\Model\Cart $cart,
         \Magento\Framework\App\Action\Context $context,
         \Magento\Quote\Model\QuoteRepository $quoteRepository,
-        \Magento\Quote\Model\quoteIdMaskFactory $quoteIdMaskFactory
+        \Magento\Quote\Model\QuoteIdMaskFactory $quoteIdMaskFactory
     ) {
         $this->quoteRepository = $quoteRepository;
         $this->resultRedirectFactory = $context->getResultRedirectFactory();
