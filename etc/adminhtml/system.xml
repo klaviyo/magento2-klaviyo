@@ -26,7 +26,7 @@
                     <label>Custom Media URL</label>
                     <validate>validate-url</validate>
                 </field>
-                <field id="logger" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="logger" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Klaviyo Logger</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Log file is located under the standard log directory for your Magento app install. By default this will be {magento-root-directory}/var/log/klaviyo.log</comment>
@@ -46,7 +46,7 @@
                     <source_model>Klaviyo\Reclaim\Model\Config\Source\ListOptions</source_model>
                     <frontend_model>Klaviyo\Reclaim\Block\System\Config\Form\Field\Newsletter</frontend_model>
                 </field>
-                <field id="using_klaviyo_list_opt_in" translate="label" type="radios" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="using_klaviyo_list_opt_in" translate="label comment" type="radios" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Use Klaviyo Opt-In Settings For This List?</label>
                     <source_model>Klaviyo\Reclaim\Model\Config\Source\Radiobtn</source_model>
                     <comment>NOTE: There is a separate Magento opt-in setting for this list that can also send opt-in emails</comment>
@@ -60,7 +60,7 @@
             <resource>Klaviyo_Reclaim::klaviyo_reclaim</resource>
             <group id="email_consent" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Email</label>
-                <field id="is_active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="is_active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Subscribe contacts to email marketing at checkout</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Adds a checkbox to the checkout page for email opt in</comment>
@@ -91,7 +91,7 @@
             </group>
             <group id="sms_consent" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>SMS</label>
-                <field id="is_active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="is_active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Subscribe contacts to SMS marketing at checkout</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[Adds a checkbox to the checkout page for SMS opt in. <a target="_blank" href="https://help.klaviyo.com/hc/en-us/articles/360039190611-On-Demand-Training-Getting-Started-with-Klaviyo-SMS">Set up SMS in Klaviyo</a>]]></comment>
@@ -158,7 +158,7 @@
                     <label>Webhook Secret</label>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
-                <field id="using_product_delete_before_webhook" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="using_product_delete_before_webhook" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Use Product Delete Webhook?</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>This will remove deleted products from the Klaviyo catalog.</comment>
