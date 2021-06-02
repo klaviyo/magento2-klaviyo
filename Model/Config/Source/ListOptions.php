@@ -53,7 +53,7 @@ class ListOptions implements \Magento\Framework\Option\ArrayInterface
         }, $result['lists']);
 
         $default_value = [
-            self::LABEL => 'Select a list...',
+            self::LABEL => __('Select a list...'),
             self::VALUE => 0
         ];
         array_unshift($options, $default_value);
