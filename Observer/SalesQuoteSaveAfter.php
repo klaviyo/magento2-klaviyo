@@ -67,10 +67,10 @@ class SalesQuoteSaveAfter implements ObserverInterface
         if ( !isset( $public_key ) ) { return; }
 
         $kl_decoded_cookie = json_decode( base64_decode( $_COOKIE['__kla_id'] ), true );
-        if ( !isset( $kl_decoded_cookie ) ) { return; };
+        if ( !isset( $kl_decoded_cookie ) ) { return; }
 
         $kl_user_properties = array( '$email' => $kl_decoded_cookie['$email'] );
-        if ( !isset( $kl_user_properties['$email'] ) ) { return; };
+        if ( !isset( $kl_user_properties['$email'] ) ) { return; }
 
         $quote = $observer->getData('quote');
         $maskedQuoteId = $this->_cartSearchRepository->getMaskedIdFromQuoteId( $quote->getId() );

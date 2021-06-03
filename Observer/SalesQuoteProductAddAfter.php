@@ -66,16 +66,17 @@ class SalesQuoteProductAddAfter implements ObserverInterface
      */
     public function klAddedToCartItemData( $quote, $addedItem )
     {
+        $addedProduct = $addedItem->getProduct();
         $addedItemData = array(
-            'AddedItemCategories' => (array) $this->getCategoryName( $addedItem->getProduct()->getCategoryIds() ),
-            'AddedItemDescription' => (string) $addedItem->get_description(),
-            'AddedItemImageUrlKey' => (string) $addedItem->getProduct()->getData('small_image'),
-            'AddedItemPrice' => (float) $addedItem->getProduct()->get_price(),
+            'AddedItemCategories' => (array) $this->getCategoryName( $addedProduct->getCategoryIds() ),
+            'AddedItemDescription' => (string) $addedProduct->getDescription(),
+            'AddedItemImageUrlKey' => (string) $addedProduct->getData('small_image'),
+            'AddedItemPrice' => (float) $addedProduct->get_price(),
             'AddedItemQuantity' => (int) $addedItem->getQty(),
-            'AddedItemProductID' => (int) $addedItem->getProduct()->getId(),
+            'AddedItemProductID' => (int) $addedProduct->getId(),
             'AddedItemProductName' => (string) $addedItem->getName(),
-            'AddedItemSku' => (string) $addedItem->getProduct()->getSku(),
-            'AddedItemUrl' => (string) $addedItem->getProduct()->getProductUrl()
+            'AddedItemSku' => (string) $addedProduct->getSku(),
+            'AddedItemUrl' => (string) $addedProduct->getProductUrl()
         );
 
         $klAddedToCartPayload = array_merge( $this->klBuildCartData( $quote, $addedItem ), $addedItemData );
@@ -98,17 +99,18 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         $cartItemCategories = array();
 
         foreach( $cartItems as $item ) {
-            $cartItemId = $item->getProduct()->getId();
-            $itemCategories = $this->getCategoryName( $item->getProduct()->getCategoryIds() );
+            $product = $item->getProduct();
+            $cartItemId = $product->getId();
+            $itemCategories = $this->getCategoryName( $product->getCategoryIds() );
             $itemName = $item->getName();
             $currentProduct = array(
                 'Categories' => (array) $itemCategories,
-                'ImageUrlKey' => $item->getProduct()->getData('small_image'),
+                'ImageUrlKey' => $product->getData('small_image'),
                 'ProductId' => (int) $cartItemId,
-                'Price' => (float) $item->getProduct()->getPrice(),
+                'Price' => (float) $product->getPrice(),
                 'Title' => (string) $itemName,
-                'Description' => (string) strip_tags( $item->getProduct()->getDescription() ),
-                'Url' => (string) $item->getProduct()->getProductUrl(),
+                'Description' => (string) strip_tags( $product->getDescription() ),
+                'Url' => (string) $product->getProductUrl(),
                 'Quantity' => (int) $item->getQty()
             );
             $cartQty += $item->getQty();
