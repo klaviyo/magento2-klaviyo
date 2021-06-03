@@ -3,8 +3,6 @@
 
 namespace Klaviyo\Reclaim\Observer;
 
-use Klaviyo\Reclaim\Helper\Data;
-use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Klaviyo\Reclaim\Plugin\Api\CartSearchRepository;
 
 use Magento\Framework\Config\Scope;
@@ -16,18 +14,6 @@ use Magento\Checkout\Model\Session;
 
 class SalesQuoteProductAddAfter implements ObserverInterface
 {
-    /**
-     * Klaviyo Data Helper
-     * @var Data $_dataHelper
-     */
-    protected $_dataHelper;
-
-    /**
-     * Klaviyo Scope Setting
-     * @var ScopeSetting $_scopesetting
-     */
-    protected $_scopesetting;
-
     /**
      * Klaviyo Cart Search Interface
      * @var  CartSearchRepository $_cartSearchRepository
@@ -48,15 +34,11 @@ class SalesQuoteProductAddAfter implements ObserverInterface
 
     /**
      * SalesQuoteProductAddAfter constructor.
-     * @param Data $dataHelper
-     * @param ScopeSetting $scopesetting
      * @param CartSearchRepository $cartSearchRepository
      * @param CategoryFactory $categoryFactory
      * @param Session $checkoutsession
      */
     public function __construct(
-        Data $dataHelper,
-        ScopeSetting $scopesetting,
         CartSearchRepository $cartSearchRepository,
         CategoryFactory $categoryFactory,
         Session $checkoutsession
