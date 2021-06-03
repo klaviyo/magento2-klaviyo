@@ -9,7 +9,7 @@ use \Klaviyo\Reclaim\Helper\ScopeSetting;
 class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const USER_AGENT = 'Klaviyo/MagentoTwo/Webhook';
-    const WEBHOOK_URL = 'http://www.local-klaviyo.com:8080/api/webhook/integration/magento_two';
+    const WEBHOOK_URL = 'https://www.klaviyo.com/api/webhook/integration/magento_two';
 
     /**
      * Klaviyo logger helper
@@ -59,29 +59,19 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
                 'Topic: ' . $webhookType
             ),
         ]);
-        $this->_klaviyoLogger->log(sprintf($url));
-        $this->_klaviyoLogger->log(sprintf($webhookType));
-        $this->_klaviyoLogger->log(sprintf(json_encode($data)));
-        $this->_klaviyoLogger->log(sprintf(self::USER_AGENT));
-        $this->_klaviyoLogger->log(sprintf($this->createWebhookSecurity($data)));
 
         // Submit the request
-        // $response = curl_exec($curl);
-        // $err = curl_errno($curl);
+        $response = curl_exec($curl);
+        $err = curl_errno($curl);
 
-        // if ($err) {
-        //     $this->_klaviyoLogger->log(sprintf('Unable to send webhook to %s with data: %s', $url, json_encode($data)));
-        //     $this->_klaviyoLogger->log(sprintf('Error %s json encoded as: %s', $err, json_encode($err)));
-        // } else {
-        //     $this->_klaviyoLogger->log(sprintf('Webhook successfully sent to %s with data: %s', $url, json_encode($data)));
-        //     $this->_klaviyoLogger->log(sprintf('Response from Klaviyo: %s', $response));
-        // }
+        if ($err) {
+            $this->_klaviyoLogger->log(sprintf('Unable to send webhook to %s with data: %s', $url, json_encode($data)));
+        }
 
         // Close cURL session handle
         curl_close($curl);
 
-        // return $response;
-        return 'hi';
+        return $response;
     }
 
     /**

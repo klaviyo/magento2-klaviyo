@@ -8,7 +8,7 @@ use \Klaviyo\Reclaim\Helper\Logger;
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const USER_AGENT = 'Klaviyo/1.0';
-    const KLAVIYO_HOST = 'http://www.local-klaviyo.com:8080';
+    const KLAVIYO_HOST = 'https://a.klaviyo.com/';
     const LIST_V2_API = 'api/v2/list/';
 
     /**
@@ -37,7 +37,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         if (!$api_key) $api_key = $this->_klaviyoScopeSetting->getPrivateApiKey();
 
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'http://www.local-klaviyo.com:8080/api/v2/lists?api_key=' . $api_key);
+        curl_setopt($ch, CURLOPT_URL, 'https://a.klaviyo.com/api/v2/lists?api_key=' . $api_key);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
 
