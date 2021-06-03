@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 
+#### Added
+- Start tracking Added to Cart events
+
 ### [3.0.3] - 2021-06-01
 
 #### Added
