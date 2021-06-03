@@ -44,8 +44,6 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         Session $checkoutsession
     )
     {
-        $this->_dataHelper = $dataHelper;
-        $this->_scopesetting = $scopesetting;
         $this->_cartSearchRepository = $cartSearchRepository;
         $this->_categoryFactory = $categoryFactory;
         $this->_checkoutSession = $checkoutsession;
