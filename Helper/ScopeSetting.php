@@ -30,6 +30,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
 
     const WEBHOOK_SECRET = 'klaviyo_reclaim_webhook/klaviyo_webhooks/webhook_secret';
     const PRODUCT_DELETE_BEFORE = 'klaviyo_reclaim_webhook/klaviyo_webhooks/using_product_delete_before_webhook';
+    const PRODUCT_SAVE_AFTER = 'klaviyo_reclaim_webhook/klaviyo_webhooks/using_product_save_after_webhook';
 
     const KLAVIYO_OAUTH_NAME = 'klaviyo_reclaim_oauth/klaviyo_oauth/integration_name';
 
