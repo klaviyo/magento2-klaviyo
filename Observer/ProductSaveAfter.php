@@ -82,87 +82,9 @@ class ProductSaveAfter implements ObserverInterface
             if ($this->_klaviyoScopeSetting->getWebhookSecret() && $this->_klaviyoScopeSetting->getProductSaveAfterSetting($storeIds[0])) {
 
               $normalizedProduct = $this->normalizeProduct($product);
-              // $product_id = $product->getId();
-              // $product_type = $product->getTypeId();
-              // $product_name = $product->getName();
-              // $product_qty = $this->_stockRegistry->getStockItem($product_id)->getQty();
-              //
-              // $product_visibility = $product->getVisibility();
-              // $product_isInStock = $product->isInStock();
-              // $product_status = $product->getStatus();
-              //
-              // $product_createdAt = $product->getCreatedAt();
-              // $product_updatedAt = $product->getUpdatedAt();
-              //
-              // $product_image_url = $product->getImage();
-              // $product_thumbnail_url = $product->getThumbnail();
-              //
-              // $product_metadata = array(
-              //   'price' => $product->getPrice(),
-              //   'sku' => $product->getSku()
-              // );
-              //
-              // if ($product->getSpecialPrice()) {
-              //   $product_metadata['special_price'] = $product->getSpecialPrice();
-              //   $product_metadata['special_from_date'] = $product->getSpecialFromDate();
-              //   $product_metadata['special_to_date'] = $product->getSpecialToDate();
-              // }
-              //
-              // $product_categories = [];
-              // $product_category_ids = $product->getCategoryIds();
-              // $category_factory = $this->_categoryFactory->create();
-              // foreach ($product_category_ids as $category_id) {
-              //   $category = $category_factory->load($category_id);
-              //   $product_categories[$category_id] = $category->getName();
-              // }
-              //
-              // $parent_product = $this->_productTypeConfigurable->getParentIdsByChild($product_id);
-              //
-              // if (isset($parent_product[0])) {
-              //   $parent_product_id = $parent_product[0];
-              // } else {
-              //   $parent_product_id = '';
-              // }
-              //
-              // $product_variants = [];
               if ($normalizedProduct['TypeID'] == 'configurable') {
                 $children = $product->getTypeInstance()->getUsedProducts($product);
                 foreach ($children as $child) {
-                  // $child_product = [];
-                  // $child_product['store_ids'] = $child->getStoreIds();
-                  // $child_product['ID'] = $child->getId();
-                  // $child_product['TypeID'] = $child->getTypeId();
-                  // $child_product['Name'] = $child->getName();
-                  // $child_product['qty'] = $this->_stockRegistry->getStockItem($child->getId())->getQty();
-                  //
-                  // $child_product['Visibility'] = $child->getVisibility();
-                  // $child_product['IsInStock'] = $child->isInStock();
-                  // $child_product['Status'] = $child->getStatus();
-                  //
-                  // $child_product['CreatedAt'] = $child->getCreatedAt();
-                  // $child_product['UpdatedAt'] = $child->getUpdatedAt();
-                  //
-                  // $child_product['FirstImageUrl'] = $child->getImage();
-                  // $child_product['ThumbnailImageURL'] = $child->getThumbnail();
-                  //
-                  // $child_product['metadata'] = array(
-                  //   'price' => $child->getPrice(),
-                  //   'sku' => $child->getSku()
-                  // );
-                  //
-                  // if ($child->getSpecialPrice()) {
-                  //   $child_product['metadata']['special_price'] = $child->getSpecialPrice();
-                  //   $child_product['metadata']['special_from_date'] = $child->getSpecialFromDate();
-                  //   $child_product['metadata']['special_to_date'] = $child->getSpecialToDate();
-                  // }
-                  //
-                  // $child_product['categories'] = [];
-                  // $child_category_ids = $child->getCategoryIds();
-                  // $category_factory = $this->_categoryFactory->create();
-                  // foreach ($child_category_ids as $category_id) {
-                  //   $category = $category_factory->load($category_id);
-                  //   $child_product['categories'][$category_id] = $category->getName();
-                  // }
                   $normalizedChildProduct = $this->normalizeProduct($child);
                   array_push($normalizedProduct['variants'], $normalizedChildProduct);
                 }
