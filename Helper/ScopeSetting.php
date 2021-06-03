@@ -148,7 +148,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
         $registeredWebhooks = array();
 
         $product_delete = $this->getProductDeleteBeforeSetting();
-        $product_save = $this->getProductSaveBeforeSetting();
+        $product_save = $this->getProductSaveAfterSetting();
 
         array_push($registeredWebhooks, array('product/delete', $product_delete));
         array_push($registeredWebhooks, array('product/save',$product_save));
@@ -272,9 +272,9 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->getScopeSetting(self::PRODUCT_DELETE_BEFORE, $storeId);
     }
 
-    public function getProductSaveBeforeSetting($storeId = null)
+    public function getProductSaveAfterSetting($storeId = null)
     {
-        return $this->getScopeSetting(self::PRODUCT_SAVE_BEFORE, $storeId);
+        return $this->getScopeSetting(self::PRODUCT_SAVE_AFTER, $storeId);
     }
 
 }
