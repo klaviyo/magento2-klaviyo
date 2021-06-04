@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 
+
+### [3.0.5] - 2021-06-08
+
+#### Added
+- Updates composer requirement to Magento version 2.3.4+
+
 ### [3.0.4] - 2021-06-08
 
 #### Fixed
