@@ -36,6 +36,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_scopeConfig;
     protected $_request;
     protected $_state;
+    protected $_storeId;
     protected $_moduleList;
     protected $_configWriter;
 
