@@ -1,6 +1,6 @@
 <?php
 namespace Klaviyo\Reclaim\Api;
- 
+
 interface ReclaimInterface
 {
     /**
@@ -18,6 +18,40 @@ interface ReclaimInterface
      * @return string
      */
     public function reclaim();
+
+    /**
+     * Returns the webhook secret
+     *
+     * @return string
+     * @api
+     */
+    public function getWebhookSecret();
+
+    /**
+     * Returns the Klaviyo log file
+     *
+     * @api
+     * @return mixed[]
+     */
+    public function getLog();
+
+    /**
+     * Cleans the Klaviyo log file
+     *
+     * @api
+     * @param string $date
+     * @return mixed[]
+     */
+    public function cleanLog($date);
+
+    /**
+     * Appends a message to the Klaviyo log file
+     *
+     * @api
+     * @param string $message
+     * @return mixed[]
+     */
+    public function appendLog($message);
 
     /**
      * Returns product information

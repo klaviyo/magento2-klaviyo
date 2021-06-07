@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Api/etc/extension_attributes.xsd">
+    <extension_attributes for="Magento\Checkout\Api\Data\ShippingInformationInterface">
+        <attribute code="kl_sms_consent" type="string"/>
+        <attribute code="kl_email_consent" type="string"/>
+    </extension_attributes>
+    <extension_attributes for="Magento\Quote\Api\Data\CartInterface">
+        <attribute code="kl_masked_id" type="string" />
+    </extension_attributes>
+</config>

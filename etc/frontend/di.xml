@@ -3,4 +3,7 @@
     <type name="Magento\Customer\CustomerData\Customer">
         <plugin name="Klaviyo_Reclaim::customerData" type="Klaviyo\Reclaim\Plugin\Customer\Model\CustomerData" />
     </type>
+    <type name="Magento\Checkout\Block\Checkout\LayoutProcessor">
+        <plugin name="custom-checkout" type="Klaviyo\Reclaim\Plugin\CheckoutLayoutPlugin" sortOrder="10"/>
+    </type>
 </config>

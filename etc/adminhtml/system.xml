@@ -18,12 +18,18 @@
                 <field id="public_api_key" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Public Klaviyo API Key</label>
                 </field>
-                <field id="private_api_key" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="private_api_key" translate="label" type="obscure" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Private Klaviyo API Key</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
                 <field id="custom_media_url" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
-                     <label>Custom Media URL</label>
+                    <label>Custom Media URL</label>
                     <validate>validate-url</validate>
+                </field>
+                <field id="logger" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Klaviyo Logger</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Log file is located under the standard log directory for your Magento app install. By default this will be {magento-root-directory}/var/log/klaviyo.log</comment>
                 </field>
             </group>
         </section>
@@ -36,7 +42,8 @@
                 <label>Newsletter</label>
                 <field id="newsletter" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>List to Sync Subscribers</label>
-                    <source_model>Klaviyo\Reclaim\Helper\ListOptions</source_model>
+                    <comment>Sync subscribers from Magento forms and account opt-ins to a Klaviyo list</comment>
+                    <source_model>Klaviyo\Reclaim\Model\Config\Source\ListOptions</source_model>
                     <frontend_model>Klaviyo\Reclaim\Block\System\Config\Form\Field\Newsletter</frontend_model>
                 </field>
                 <field id="using_klaviyo_list_opt_in" translate="label" type="radios" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -47,5 +54,111 @@
             </group>
         </section>
 
+        <section id="klaviyo_reclaim_consent_at_checkout" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Consent at Checkout</label>
+            <tab>klaviyo</tab>
+            <resource>Klaviyo_Reclaim::klaviyo_reclaim</resource>
+            <group id="email_consent" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Email</label>
+                <field id="is_active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Subscribe contacts to email marketing at checkout</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Adds a checkbox to the checkout page for email opt in</comment>
+                </field>
+                <field id="list_id" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Email list to sync</label>
+                    <source_model>Klaviyo\Reclaim\Model\Config\Source\ListOptions</source_model>
+                    <frontend_model>Klaviyo\Reclaim\Block\System\Config\Form\Field\Consent</frontend_model>
+                    <validate>validate-length minimum-length-5</validate>
+                    <depends>
+                        <field id="is_active">1</field>
+                    </depends>
+                </field>
+                <field id="consent_text" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Email opt-in checkbox text</label>
+                    <comment>This is the text that will appear next to the checkbox for email marketing</comment>
+                    <validate>required-entry</validate>
+                    <depends>
+                        <field id="is_active">1</field>
+                    </depends>
+                </field>
+                <field id="sort_order" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sort Order</label>
+                    <depends>
+                        <field id="is_active">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="sms_consent" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>SMS</label>
+                <field id="is_active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Subscribe contacts to SMS marketing at checkout</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Adds a checkbox to the checkout page for SMS opt in. <a target="_blank" href="https://help.klaviyo.com/hc/en-us/articles/360039190611-On-Demand-Training-Getting-Started-with-Klaviyo-SMS">Set up SMS in Klaviyo</a>]]></comment>
+                </field>
+                <field id="list_id" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>SMS list to sync</label>
+                    <source_model>Klaviyo\Reclaim\Model\Config\Source\ListOptions</source_model>
+                    <frontend_model>Klaviyo\Reclaim\Block\System\Config\Form\Field\Consent</frontend_model>
+                    <validate>validate-length minimum-length-5</validate>
+                    <depends>
+                        <field id="is_active">1</field>
+                    </depends>
+                </field>
+                <field id="label_text" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>SMS opt-in checkbox text</label>
+                    <comment>This is the text that will appear next to the checkbox for SMS marketing</comment>
+                    <validate>required-entry</validate>
+                    <depends>
+                        <field id="is_active">1</field>
+                    </depends>
+                </field>
+                <field id="consent_text" translate="label comment" type="textarea" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>SMS disclosure text</label>
+                    <comment><![CDATA[You must include disclosure language for TCPA compliance. You should also update your Terms of Service and Privacy Policy to include the terms of your SMS marketing program. <a target="_blank" href="https://help.klaviyo.com/hc/en-us/articles/360035055312-About-US-SMS-Compliance-Laws">Learn more about SMS consent and compliance</a>]]></comment>
+                    <validate>required-entry</validate>
+                    <depends>
+                        <field id="is_active">1</field>
+                    </depends>
+                </field>
+                <field id="sort_order" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sort Order</label>
+                    <depends>
+                        <field id="is_active">1</field>
+                    </depends>
+                </field>
+            </group>
+        </section>
+
+        <section id="klaviyo_reclaim_oauth" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Setup OAuth</label>
+            <tab>klaviyo</tab>
+            <resource>Klaviyo_Reclaim::klaviyo_reclaim</resource>
+            <group id="klaviyo_oauth" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Setup Oauth</label>
+                <field id="integration_name" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Integration Name</label>
+                    <validate>required-entry validate-no-empty</validate>
+                </field>
+            </group>
+        </section>
+
+        <section id="klaviyo_reclaim_webhook" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Webhooks</label>
+            <tab>klaviyo</tab>
+            <resource>Klaviyo_Reclaim::klaviyo_reclaim</resource>
+            <group id="klaviyo_webhooks" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Setup Klaviyo Webhooks</label>
+                <field id="webhook_secret" translate="label" type="password" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Webhook Secret</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                </field>
+                <field id="using_product_delete_before_webhook" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Use Product Delete Webhook?</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>This will remove deleted products from the Klaviyo catalog.</comment>
+                </field>
+            </group>
+        </section>
     </system>
 </config>

@@ -4,18 +4,18 @@ namespace Klaviyo\Reclaim\Block;
 
 class Initialize extends \Magento\Framework\View\Element\Template
 {
-    protected $_helper;
-    protected $_objectManager;
+    protected $klaviyoScopeSetting;
+    protected $session;
 
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
-        \Klaviyo\Reclaim\Helper\Data $helper,
-        \Magento\Framework\ObjectManagerInterface $objectManager,
+        \Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting,
+        \Magento\Customer\Model\Session $session,
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->_helper = $helper;
-        $this->_objectManager = $objectManager;
+        $this->klaviyoScopeSetting = $klaviyoScopeSetting;
+        $this->session = $session;
     }
 
     /**
@@ -27,7 +27,7 @@ class Initialize extends \Magento\Framework\View\Element\Template
      */
     public function getPublicApiKey()
     {
-        return $this->_helper->getPublicApiKey();
+        return $this->klaviyoScopeSetting->getPublicApiKey();
     }
 
     /**
@@ -38,7 +38,7 @@ class Initialize extends \Magento\Framework\View\Element\Template
      */
     public function isKlaviyoEnabled()
     {
-        return $this->_helper->getEnabled();
+        return $this->klaviyoScopeSetting->isEnabled();
     }
 
     /**
@@ -49,8 +49,7 @@ class Initialize extends \Magento\Framework\View\Element\Template
      */
     public function isLoggedIn()
     {
-        $customerSession = $this->_objectManager->create('Magento\Customer\Model\Session');
-        return $customerSession->isLoggedIn();
+        return $this->session->isLoggedIn();
     }
 
     /**
@@ -61,8 +60,7 @@ class Initialize extends \Magento\Framework\View\Element\Template
      */
     public function getCustomerEmail()
     {
-        $customerSession = $this->_objectManager->create('Magento\Customer\Model\Session');
-        return $customerSession->getCustomerData()->getEmail();
+        return $this->session->getCustomerData()->getEmail();
     }
 
     /**
@@ -73,8 +71,7 @@ class Initialize extends \Magento\Framework\View\Element\Template
      */
     public function getCustomerFirstname()
     {
-        $customerSession = $this->_objectManager->create('Magento\Customer\Model\Session');
-        return $customerSession->getCustomerData()->getFirstname();
+        return $this->session->getCustomerData()->getFirstname();
     }
 
     /**
@@ -85,7 +82,6 @@ class Initialize extends \Magento\Framework\View\Element\Template
      */
     public function getCustomerLastname()
     {
-        $customerSession = $this->_objectManager->create('Magento\Customer\Model\Session');
-        return $customerSession->getCustomerData()->getLastname();
+        return $this->session->getCustomerData()->getLastname();
     }
 }

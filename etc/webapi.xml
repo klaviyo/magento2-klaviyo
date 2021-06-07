@@ -3,49 +3,73 @@
     <route url="/V1/klaviyo/reclaim/stores" method="GET">
         <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="stores"/>
         <resources>
-            <resource ref="anonymous"/>
+            <resource ref="Magento_Backend::store"/>
         </resources>
     </route>
     <route url="/V1/klaviyo/reclaim/product" method="GET">
         <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="product"/>
         <resources>
-            <resource ref="anonymous"/>
+            <resource ref="Magento_Catalog::products" />
         </resources>
     </route>
     <route url="/V1/klaviyo/reclaim/product/back-in-stock" method="GET">
         <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="productVariantInventory"/>
         <resources>
-            <resource ref="anonymous"/>
+            <resource ref="Magento_CatalogInventory::cataloginventory"/>
         </resources>
     </route>
     <route url="/V1/klaviyo/reclaim/product-inspector" method="GET">
         <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="productinspector"/>
         <resources>
-            <resource ref="anonymous"/>
+            <resource ref="Magento_Catalog::products" />
         </resources>
     </route>
     <route url="/V1/klaviyo/reclaim/customers/subscriptions/count" method="GET">
         <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="getSubscribersCount"/>
         <resources>
-            <resource ref="Magento_Customer::group"/>
+            <resource ref="Magento_Newsletter::subscriber"/>
         </resources>
     </route>
     <route url="/V1/klaviyo/reclaim/customers/subscriptions/periodic" method="GET">
         <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="getSubscribersByDateRange"/>
         <resources>
-            <resource ref="Magento_Customer::group"/>
+            <resource ref="Magento_Newsletter::subscriber"/>
         </resources>
     </route>
     <route url="/V1/klaviyo/reclaim/customers/subscriptions/historical" method="GET">
         <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="getSubscribersById"/>
         <resources>
-            <resource ref="Magento_Customer::group"/>
+            <resource ref="Magento_Newsletter::subscriber"/>
         </resources>
     </route>
     <route url="/V1/klaviyo/reclaim/" method="GET">
         <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="reclaim"/>
         <resources>
-            <resource ref="anonymous"/>
+            <resource ref="Magento_Backend::admin"/>
+        </resources>
+    </route>
+    <route url="/V1/klaviyo/reclaim/webhook-secret" method="GET">
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="getWebhookSecret"/>
+        <resources>
+            <resource ref="Magento_Backend::admin"/>
+        </resources>
+    </route>
+    <route url="/V1/klaviyo/reclaim/log" method="GET">
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="getLog"/>
+        <resources>
+            <resource ref="Magento_Backend::admin"/>
+        </resources>
+    </route>
+    <route url="/V1/klaviyo/reclaim/log" method="POST">
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="appendLog"/>
+        <resources>
+            <resource ref="Magento_Backend::admin"/>
+        </resources>
+    </route>
+    <route url="/V1/klaviyo/reclaim/log/clean" method="POST">
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="cleanLog"/>
+        <resources>
+            <resource ref="Magento_Backend::admin"/>
         </resources>
     </route>
 </routes>

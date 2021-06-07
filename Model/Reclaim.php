@@ -1,5 +1,7 @@
 <?php
+
 namespace Klaviyo\Reclaim\Model;
+
 use Klaviyo\Reclaim\Api\ReclaimInterface;
 use \Magento\Framework\Exception\NotFoundException;
 
@@ -12,23 +14,37 @@ class Reclaim implements ReclaimInterface
      * @var \Magento\Framework\ObjectManagerInterface
      */
     protected $_objectManager = null;
-    protected $_subscriber;
+
+    /**
+     *
+     */
     protected $_stockItemRepository;
+
+    /**
+     *
+     */
     protected $subscriberCollection;
+
+    /**
+     *
+     */
     public $response;
+
+    protected $_klaviyoLogger;
+    protected $_klaviyoScopeSetting;
 
     const MAX_QUERY_DAYS = 10;
     const SUBSCRIBER_BATCH_SIZE = 500;
 
     public function __construct(
-        \Magento\Framework\ObjectManagerInterface $objectManager, 
+        \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Magento\CatalogInventory\Api\StockStateInterface $stockItem,
         \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository,
-        \Magento\Newsletter\Model\Subscriber $subscriber,
         \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection,
-        \Klaviyo\Reclaim\Helper\Data $klaviyoHelper
+        \Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting,
+        \Klaviyo\Reclaim\Helper\Logger $klaviyoLogger
         )
     {
         $this->quoteFactory = $quoteFactory;
@@ -36,9 +52,9 @@ class Reclaim implements ReclaimInterface
         $this->_objectManager = $objectManager;
         $this->_stockItem = $stockItem;
         $this->_stockItemRepository = $stockItemRepository;
-        $this->_subscriber= $subscriber;
         $this->_subscriberCollection = $subscriberCollection;
-        $this->_klaviyoHelper = $klaviyoHelper;
+        $this->_klaviyoLogger = $klaviyoLogger;
+        $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
     }
 
     /**
@@ -47,8 +63,121 @@ class Reclaim implements ReclaimInterface
      * @api
      * @return string
      */
-    public function reclaim(){
-        return $this->_klaviyoHelper->getVersion();
+    public function reclaim()
+    {
+        return $this->_klaviyoScopeSetting->getVersion();
+    }
+
+    public function getWebhookSecret()
+    {
+        return $this->_klaviyoScopeSetting->getWebhookSecret();
+    }
+
+    /**
+     * Returns the Klaviyo log file
+     *
+     * @api
+     * @return string
+     */
+    public function getLog()
+    {
+        try {
+            $log = file($this->_klaviyoLogger->getPath());
+        } catch (\Exception $e) {
+            return array (
+                'message' => 'Unable to retrieve log file with error: ' . $e->getMessage()
+            );
+        }
+
+        if (!empty($log)) {
+            return $log;
+        } else {
+            return array (
+                'message' => 'Log file is empty'
+            );
+        }
+    }
+
+    /**
+     * Cleans the Klaviyo log file
+     *
+     * @api
+     * @param string $date
+     * @return boolean
+     */
+    public function cleanLog($date)
+    {
+        //attempt to parse unix timestamp from api request parameter
+        $cursor = strtotime($date);
+
+        //check if we were able to parse the timestamp
+        //if no timestamp, return failure message
+        if ($cursor == '')
+        {
+            $response = array(
+                'message' => 'Unable to parse timestamp: ' . $date
+            );
+            $this->_klaviyoLogger->log('cleanLog failed: unable to parse timestamp from: ' . $date);
+            return $response;
+        }
+
+        //get log file path and do the old switcheroo in preparation for cleaning
+        $path = $this->_klaviyoLogger->getPath();
+        $old = $path . '.old';
+        rename($path, $old);
+
+        //open file streams
+        $input = fopen($old, 'rb');
+        $output = fopen($path, 'wb');
+
+        //loop through all of the lines in the log
+        while ($row = fgets($input))
+        {
+            //parse timestamp from the line in the log
+            //example formatting:
+            //[2018-07-05 11:10:35] channel-name.INFO: This is a log entry
+            preg_match('/\[.*?\]/', $row, $matches);
+            $timestamp = strtotime(substr($matches[0], 1, -1));
+            if ($timestamp > $cursor)
+            {
+                fwrite($output, $row);
+            }
+        }
+
+
+        //close file streams
+        fclose($input);
+        fclose($output);
+
+        //remove old log file
+        unlink($old);
+
+        //log cleaning success
+        $this->_klaviyoLogger->log('Cleaned all log entries before: ' . $date);
+
+        //return success message
+        $response = array(
+            'message' => 'Cleaned all log entries before: ' . $date
+        );
+        return $response;
+    }
+
+    /**
+     * Appends a message to the Klaviyo log file
+     *
+     * @api
+     * @param string $message
+     * @return mixed[]
+     */
+    public function appendLog($message)
+    {
+        //log the provided message
+        $this->_klaviyoLogger->log($message);
+
+        //return success message
+        return array(
+            'message' => 'Logged message: \'' . $message . '\''
+        );
     }
 
     /**
@@ -121,9 +250,9 @@ class Reclaim implements ReclaimInterface
         if (!$product_id){
             throw new NotFoundException(_('A product id is required'));
         }
-        // if store_id is specificed, use it
+        // if store_id is specified, use it
         if ($store_id){
-            $product = $this->_productFactory->create()->setStoreId($store_id)->load($product_id);    
+            $product = $this->_productFactory->create()->setStoreId($store_id)->load($product_id);
         } else {
             $product = $this->_productFactory->create()->load($product_id);
         }
@@ -150,7 +279,7 @@ class Reclaim implements ReclaimInterface
         } catch (\Error $e) {
             return $response;
         }
-        
+
         foreach ($_children as $child){
             $response['variants'][] = array(
                 'id' => $child->getId(),
@@ -198,13 +327,13 @@ class Reclaim implements ReclaimInterface
 
     public function getSubscribersCount()
     {
-        $subscriberCount =$this->_subscriberCollection->create()->getSize();
+        $subscriberCount = $this->_subscriberCollection->create()->getSize();
         return $subscriberCount;
     }
 
     public function getSubscribersById($start_id, $end_id, $storeId=null)
     {
-        if (!$start_id || !$end_id ){ 
+        if (!$start_id || !$end_id ){
             throw new NotFoundException(__('Please provide start_id and end_id'));
         }
 
@@ -230,8 +359,8 @@ class Reclaim implements ReclaimInterface
 
     public function getSubscribersByDateRange($start, $until, $storeId=null)
     {
-        
-        if (!$start || !$until ){ 
+
+        if (!$start || !$until ){
             throw new NotFoundException(__('Please provide start and until param'));
         }
         // start and until date formats
@@ -252,7 +381,7 @@ class Reclaim implements ReclaimInterface
         }
 
         $storeIdFilter = $this->_storeFilter($storeId);
-        
+
         $subscriberCollection =$this->_subscriberCollection->create()
             ->addFieldToFilter('change_status_at', ['gteq' => $start])
             ->addFieldToFilter('change_status_at', ['lteq' => $until])
@@ -288,7 +417,7 @@ class Reclaim implements ReclaimInterface
     {
         $images = $product->getMediaGalleryImages();
         $image_array = array();
-        
+
         foreach($images as $image) {
             $image_array[] = $this->handleMediaURL($image);
         }
@@ -296,9 +425,9 @@ class Reclaim implements ReclaimInterface
     }
     public function handleMediaURL($image)
     {
-        $custom_media_url = $this->_klaviyoHelper->getCustomMediaURL();
+        $custom_media_url = $this->_klaviyoScopeSetting->getCustomMediaURL();
         if ($custom_media_url){
-            return $custom_media_url . "/media/catalog/product" . $image->getFile();
+            return $custom_media_url . '/media/catalog/product' . $image->getFile();
         }
         return $image->getUrl();
     }
