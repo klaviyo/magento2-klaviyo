@@ -5,8 +5,12 @@ namespace Klaviyo\Reclaim\Observer;
 use Klaviyo\Reclaim\Helper\Data;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Magento\Customer\Api\CustomerRepositoryInterface;
-use Magento\Framework\Event\ObserverInterface;
+use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Framework\Event\Observer;
+use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Newsletter\Model\Subscriber;
 
 class NewsletterSubscribeObserver implements ObserverInterface
 {
@@ -24,8 +28,8 @@ class NewsletterSubscribeObserver implements ObserverInterface
     protected $customerRepository;
 
     public function __construct(
-        Data                        $helper,
-        ScopeSetting                $scopeSetting,
+        Data $helper,
+        ScopeSetting $scopeSetting,
         CustomerRepositoryInterface $customerRepository
     ) {
         $this->helper = $helper;
@@ -39,13 +43,11 @@ class NewsletterSubscribeObserver implements ObserverInterface
             return;
         }
 
-        $customer = null;
+        /** @var Subscriber $subscriber */
         $subscriber = $observer->getDataObject();
 
         if ($subscriber->isStatusChanged()) {
-            if ($subscriber->getCustomerId()) {
-                $customer = $this->customerRepository->getById($subscriber->getCustomerId());
-            }
+            $customer = $this->getCustomer($subscriber);
 
             if ($subscriber->isSubscribed()) {
                 $this->helper->subscribeEmailToKlaviyoList(
@@ -59,5 +61,24 @@ class NewsletterSubscribeObserver implements ObserverInterface
                 );
             }
         }
+    }
+
+    /**
+     * @param Subscriber $subscriber
+     * @return CustomerInterface|null
+     */
+    private function getCustomer(Subscriber $subscriber)
+    {
+        $customer = null;
+
+        if ($subscriber->getCustomerId()) {
+            try {
+                $customer = $this->customerRepository->getById($subscriber->getCustomerId());
+            } catch (NoSuchEntityException $e) {
+                // If the customer doesn't exist - return null
+            }
+        }
+
+        return $customer;
     }
 }
