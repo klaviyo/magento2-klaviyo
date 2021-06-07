@@ -1,4 +1,4 @@
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../../lib/internal/Magento/Framework/App/etc/events.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
     <event name="newsletter_subscriber_save_commit_after">
         <observer name="klaviyo_reclaim" instance="Klaviyo\Reclaim\Observer\NewsletterSubscribeObserver" />
     </event>
