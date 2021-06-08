@@ -2,7 +2,17 @@ var config = {
     map: {
         '*': {
             KlaviyoCustomerData: 'Klaviyo_Reclaim/js/customer',
-            'Magento_Checkout/js/model/shipping-save-processor/default': 'Klaviyo_Reclaim/js/model/shipping-save-processor/default'
+        }
+    },
+    config: {
+        mixins: {
+            // Compatibility with Magento < 2.2.2
+            'mage/storage': {
+                'Klaviyo_Reclaim/js/mixin/storage-mixin': true
+            },
+            'Magento_Checkout/js/model/shipping-save-processor/payload-extender': {
+                'Klaviyo_Reclaim/js/mixin/shipping-payload-extender-mixin': true
+            },
         }
     }
 };

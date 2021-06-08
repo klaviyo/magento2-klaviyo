@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Added
 - Add an ability to pass the Store ID during track event
 
+#### Fixed
+- Keep existing extension attributes when extending shipping payload request
+
 ### [3.0.5] - 2021-06-08
 
 #### Added
