@@ -7,7 +7,7 @@ namespace Klaviyo\Reclaim\Plugin\Api;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\CartExtensionFactory;
 use Magento\Quote\Model\QuoteIdToMaskedQuoteId;
-use Magento\Framework\Api\SearchResults;
+use Magento\Quote\Model\CartSearchResults;
 
 class CartSearchRepository
 {
@@ -45,11 +45,11 @@ class CartSearchRepository
      * Add "kl_masked_id" extension attribute to order data object to make it accessible in API data
      *
      * @param CartRepositoryInterface $subject
-     * @param SearchResults $searchResult
+     * @param CartSearchResults $searchResult
      *
-     * @return SearchResults
+     * @return CartSearchResults
      */
-    public function afterGetList(CartRepositoryInterface $subject, SearchResults $searchResult)
+    public function afterGetList(CartRepositoryInterface $subject, CartSearchResults $searchResult)
     {
         $quotes = $searchResult->getItems();
 
