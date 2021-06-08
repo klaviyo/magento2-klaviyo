@@ -8,8 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [3.0.4] - 2021-06-08
 
-#### Added
-- Fix to address customers on Magento 2 versions 2.3.0 to 2.3.3
+#### Fixed
+- Use `Magento\Framework\Api\SearchResults` to support Magento 2 versions 2.3.0 to 2.3.3
 
 ### [3.0.3] - 2021-06-01
 
