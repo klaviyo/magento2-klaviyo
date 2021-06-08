@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 
+#### Added
+- Add an ability to pass the Store ID during track event
 
 ### [3.0.5] - 2021-06-08
 
