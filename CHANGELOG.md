@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### [3.0.5] - 2021-06-08
 
 #### Added
-- Updates composer requirement to Magento version 2.3.4+
+- Updates composer requirement to use module quote >=101.1.3
 
 ### [3.0.4] - 2021-06-08
 
@@ -98,7 +98,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CSP now uses report-only mode
 
 
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.4...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.5...HEAD
+[3.0.5]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.4...3.0.5
 [3.0.4]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.3...3.0.4
 [3.0.3]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.2...3.0.3
 [3.0.2]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.1...3.0.2
