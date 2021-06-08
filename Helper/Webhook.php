@@ -40,7 +40,6 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function makeWebhookRequest($webhookType, $data, $klaviyoId=null)
     {
-
         if (!$klaviyoId) {
             $klaviyoId = $this->_klaviyoScopeSetting->getPublicApiKey();
         }
@@ -71,6 +70,7 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
 
         // Close cURL session handle
         curl_close($curl);
+
         return $response;
     }
 
@@ -86,4 +86,3 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
 
     }
 }
-
