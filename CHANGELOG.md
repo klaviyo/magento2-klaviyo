@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Added
 - Updates composer requirement to use module quote >=101.1.3
+- Add ability to retrieve config values for specified store id
+
+#### Fixed
+- Fix issue with newsletter subscription
 
 ### [3.0.4] - 2021-06-08
 
