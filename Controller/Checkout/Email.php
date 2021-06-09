@@ -2,15 +2,31 @@
 
 namespace Klaviyo\Reclaim\Controller\Checkout;
 
-class Email extends \Magento\Framework\App\Action\Action
+use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\Controller\Result\Json;
+use Magento\Framework\Controller\Result\JsonFactory;
+
+class Email extends Action
 {
+    /**
+     * @var JsonFactory
+     */
+    private $resultJsonFactory;
+    /**
+     * @var CheckoutSession
+     */
+    private $checkoutSession;
+
     public function __construct(
-        \Magento\Backend\App\Action\Context $context,
-        \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
+        Context $context,
+        JsonFactory $resultJsonFactory,
+        CheckoutSession $checkoutSession
     ) {
         parent::__construct($context);
         $this->resultJsonFactory = $resultJsonFactory;
-        $this->_objectManager = $context->getObjectManager();
+        $this->checkoutSession = $checkoutSession;
     }
 
     /**
@@ -18,22 +34,22 @@ class Email extends \Magento\Framework\App\Action\Action
      * is AJAX'd here after the email input changes. We look up the current
      * quote and save the email on it, since Magento doesn't do that on its own.
      *
-     * @return JSON
+     * @return Json
      */
     public function execute()
     {
         $result = $this->resultJsonFactory->create();
-        $quote = $this->_objectManager->create('Magento\Checkout\Model\Cart')->getQuote();
+        $quote = $this->checkoutSession->getQuote();
 
-        $customer_email = $this->getRequest()->getParam('email');
+        $customerEmail = $this->getRequest()->getParam('email');
         // add email validation
-        if (!filter_var($customer_email, FILTER_VALIDATE_EMAIL)) {
-            return;
+        if (!filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
+            return $result->setData(['success' => false]);
         }
 
-        $quote->setCustomerEmail($customer_email);
+        $quote->setCustomerEmail($customerEmail);
         $quote->save();
 
-        return $result->setData(['success' => $quote->getData()]);
+        return $result->setData(['success' => true]);
     }
 }
