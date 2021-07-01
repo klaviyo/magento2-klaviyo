@@ -11,8 +11,8 @@ define([
      * @return {Object}
      */
     return function (target) {
-        return wrapper.wrap(target, function (o, payload) {
-            o(payload);
+        return wrapper.wrap(target, function (parentFunction, payload) {
+            parentFunction(payload);
 
             assignData(payload.addressInformation);
 
