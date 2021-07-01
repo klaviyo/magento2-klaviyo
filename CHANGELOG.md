@@ -6,8 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 
+### [3.0.6] - 2021-07-01
+
 #### Added
 - Add an ability to pass the Store ID during track event
+
+#### Fixed
+- Keep existing extension attributes when extending shipping payload request
 
 ### [3.0.5] - 2021-06-08
 
@@ -104,7 +109,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CSP now uses report-only mode
 
 
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.5...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.6...HEAD
+[3.0.6]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.5...3.0.6
 [3.0.5]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.4...3.0.5
 [3.0.4]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.3...3.0.4
 [3.0.3]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.2...3.0.3
