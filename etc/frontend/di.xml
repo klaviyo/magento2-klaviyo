@@ -6,4 +6,10 @@
     <type name="Magento\Checkout\Block\Checkout\LayoutProcessor">
         <plugin name="custom-checkout" type="Klaviyo\Reclaim\Plugin\CheckoutLayoutPlugin" sortOrder="10"/>
     </type>
+
+    <type name="Klaviyo\Reclaim\Controller\Checkout\Email">
+        <arguments>
+            <argument name="checkoutSession" xsi:type="object">Magento\Checkout\Model\Session\Proxy</argument>
+        </arguments>
+    </type>
 </config>

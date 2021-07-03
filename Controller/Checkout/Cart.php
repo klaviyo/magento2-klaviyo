@@ -2,32 +2,54 @@
 
 namespace Klaviyo\Reclaim\Controller\Checkout;
 
+use Magento\Checkout\Model\Cart as CartModel;
+use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\Controller\Result\Redirect;
+use Magento\Framework\Controller\Result\RedirectFactory;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Quote\Model\MaskedQuoteIdToQuoteIdInterface;
+use Magento\Quote\Model\QuoteRepository;
+use Psr\Log\LoggerInterface;
 
-class Cart extends \Magento\Framework\App\Action\Action
+class Cart extends Action
 {
-    protected $quoteRepository;
-    protected $resultRedirectFactory;
-    protected $cart;
-    protected $request;
-
     /**
-     * @var quoteIdMaskFactory
+     * @var QuoteRepository
      */
-    private $quoteIdMaskFactory;
+    protected $quoteRepository;
+    /**
+     * @var RedirectFactory
+     */
+    protected $resultRedirectFactory;
+    /**
+     * @var CartModel
+     */
+    protected $cart;
+    /**
+     * @var MaskedQuoteIdToQuoteIdInterface
+     */
+    private $maskedQuoteIdToQuoteId;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     public function __construct(
-        \Magento\Checkout\Model\Cart $cart,
-        \Magento\Framework\App\Action\Context $context,
-        \Magento\Quote\Model\QuoteRepository $quoteRepository,
-        \Magento\Quote\Model\QuoteIdMaskFactory $quoteIdMaskFactory
+        Context $context,
+        CartModel $cart,
+        QuoteRepository $quoteRepository,
+        RedirectFactory $resultRedirectFactory,
+        MaskedQuoteIdToQuoteIdInterface $maskedQuoteIdToQuoteId,
+        LoggerInterface $logger
     ) {
-        $this->quoteRepository = $quoteRepository;
-        $this->resultRedirectFactory = $context->getResultRedirectFactory();
-        $this->cart = $cart;
-        $this->request = $context->getRequest();
-        $this->quoteIdMaskFactory = $quoteIdMaskFactory;
-
         parent::__construct($context);
+
+        $this->cart = $cart;
+        $this->quoteRepository = $quoteRepository;
+        $this->resultRedirectFactory = $resultRedirectFactory;
+        $this->maskedQuoteIdToQuoteId = $maskedQuoteIdToQuoteId;
+        $this->logger = $logger;
     }
 
     /**
@@ -35,21 +57,22 @@ class Cart extends \Magento\Framework\App\Action\Action
      * quote into the current Customer's cart and redirect the Customer to checkout/cart
      * If no masked quote is found it will not do anything to the Customer's cart
      *
-     * @return JSON
+     * @return Redirect
      */
     public function execute()
     {
-        $params = $this->request->getParams();
-        $quoteId = isset($params['quote_id']) ? $params['quote_id'] : "";
+        $params = $this->_request->getParams();
+        $maskedQuoteId = $params['quote_id'] ?? '';
 
         unset($params['quote_id']);
 
         try {
-            $quoteIdMask = $this->quoteIdMaskFactory->create()->load($quoteId, 'masked_id');
-            $quote = $this->quoteRepository->get($quoteIdMask->getQuoteId());
+            $cartId = $this->maskedQuoteIdToQuoteId->execute($maskedQuoteId);
+            $quote = $this->quoteRepository->get($cartId);
             $this->cart->setQuote($quote);
             $this->cart->save();
-        } catch (\Magento\Framework\Exception\NoSuchEntityException $ex) {
+        } catch (NoSuchEntityException $e) {
+            $this->logger->warning($e);
         }
 
         $redirect = $this->resultRedirectFactory->create();
