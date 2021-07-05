@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 
+#### Fixed
+- Right trim trailing slash from Custom Media Url setting from Klaviyo Extension 
+
 ### [3.0.6] - 2021-07-01
 
 #### Added
