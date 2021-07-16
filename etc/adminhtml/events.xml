@@ -2,9 +2,6 @@
     <event name="config_data_save_before">
         <observer name="klaviyo_reclaim" instance="Klaviyo\Reclaim\Observer\PrivateApiKeyObserver" />
     </event>
-    <event name="newsletter_subscriber_save_commit_after">
-        <observer name="klaviyo_reclaim" instance="Klaviyo\Reclaim\Observer\NewsletterSubscribeObserver" />
-    </event>
     <event name="catalog_product_delete_before">
         <observer name="klaviyo_reclaim" instance="Klaviyo\Reclaim\Observer\ProductDeleteBefore" />
     </event>
