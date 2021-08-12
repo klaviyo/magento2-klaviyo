@@ -1,8 +1,0 @@
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../../lib/internal/Magento/Framework/App/etc/events.xsd">
-    <event name="controller_action_postdispatch_newsletter_subscriber_new">
-        <observer name="klaviyo_reclaim" instance="Klaviyo\Reclaim\Observer\NewsletterSubscribeObserver" />
-    </event>
-    <event name="newsletter_subscriber_save_commit_after">
-        <observer name="klaviyo_reclaim" instance="Klaviyo\Reclaim\Observer\UserProfileNewsletterSubscribeObserver" />
-    </event>
-</config>

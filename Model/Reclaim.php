@@ -427,7 +427,7 @@ class Reclaim implements ReclaimInterface
     {
         $custom_media_url = $this->_klaviyoScopeSetting->getCustomMediaURL();
         if ($custom_media_url){
-            return $custom_media_url . '/media/catalog/product' . $image->getFile();
+            return rtrim($custom_media_url, '/') . '/media/catalog/product' . $image->getFile();
         }
         return $image->getUrl();
     }

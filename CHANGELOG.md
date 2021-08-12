@@ -9,6 +9,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Added
 - Start tracking Added to Cart events
 
+#### Fixed
+- Right trim trailing slash from Custom Media Url setting from Klaviyo Extension 
+- Properly escape the public api for onsite tag
+- Handle newsletter subscriptions in all areas
+
+### [3.0.6] - 2021-07-01
+
+#### Added
+- Add an ability to pass the Store ID during track event
+
+#### Fixed
+- Keep existing extension attributes when extending shipping payload request
+
+### [3.0.5] - 2021-06-08
+
+#### Added
+- Updates composer requirement to use module quote >=101.1.3
+- Add ability to retrieve config values for specified store id
+
+#### Fixed
+- Fix issue with newsletter subscription
+
+### [3.0.4] - 2021-06-08
+
+#### Fixed
+- Use `Magento\Framework\Api\SearchResults` to support Magento 2 versions 2.3.0 to 2.3.3
+
 ### [3.0.3] - 2021-06-01
 
 #### Added

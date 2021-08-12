@@ -10,4 +10,7 @@
     <event name="sales_quote_save_after" >
         <observer name="klaviyo_reclaim_atc" instance="Klaviyo\Reclaim\Observer\SalesQuoteSaveAfter" />
     </event>
+    <event name="newsletter_subscriber_save_commit_after">
+        <observer name="klaviyo_reclaim" instance="Klaviyo\Reclaim\Observer\NewsletterSubscribeObserver" />
+    </event>
 </config>
