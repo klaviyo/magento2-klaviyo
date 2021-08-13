@@ -8,9 +8,13 @@ use Magento\Catalog\Model\CategoryFactory;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
+use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
+use Magento\Framework\Serialize\Serializer\Json;
 
 class ViewedProduct extends Template
 {
+	const PRODUCT_CATEGORY_LIMIT = '50';
+
     protected $_klaviyoScopeSetting;
     protected $_registry;
     protected $_categoryFactory;
@@ -24,27 +28,43 @@ class ViewedProduct extends Template
     private $imageHelper;
 
     /**
+     * @var Json
+     */
+    private $json;
+
+    /**
+     * @var CollectionFactory
+     */
+    private $categoryCollectionFactory;
+
+    /**
      * ViewedProduct constructor.
      * @param Context $context
      * @param ScopeSetting $klaviyoScopeSetting
+     * @param Json $json
      * @param Registry $registry
      * @param CategoryFactory $categoryFactory
+     * @param CollectionFactory $categoryCollectionFactory
      * @param Image $imageHelper
      * @param array $data
      */
     public function __construct(
         Context $context,
         ScopeSetting $klaviyoScopeSetting,
+        Json $json,
         Registry $registry,
         CategoryFactory $categoryFactory,
+        CollectionFactory $categoryCollectionFactory,
         Image $imageHelper,
         array $data = []
     ) {
         parent::__construct($context, $data);
+        $this->json = $json;
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
         $this->_registry = $registry;
         $this->_categoryFactory = $categoryFactory;
         $this->imageHelper = $imageHelper;
+        $this->categoryCollectionFactory = $categoryCollectionFactory;
     }
 
     /**
@@ -90,9 +110,18 @@ class ViewedProduct extends Template
     public function getProductCategories()
     {
         if (empty($this->categories)) {
-            foreach ($this->getProduct()->getCategoryIds() as $category_id) {
-                $category = $category = $this->_categoryFactory->create()->load($category_id);
-                $this->categories[] = $category->getName();
+            $categoryIds = $this->getProduct()->getCategoryIds();
+            $categoryCollection = $this->categoryCollectionFactory->create()
+                ->addAttributeToSelect('name')
+                ->addAttributeToFilter('entity_id', $categoryIds);
+            $categoryCollection->addIsActiveFilter();
+            $categoryCollection->setPageSize(self::PRODUCT_CATEGORY_LIMIT);
+
+            foreach ($categoryCollection as $category) {
+                $categoryName = $category->getName();
+                if (!in_array($categoryName, $this->categories)) {
+                    $this->categories[] = $categoryName;
+                }
             }
         }
 
@@ -107,7 +136,7 @@ class ViewedProduct extends Template
      */
     public function getProductCategoriesAsJson()
     {
-        return json_encode($this->getProductCategories());
+        return $this->json->serialize($this->getProductCategories());
     }
 
     /**
@@ -191,7 +220,7 @@ class ViewedProduct extends Template
             $result['ImageURL'] = $this->getProductImage();
         }
 
-        return json_encode($result);
+        return $this->json->serialize($result);
     }
 
     /**
@@ -215,6 +244,6 @@ class ViewedProduct extends Template
             $result['ImageURL'] = $this->getProductImage();
         }
 
-        return json_encode($result);
+        return $this->json->serialize($result);
     }
 }
