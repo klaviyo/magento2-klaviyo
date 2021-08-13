@@ -82,15 +82,18 @@ class ProductSaveAfter implements ObserverInterface
             if ($this->_klaviyoScopeSetting->getWebhookSecret() && $this->_klaviyoScopeSetting->getProductSaveAfterSetting($storeIds[0])) {
 
               $normalizedProduct = $this->normalizeProduct($product);
-              if ($normalizedProduct['TypeID'] == 'configurable') {
-                $children = $product->getTypeInstance()->getUsedProducts($product);
-                foreach ($children as $child) {
-                  $normalizedChildProduct = $this->normalizeProduct($child);
-                  array_push($normalizedProduct['variants'], $normalizedChildProduct);
-                }
-              }
 
-                $this->_webhookHelper->makeWebhookRequest('product/save', $normalizedProduct, $klaviyoId);
+              // write to kl_products table so data can by passed to sync table and then to klaviyo
+              $connection  = $this->resourceConnection->getConnection();
+              $tableName = "kl_products";
+
+              $data = [
+
+              ];
+
+              $connection->insert($tableName, $data);
+
+              // $this->_webhookHelper->makeWebhookRequest('product/save', $normalizedProduct, $klaviyoId);
             }
         }
     }
@@ -101,27 +104,28 @@ class ProductSaveAfter implements ObserverInterface
         return;
       }
 
-      $product_info = [];
+      $product_id = $product->getId();
 
-      $product_info['store_ids'] = $product->getStoreIds();
-      $product_info['ID'] = $product->getId();
-      $product_info['TypeID'] = $product->getTypeId();
-      $product_info['Name'] = $product->getName();
-      $product_info['qty'] = $this->_stockRegistry->getStockItem($product->getId())->getQty();
-
-      $product_info['Visibility'] = $product->getVisibility();
-      $product_info['IsInStock'] = $product->isInStock();
-      $product_info['Status'] = $product->getStatus();
-
-      $product_info['CreatedAt'] = $product->getCreatedAt();
-      $product_info['UpdatedAt'] = $product->getUpdatedAt();
-
-      $product_info['FirstImageUrl'] = $product->getImage();
-      $product_info['ThumbnailImageURL'] = $product->getThumbnail();
-
-      $product_info['metadata'] = array(
-        'price' => $product->getPrice(),
-        'sku' => $product->getSku()
+      $product_info = array(
+        'product' => array(
+          'store_ids' => $product->getStoreIds(),
+          'ID' => $product_id,
+          'TypeID' => $product->getTypeId(),
+          'Name' => $product->getName(),
+          'qty' => $this->_stockRegistry->getStockItem($product_id)->getQty(),
+          'Visibility' => $product->getVisibility(),
+          'IsInStock' => $product->isInStock(),
+          'Status' => $product->getStatus(),
+          'CreatedAt' => $product->getCreatedAt(),
+          'UpdatedAt' => $product->getUpdatedAt(),
+          'FirstImageUrl' => $product->getImage(),
+          'ThumbnailImageURL' => $product->getThumbnail(),
+          'metadata' => array(
+            'price' => $product->getPrice(),
+            'sku' => $product->getSku()
+          ),
+          'categories' => []
+        )
       );
 
       if ($product->getSpecialPrice()) {
@@ -130,23 +134,12 @@ class ProductSaveAfter implements ObserverInterface
         $product_info['metadata']['special_to_date'] = $product->getSpecialToDate();
       }
 
-      $product_info['categories'] = [];
       $product_category_ids = $product->getCategoryIds();
       $category_factory = $this->_categoryFactory->create();
       foreach ($product_category_ids as $category_id) {
         $category = $category_factory->load($category_id);
         $product_info['categories'][$category_id] = $category->getName();
       }
-
-      $parent_product = $this->_productTypeConfigurable->getParentIdsByChild($product_info['ID']);
-
-      if (isset($parent_product[0])) {
-        $product_info['parent_product_id'] = $parent_product[0];
-      } else {
-        $product_info['parent_product_id'] = '';
-      }
-
-      $product_info['variants'] = [];
 
       return $product_info;
     }

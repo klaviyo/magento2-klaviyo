@@ -23,6 +23,14 @@ class InstallSchema implements InstallSchemaInterface
         $installer = $setup;
         $installer->startSetup();
 
+        /**
+         * Create products table
+         */
+        $this->createProductsTable($installer);
+
+        /**
+         * Add consent columns to quote and sales_order tables
+         */
         $eavTable1 = $installer->getTable('quote');
         $eavTable2 = $installer->getTable('sales_order');
 
@@ -47,5 +55,61 @@ class InstallSchema implements InstallSchemaInterface
         }
 
         $installer->endSetup();
+    }
+
+    /**
+     * @param SchemaSetupInterface $installer
+     *
+     * @return null
+     */
+    private function createProductsTable($installer)
+    {
+      $tableName = 'kl_products';
+      $this->dropTableIfExists($installer, $tableName);
+
+      $productsTable = $installer->getConnection()->newTable($tableName);
+      $productsTable = $this->addColumnsToProductsTable($productsTable);
+      // $productsTable = $this->addIndexesToProductsTable($installer, $productsTable);
+    }
+
+    /**
+     * @param Table $productsTable
+     * @return Table
+     */
+    private function addColumnsToProductsTable($productsTable)
+    {
+      return $productsTable->addColumn(
+        'id',
+        \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+        null,
+        [
+          'primary' => true,
+          'identity' => true,
+          'unsigned' => true,
+          'nullable' => false
+        ],
+        'Primary Key'
+      )
+      ->addColumn(
+        'payload',
+        \Magento\Framework\DB\Ddl\Table::TYPE_JSON,
+        null,
+        ['nullable' => false],
+        'Payload'
+      )
+      ->addColumn(
+        'created_at',
+        \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+        null,
+        [],
+        'Created at Time'
+      )
+      ->addColumn(
+        'updated_at',
+        \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+        null,
+        [],
+        'Updated at Time'
+      )
     }
 }

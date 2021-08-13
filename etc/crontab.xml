@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+  <group id="klaviyo_syncs">
+    <job name="klaviyo_queue_products_for_sync" instance="Klaviyo\Reclaim\Model\Cron" method="queueProducts">
+      <schedule>*************</schedule>
+    </job>
+  </group>
+</config>
