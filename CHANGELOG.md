@@ -6,10 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 
+### [3.0.7] - 2021-08-27
+
 #### Fixed
 - Right trim trailing slash from Custom Media Url setting from Klaviyo Extension 
 - Properly escape the public api for onsite tag
 - Handle newsletter subscriptions in all areas
+- Fixing bug with newsletter subscribes for anonymous users (not registered accounts)
 
 ### [3.0.6] - 2021-07-01
 
@@ -114,7 +117,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CSP now uses report-only mode
 
 
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.6...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.7...HEAD
+[3.0.7]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.6...3.0.7
 [3.0.6]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.5...3.0.6
 [3.0.5]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.4...3.0.5
 [3.0.4]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.3...3.0.4
