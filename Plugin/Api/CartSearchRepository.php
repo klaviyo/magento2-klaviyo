@@ -11,8 +11,12 @@ use Magento\Quote\Model\CartSearchResults;
 
 class CartSearchRepository
 {
-
     const KL_MASKED_ID = 'kl_masked_id';
+
+    /**
+     * @var bool
+     */
+    private $hasPluginExecuted = false;
 
     /**
      * QuoteId Masker
@@ -51,6 +55,11 @@ class CartSearchRepository
      */
     public function afterGetList(CartRepositoryInterface $subject, CartSearchResults $searchResult)
     {
+        if ($this->hasPluginExecuted) {
+            return $searchResult;
+        }
+
+        $this->hasPluginExecuted = true;
         $quotes = $searchResult->getItems();
 
         foreach ($quotes as $quote) {
