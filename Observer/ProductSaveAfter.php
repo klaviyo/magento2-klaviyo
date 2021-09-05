@@ -6,10 +6,10 @@ use Exception;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Klaviyo\Reclaim\Helper\Webhook;
 use Klaviyo\Reclaim\Helper\Logger;
+use Klaviyo\Reclaim\Model\KlProductFactory;
 
 use Magento\Catalog\Model\CategoryFactory;
 use Magento\CatalogInventory\Api\StockRegistryInterface;
-use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 
@@ -33,7 +33,7 @@ class ProductSaveAfter implements ObserverInterface
      */
     protected $_webhookHelper;
     protected $_categoryFactory;
-    protected $_productTypeConfigurable;
+    protected $_klProductFactory;
     protected $_stockRegistry;
     protected $product_category_names = [];
 
@@ -41,7 +41,7 @@ class ProductSaveAfter implements ObserverInterface
      * @param Webhook $webhookHelper
      * @param ScopeSetting $klaviyoScopeSetting
      * @param CategoryFactory $categoryFactory
-     * @param Configurable $productTypeConfigurable
+     * @param KlProductFactory $klProductFactory
      * @param StockRegistryInterface $stockRegistry
      * @param Logger $klaviyoLogger
      */
@@ -49,14 +49,14 @@ class ProductSaveAfter implements ObserverInterface
         Webhook $webhookHelper,
         ScopeSetting $klaviyoScopeSetting,
         CategoryFactory $categoryFactory,
-        Configurable $productTypeConfigurable,
+        KlProductFactory $klProductFactory,
         StockRegistryInterface $stockRegistry,
         Logger $klaviyoLogger
     ) {
         $this->_webhookHelper = $webhookHelper;
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
         $this->_categoryFactory = $categoryFactory;
-        $this->_productTypeConfigurable = $productTypeConfigurable;
+        $this->_klProductFactory = $klProductFactory;
         $this->_klaviyoLogger = $klaviyoLogger;
         $this->_stockRegistry = $stockRegistry;
     }
@@ -82,16 +82,17 @@ class ProductSaveAfter implements ObserverInterface
             if ($this->_klaviyoScopeSetting->getWebhookSecret() && $this->_klaviyoScopeSetting->getProductSaveAfterSetting($storeIds[0])) {
 
               $normalizedProduct = $this->normalizeProduct($product);
-
-              // write to kl_products table so data can by passed to sync table and then to klaviyo
-              $connection  = $this->resourceConnection->getConnection();
-              $tableName = "kl_products";
-
               $data = [
-
+                "status"=>"New",
+                "topic"=>"product/save",
+                "klaviyo_id"=>$klaviyoId,
+                "payload"=>json_encode($normalizedProduct)
               ];
+              $klProduct = $this->_klProductFactory->create();
+              $klProduct->setData($data);
+              $klProduct->save();
 
-              $connection->insert($tableName, $data);
+              // $this->_klaviyoLogger->log( print_r("Created new row?", true));
 
               // $this->_webhookHelper->makeWebhookRequest('product/save', $normalizedProduct, $klaviyoId);
             }

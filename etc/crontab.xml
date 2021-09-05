@@ -1,8 +1,20 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
   <group id="klaviyo_syncs">
-    <job name="klaviyo_queue_products_for_sync" instance="Klaviyo\Reclaim\Model\Cron" method="queueProducts">
-      <schedule>*************</schedule>
+    <!-- <job name="klaviyo_queue_products_for_sync" instance="Klaviyo\Reclaim\Cron\KlProductsSync" method="queueKlProductsForSync">
+      <schedule>* * * * *</schedule>
+    </job> -->
+    <!-- <job name="klaviyo_clean_products_table" instance="Klaviyo\Reclaim\Cron\KlProductsSync" method="deleteMovedRows">
+      <schedule>* * * * *</schedule>
+    </job> -->
+    <job name="klaviyo_sync" instance="Klaviyo\Reclaim\Cron\KlSyncs" method="sync">
+      <schedule>* * * * *</schedule>
     </job>
+    <!-- <job name="klaviyo_retry_sync" instance="Klaviyo\Reclaim\Cron\KlSyncs" method="retry">
+      <schedule>59 23 * * *</schedule>
+    </job> -->
+    <!-- <job name="klaviyo_clean_sync_table" instance="Klaviyo\Reclaim\Cron\KlSyncs" method="clean">
+      <schedule>* * * * *</schedule>
+    </job> -->
   </group>
 </config>

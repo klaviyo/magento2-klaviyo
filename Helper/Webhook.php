@@ -9,7 +9,7 @@ use \Klaviyo\Reclaim\Helper\ScopeSetting;
 class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const USER_AGENT = 'Klaviyo/MagentoTwo/Webhook';
-    const WEBHOOK_URL = 'https://www.klaviyo.com/api/webhook/integration/magento_two';
+    const WEBHOOK_URL = 'https://local-klaviyo.com:8888/api/webhook/integration/magento_two';
 
     /**
      * Klaviyo logger helper
@@ -83,6 +83,5 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $webhookSecret = $this->_klaviyoScopeSetting->getWebhookSecret();
         return hash_hmac('sha256', json_encode($data), $webhookSecret);
-
     }
 }
