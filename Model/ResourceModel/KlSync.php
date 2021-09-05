@@ -25,6 +25,32 @@ class KlSync extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
       );
     }
 
+    public function updateRowsToRetry($ids)
+    {
+      if (empty($ids)) {
+          return;
+      }
+
+      $this->getConnection()->update(
+          $this->getMainTable(),
+          ['status' => 'RETRY'],
+          $where = ['id IN(?)' => $ids]
+      );
+    }
+
+    public function updateRowsToFailed($ids)
+    {
+      if (empty($ids)) {
+          return;
+      }
+
+      $this->getConnection()->update(
+          $this->getMainTable(),
+          ['status' => 'FAILED'],
+          $where = ['id IN(?)' => $ids]
+      );
+    }
+
     public function deleteSyncedRows($ids)
     {
         if (empty($ids)) {

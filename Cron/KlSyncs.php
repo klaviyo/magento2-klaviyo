@@ -61,9 +61,6 @@ class KlSyncs
        $klSyncCollection = $this->_klSyncCollectionFactory->create();
        $klSyncs = $klSyncCollection->getRowsForSync()->getData();
 
-       // $this->_klaviyoLogger->log("getRowsForSync query result below");
-       // $this->_klaviyoLogger->log( print_r( $klSyncs, true ) );
-
        $groupedRows = [];
 
        foreach ( $klSyncs as $row )
@@ -78,32 +75,19 @@ class KlSyncs
          }
        }
 
-       // $this->_klaviyoLogger->log("grouped rows result below");
-       // $this->_klaviyoLogger->log( print_r( $groupedRows["product/save"], true ) );
+       if (empty($groupedRows["product/save"]))
+       {
+          $this->_klaviyoLogger->log("No Klaviyo products to sync");
+       }
+       else
+       {
+         $productUpdateResponses = $this->sendProductUpdates($groupedRows["product/save"]);
+         $this->_klaviyoLogger->log( "product update responses below" );
+         $this->_klaviyoLogger->log( print_r( $productUpdateResponses, true ) );
 
-       $productUpdateResponses = $this->sendProductUpdates($groupedRows["product/save"]);
-       $this->_klaviyoLogger->log( "product update responses below" );
-       $this->_klaviyoLogger->log( print_r( $productUpdateResponses, true ) );
-
-
-       // $idsToUpdate = array_map(function($row) { return $row["id"]; }, $klSyncs);
-       // $this->_klaviyoLogger->log("Ids that need status to be changed below");
-       // $this->_klaviyoLogger->log( print_r( $idsToUpdate, true) );
-
-
-
-
-       // get connection to db
-       // $connection = $this->_resourceConnection->getConnection();
-       // name of sync table
-       // $klSyncTable = $connection->getTableName("kl_sync");
-       // build a query to get the 3 oldest non-processed rows
-       // $selectQuery = "select id, payload, topic from $klSyncTable where status = New limit 3";
-       // run the query to get the oldest rows for processing
-       // $result = $connection->fetchAll($selectQuery);
-       // break the result up into groups based on the webhook topic
-
-       // send the product/save payloads to the method for sending to Klaviyo
+         $this->_klSync->updateRowsToSynced($productUpdateResponses["successes"]);
+         $this->_klSync->updateRowsToRetry($productUpdateResponses["failures"]);
+       }
 
        return "result";
      }
@@ -115,12 +99,14 @@ class KlSyncs
        foreach ($products as $product)
        {
          $response = $this->_webhookHelper->makeWebhookRequest($product["topic"], [$product["payload"]], $product["klaviyo_id"]);
-         // array_push($responseManifest["successes"], $product["id"]);
-         $this->_klaviyoLogger->log(print_r("webhook response below", true));
-         $this->_klaviyoLogger->log(print_r($response, true));
-         $this->_klaviyoLogger->log(print_r("webhook response above", true));
-         // array_push($responseManifest["failures"], $product["id"]);
-
+         if ($response)
+         {
+           array_push($responseManifest["succeses"], $product["id"]);
+         }
+         else
+         {
+           array_push($responseManifest["failures"], $product["id"]);
+         }
        }
        return $responseManifest;
      }
@@ -145,9 +131,19 @@ class KlSyncs
          }
        }
 
-       $productUpdateResponses = $this->sendProductUpdates($groupedRows["product/save"]);
-       $this->_klaviyoLogger->log( "product update responses below" );
-       $this->_klaviyoLogger->log( print_r( $productUpdateResponses, true ) );
+       if (empty($groupedRows["product/save"]))
+       {
+          $this->_klaviyoLogger->log("No Klaviyo product syncs to retry");
+       }
+       else
+       {
+         $productUpdateResponses = $this->sendProductUpdates($groupedRows["product/save"]);
+         $this->_klaviyoLogger->log( "product update responses below" );
+         $this->_klaviyoLogger->log( print_r( $productUpdateResponses, true ) );
+
+         $this->_klSync->updateRowsToSynced($productUpdateResponses["successes"]);
+         $this->_klSync->updateRowsToRetry($productUpdateResponses["failures"]);
+       }
 
        return;
      }

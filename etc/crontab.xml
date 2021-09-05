@@ -4,9 +4,6 @@
     <!-- <job name="klaviyo_queue_products_for_sync" instance="Klaviyo\Reclaim\Cron\KlProductsSync" method="queueKlProductsForSync">
       <schedule>* * * * *</schedule>
     </job> -->
-    <!-- <job name="klaviyo_clean_products_table" instance="Klaviyo\Reclaim\Cron\KlProductsSync" method="deleteMovedRows">
-      <schedule>* * * * *</schedule>
-    </job> -->
     <job name="klaviyo_sync" instance="Klaviyo\Reclaim\Cron\KlSyncs" method="sync">
       <schedule>* * * * *</schedule>
     </job>
