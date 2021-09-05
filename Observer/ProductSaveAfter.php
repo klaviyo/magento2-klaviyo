@@ -83,7 +83,7 @@ class ProductSaveAfter implements ObserverInterface
 
               $normalizedProduct = $this->normalizeProduct($product);
               $data = [
-                "status"=>"New",
+                "status"=>"NEW",
                 "topic"=>"product/save",
                 "klaviyo_id"=>$klaviyoId,
                 "payload"=>json_encode($normalizedProduct)

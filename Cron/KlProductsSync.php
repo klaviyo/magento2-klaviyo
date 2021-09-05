@@ -52,7 +52,7 @@ class KlProductsSync
          $klSync->setData([
            "payload"=> $klProductToSync["payload"],
            "topic"=> $klProductToSync["topic"],
-           "status"=> "New"
+           "status"=> "NEW"
          ]);
          $klSync->save();
          array_push($idsToDelete, $klProductToSync["id"]);
@@ -83,15 +83,15 @@ class KlProductsSync
     //
     //   return false;
     // }
-     //
-     // public function deleteMovedRows()
-     // {
-     //     $this->_klaviyoLogger->log("KlProduct cleanup cron running");
-     //     $klProductsCollection = $this->_klProductCollectionFactory->create();
-     //     $idsToDelete = $klProductsCollection->getIdsToDelete();
-     //
-     //     $this->_klaviyoLogger->log("ids of products to delete below");
-     //     $this->_klaviyoLogger->log(print_r($idsToDelete, true));
-         // $this->_klProduct->deleteMovedRows($idsToDelete);
-     // }
+
+     public function clean()
+     {
+         $this->_klaviyoLogger->log("KlProduct cleanup cron running");
+         $klProductsCollection = $this->_klProductCollectionFactory->create();
+         $idsToDelete = $klProductsCollection->getIdsToDelete();
+
+         $this->_klaviyoLogger->log("ids of products to delete below");
+         $this->_klaviyoLogger->log(print_r($idsToDelete, true));
+         $this->_klProduct->deleteMovedRows($idsToDelete);
+     }
 }
