@@ -107,6 +107,8 @@ class ProductSaveAfter implements ObserverInterface
 
       $product_id = $product->getId();
 
+      // remove thumnbail image url?
+
       $product_info = array(
         'product' => array(
           'store_ids' => $product->getStoreIds(),
@@ -119,7 +121,7 @@ class ProductSaveAfter implements ObserverInterface
           'Status' => $product->getStatus(),
           'CreatedAt' => $product->getCreatedAt(),
           'UpdatedAt' => $product->getUpdatedAt(),
-          'FirstImageUrl' => $product->getImage(),
+          'FirstImageURL' => $product->getImage(),
           'ThumbnailImageURL' => $product->getThumbnail(),
           'metadata' => array(
             'price' => $product->getPrice(),
