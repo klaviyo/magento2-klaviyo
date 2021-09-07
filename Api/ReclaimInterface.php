@@ -28,6 +28,14 @@ interface ReclaimInterface
     public function getWebhookSecret();
 
     /**
+     * Returns the registered webhooks
+     *
+     * @return mixed[]
+     * @api
+     */
+    public function getWebhooks();
+
+    /**
      * Returns the Klaviyo log file
      *
      * @api
