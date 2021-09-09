@@ -3,10 +3,9 @@
 
 namespace Klaviyo\Reclaim\Plugin\Api;
 
-
+use Klaviyo\Reclaim\Model\Quote\QuoteIdMask as QuoteIdMaskResource;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\CartExtensionFactory;
-use Magento\Quote\Model\QuoteIdToMaskedQuoteId;
 use Magento\Quote\Model\CartSearchResults;
 
 class CartSearchRepository
@@ -15,12 +14,12 @@ class CartSearchRepository
     const KL_MASKED_ID = 'kl_masked_id';
 
     /**
-     * QuoteId Masker
+     * Quote Id Mask Resource
      *
-     * @var QuoteIdToMaskedQuoteId
+     * @var QuoteIdMaskResource
      */
-    private $quoteIdMask;
-
+    private $quoteIdMaskResource;
+    
     /**
      * Cart Extension Attributes Factory
      *
@@ -32,14 +31,14 @@ class CartSearchRepository
      * CartRepositoryPlugin constructor
      *
      * @param CartExtensionFactory $extensionFactory
-     * @param QuoteIdToMaskedQuoteId $quoteIdToMaskedQuoteId
+     * @param QuoteIdMaskResource $quoteIdMaskResource
      */
     public function __construct(
         CartExtensionFactory $extensionFactory,
-        QuoteIdToMaskedQuoteId $quoteIdToMaskedQuoteId
+        QuoteIdMaskResource $quoteIdMaskResource
     ){
         $this->extensionFactory = $extensionFactory;
-        $this->quoteIdMask = $quoteIdToMaskedQuoteId;
+        $this->quoteIdMaskResource = $quoteIdMaskResource;
     }
     /**
      * Add "kl_masked_id" extension attribute to order data object to make it accessible in API data
@@ -54,7 +53,7 @@ class CartSearchRepository
         $quotes = $searchResult->getItems();
 
         foreach ($quotes as $quote) {
-            $maskedId = $this->getMaskedIdFromQuoteId($quote->getId());
+            $maskedId = $this->quoteIdMaskResource->getMaskedQuoteId($quote->getId());
             $extensionAttributes = $quote->getExtensionAttributes();
             $extensionAttributes = $extensionAttributes ? $extensionAttributes : $this->extensionFactory->create();
             $extensionAttributes->setData(self::KL_MASKED_ID, $maskedId);
@@ -64,13 +63,4 @@ class CartSearchRepository
         return $searchResult;
     }
 
-    public function getMaskedIdFromQuoteId($quoteId)
-    {
-        try {
-            $quoteId = $this->quoteIdMask->execute($quoteId);
-        } catch (NoSuchEntityException $e) {
-            $quoteId = "";
-        }
-        return $quoteId;
-    }
 }
