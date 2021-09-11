@@ -91,10 +91,6 @@ class ProductSaveAfter implements ObserverInterface
               $klProduct = $this->_klProductFactory->create();
               $klProduct->setData($data);
               $klProduct->save();
-
-              // $this->_klaviyoLogger->log( print_r("Created new row?", true));
-
-              // $this->_webhookHelper->makeWebhookRequest('product/save', $normalizedProduct, $klaviyoId);
             }
         }
     }
@@ -107,11 +103,9 @@ class ProductSaveAfter implements ObserverInterface
 
       $product_id = $product->getId();
 
-      // remove thumnbail image url?
-
       $product_info = array(
+        'store_ids' => $product->getStoreIds(),
         'product' => array(
-          'store_ids' => $product->getStoreIds(),
           'ID' => $product_id,
           'TypeID' => $product->getTypeId(),
           'Name' => $product->getName(),
@@ -122,7 +116,6 @@ class ProductSaveAfter implements ObserverInterface
           'CreatedAt' => $product->getCreatedAt(),
           'UpdatedAt' => $product->getUpdatedAt(),
           'FirstImageURL' => $product->getImage(),
-          'ThumbnailImageURL' => $product->getThumbnail(),
           'metadata' => array(
             'price' => $product->getPrice(),
             'sku' => $product->getSku()
@@ -141,7 +134,7 @@ class ProductSaveAfter implements ObserverInterface
       $category_factory = $this->_categoryFactory->create();
       foreach ($product_category_ids as $category_id) {
         $category = $category_factory->load($category_id);
-        $product_info['categories'][$category_id] = $category->getName();
+        $product_info['product']['categories'][$category_id] = $category->getName();
       }
 
       return $product_info;

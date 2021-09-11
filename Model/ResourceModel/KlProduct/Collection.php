@@ -19,7 +19,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
 
     public function getKlProductsToQueueForSync()
     {
-        $productsCollection = $this->addFieldToSelect( ['id','payload','status','topic'] )
+        $productsCollection = $this->addFieldToSelect( ['id','payload','status','topic', 'klaviyo_id'] )
             ->addFieldToFilter( 'status','NEW' )
             ->addOrder( 'id', self::SORT_ORDER_ASC )
             ->setPageSize( 5 );

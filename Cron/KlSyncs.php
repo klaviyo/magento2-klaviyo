@@ -57,7 +57,6 @@ class KlSyncs
      */
      public function sync()
      {
-       $this->_klaviyoLogger->log("Klaviyo main sync running");
        $klSyncCollection = $this->_klSyncCollectionFactory->create();
        $klSyncs = $klSyncCollection->getRowsForSync()->getData();
 
@@ -82,8 +81,6 @@ class KlSyncs
        else
        {
          $productUpdateResponses = $this->sendProductUpdates($groupedRows["product/save"]);
-         $this->_klaviyoLogger->log( "product update responses below" );
-         $this->_klaviyoLogger->log( print_r( $productUpdateResponses, true ) );
 
          $this->_klSync->updateRowsToSynced($productUpdateResponses["successes"]);
          $this->_klSync->updateRowsToRetry($productUpdateResponses["failures"]);
@@ -92,28 +89,8 @@ class KlSyncs
        return "result";
      }
 
-     private function sendProductUpdates($products)
-     {
-       $this->_klaviyoLogger->log(print_r("sendProductUpdates invoked", true));
-       $responseManifest = ["successes" => [], "failures" => []];
-       foreach ($products as $product)
-       {
-         $response = $this->_webhookHelper->makeWebhookRequest($product["topic"], [$product["payload"]], $product["klaviyo_id"]);
-         if ($response)
-         {
-           array_push($responseManifest["succeses"], $product["id"]);
-         }
-         else
-         {
-           array_push($responseManifest["failures"], $product["id"]);
-         }
-       }
-       return $responseManifest;
-     }
-
      public function retry()
      {
-       $this->_klaviyoLogger->log("Klaviyo retry sync running");
        $klSyncCollection = $this->_klSyncCollectionFactory->create();
        $klSyncs = $klSyncCollection->getRowsForRetrySync()->getData();
 
@@ -138,15 +115,29 @@ class KlSyncs
        else
        {
          $productUpdateResponses = $this->sendProductUpdates($groupedRows["product/save"]);
-         $this->_klaviyoLogger->log( "product update responses below" );
-         $this->_klaviyoLogger->log( print_r( $productUpdateResponses, true ) );
 
          $this->_klSync->updateRowsToSynced($productUpdateResponses["successes"]);
-         $this->_klSync->updateRowsToRetry($productUpdateResponses["failures"]);
+         $this->_klSync->updateRowsToFailed($productUpdateResponses["failures"]);
        }
 
        return;
      }
+
+   private function sendProductUpdates($products)
+   {
+     $responseManifest = ["successes" => [], "failures" => []];
+     foreach ($products as $product)
+     {
+       $response = $this->_webhookHelper->makeWebhookRequest($product["topic"], $product["payload"], $product["klaviyo_id"]);
+
+       if ($response) {
+         array_push($responseManifest["successes"], $product["id"]);
+       } else {
+         array_push($responseManifest["failures"], $product["id"]);
+       }
+     }
+     return $responseManifest;
+   }
 
      public function clean()
      {
