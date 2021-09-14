@@ -131,7 +131,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function klaviyoTrackEvent($event, $customer_properties = [], $properties = [], $timestamp = null, $storeId = null)
     {
         if ((!array_key_exists('$email', $customer_properties) || empty($customer_properties['$email']))
-            && (!array_key_exists('$id', $customer_properties) || empty($customer_properties['$id']))) {
+            && (!array_key_exists('$id', $customer_properties) || empty($customer_properties['$id']))
+            && (!array_key_exists('$exchange_id', $customer_properties) || empty($customer_properties['$exchange_id'])))
+        {
 
             return 'You must identify a user by email or ID.';
         }

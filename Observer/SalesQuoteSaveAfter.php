@@ -5,6 +5,7 @@ namespace Klaviyo\Reclaim\Observer;
 
 use Klaviyo\Reclaim\Helper\Data;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
+use Klaviyo\Reclaim\Model\Events;
 use Klaviyo\Reclaim\Plugin\Api\CartSearchRepository;
 
 use Magento\Framework\Event\Observer;
@@ -13,12 +14,6 @@ use Magento\Checkout\Model\Session;
 
 class SalesQuoteSaveAfter implements ObserverInterface
 {
-    /**
-     * Klaviyo Data Helper
-     * @var Data $_dataHelper
-     */
-    protected $_dataHelper;
-
     /**
      * Klaviyo Scope setting Helper
      * @var ScopeSetting $_scopeSetting
@@ -38,49 +33,64 @@ class SalesQuoteSaveAfter implements ObserverInterface
     protected $_checkoutsession;
 
     /**
-     * SalesQuoteSaveAfter constructor.
+     * Added To Cart Model
+     * @var Events
+     */
+    protected $_eventsModel;
+
+    /**
+     * SalesQuoteSaveAfter Constructor
      * @param Data $dataHelper
      * @param ScopeSetting $scopeSetting
      * @param CartSearchRepository $cartSearchRepository
      * @param Session $checkoutsession
+     * @param Events $eventsModel
      */
     public function __construct(
-        Data $dataHelper,
         ScopeSetting $scopeSetting,
         CartSearchRepository $cartSearchRepository,
-        Session $checkoutsession
+        Session $checkoutsession,
+        Events $eventsModel
     )
     {
-        $this->_dataHelper = $dataHelper;
         $this->_scopeSetting = $scopeSetting;
         $this->_cartSearchRepository = $cartSearchRepository;
         $this->_checkoutsession = $checkoutsession;
+        $this->_eventsModel = $eventsModel;
     }
 
     public function execute( Observer $observer )
     {
-        $eventData = $observer->getData();
         $klAddedToCartPayload = $this->getCheckoutSession()->getKlAddedToCartKey();
         if ( !isset( $klAddedToCartPayload ) ) { return; }
 
         $public_key = $this->_scopeSetting->getPublicApiKey();
         if ( !isset( $public_key ) ) { return; }
 
+        if ( ! isset( $_COOKIE['__kla_id'] )) { return; }
+
         $kl_decoded_cookie = json_decode( base64_decode( $_COOKIE['__kla_id'] ), true );
         if ( !isset( $kl_decoded_cookie ) ) { return; }
 
-        $kl_user_properties = array( '$email' => $kl_decoded_cookie['$email'] );
-        if ( !isset( $kl_user_properties['$email'] ) ) { return; }
+        if ( isset( $kl_decoded_cookie['$exchange_id'] )) {
+            $kl_user_properties = array('$exchange_id' => $kl_decoded_cookie['$exchange_id']);
+        } elseif ( isset( $kl_decoded_cookie['$email'] )) {
+            $kl_user_properties = array('$email' => $kl_decoded_cookie['$email']);
+        } else { return; }
 
         $quote = $observer->getData('quote');
         $maskedQuoteId = $this->_cartSearchRepository->getMaskedIdFromQuoteId( $quote->getId() );
         $klAddedToCartPayload = array_merge( $klAddedToCartPayload, array( 'MaskedQuoteId' => $maskedQuoteId ) );
 
-        $this->_dataHelper->klaviyoTrackEvent(
-            'Added To Cart',
-            $kl_user_properties,
-            $klAddedToCartPayload
-        );
+        $newEvent = [
+            'status' => 'NEW',
+            'user_properties' => json_encode( $kl_user_properties ),
+            'event'=> 'Added To Cart',
+            'payload' => json_encode( $klAddedToCartPayload )
+        ];
+
+        $eventsData = $this->_eventsModel->setData( $newEvent );
+        $eventsData->save();
 
         $this->getCheckoutSession()->unsKlAddedToCartKey();
     }

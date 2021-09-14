@@ -6,9 +6,10 @@ use Exception;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Klaviyo\Reclaim\Helper\Webhook;
 use Klaviyo\Reclaim\Helper\Logger;
-use Klaviyo\Reclaim\Model\KlProductFactory;
+use Klaviyo\Reclaim\Model\ProductsFactory;
 
 use Magento\Catalog\Model\CategoryFactory;
+use Magento\Catalog\Model\Product;
 use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
@@ -41,7 +42,7 @@ class ProductSaveAfter implements ObserverInterface
      * @param Webhook $webhookHelper
      * @param ScopeSetting $klaviyoScopeSetting
      * @param CategoryFactory $categoryFactory
-     * @param KlProductFactory $klProductFactory
+     * @param ProductsFactory $klProductFactory
      * @param StockRegistryInterface $stockRegistry
      * @param Logger $klaviyoLogger
      */
@@ -49,7 +50,7 @@ class ProductSaveAfter implements ObserverInterface
         Webhook $webhookHelper,
         ScopeSetting $klaviyoScopeSetting,
         CategoryFactory $categoryFactory,
-        KlProductFactory $klProductFactory,
+        ProductsFactory $klProductFactory,
         StockRegistryInterface $stockRegistry,
         Logger $klaviyoLogger
     ) {
