@@ -42,7 +42,7 @@ define([
         }
 
         self._email = jQuery(this).val();
-        if (!window._learnq.identify().email) {
+        if (!window._learnq.isIdentified()) {
           window._learnq.push(['identify', {
             '$email': self._email
           }]);
