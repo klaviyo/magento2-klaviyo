@@ -79,7 +79,7 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
      * @return string
      * @throws Exception
      */
-    private function createWebhookSecurity(array $data)
+    private function createWebhookSecurity(string $data)
     {
         $webhookSecret = $this->_klaviyoScopeSetting->getWebhookSecret();
         return hash_hmac('sha256', $data, $webhookSecret);
