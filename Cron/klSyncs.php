@@ -131,12 +131,12 @@ class klSyncs
                  if ( $response != 'successess' ) {
                      if ( $retryCount == 1 ) { sleep(3); }
                      $response = $this->getResponseStatus(
-                         $this->_webhookHelper->makeWebhookRequest($product["topic"], [$product["payload"]], $product["klaviyo_id"]
+                         $this->_webhookHelper->makeWebhookRequest($product["topic"], $product["payload"], $product["klaviyo_id"]
                          ) );
                  }
                  $retryCount+=1;
              }
-             array_push( $responseManifest["$response"], $event['id']);
+             array_push( $responseManifest["$response"], $product['id']);
          }
 
          $this->updateRowStatuses( $responseManifest, $isRetry );
