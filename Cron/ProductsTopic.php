@@ -70,6 +70,7 @@ class ProductsTopic
             $klSync->setData([
                 "payload"=> $klProductToSync["payload"],
                 "topic"=> $klProductToSync["topic"],
+                "klaviyo_id"=>$klProductToSync["klaviyo_id"],
                 "status"=> "NEW"
             ]);
             try {
