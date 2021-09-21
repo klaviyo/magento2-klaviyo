@@ -39,8 +39,8 @@ class CheckoutLayoutPlugin
 
     public function afterProcess(\Magento\Checkout\Block\Checkout\LayoutProcessor $processor, $jsLayout)
     {
-        if ($this->_klaviyoScopeSetting->getConsentAtCheckoutSMSIsActive()) {
-
+        if ($this->_klaviyoScopeSetting->getConsentAtCheckoutSMSIsActive())
+        {
             $smsConsentCheckbox = [
                 'component' => 'Magento_Ui/js/form/element/abstract',
                 'config' => [
