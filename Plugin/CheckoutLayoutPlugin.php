@@ -4,34 +4,34 @@
 namespace Klaviyo\Reclaim\Plugin;
 
 use Klaviyo\Reclaim\Helper\ScopeSetting;
+use Magento\Customer\Model\CustomerFactory;
+use Magento\Customer\Model\Session;
 
 
 class CheckoutLayoutPlugin
 {
     public function __construct(
-        ScopeSetting $klaviyoScopeSetting
+        ScopeSetting $klaviyoScopeSetting,
+        Session $customerSession,
+        CustomerFactory $customerFactory
     ) {
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
+        $this->_customerSession = $customerSession;
+        $this->_customerFactory = $customerFactory;
     }
 
     /**
      * Checks if logged in user has a default address set, if not returns false.
      *
-     * @param Magento\Framework\App\ObjectManager $objectManager
-     * @param Magento\Customer\Model\Session $customerSession
-     *
      * @return Magento\Customer\Model\Address|false
      */
-    public function _getDefaultAddressIfSetForCustomer(
-        \Magento\Framework\App\ObjectManager $objectManager,
-        \Magento\Customer\Model\Session $customerSession
-    ) {
+    public function _getDefaultAddressIfSetForCustomer()
+    {
         $address = false;
-        if ($customerSession->isLoggedIn()) {
-            $customerData = $customerSession->getCustomer()->getData();
-            $customerFactory = $objectManager->get('\Magento\Customer\Model\CustomerFactory')->create();
+        if ($this->_customerSession->isLoggedIn()) {
+            $customerData = $this->_customerSession->getCustomer()->getData();
             $customerId = $customerData["entity_id"];
-            $customer = $customerFactory->load($customerId);
+            $customer = $this->_customerFactory->create()->load($customerId);
             $address = $customer->getDefaultShippingAddress();
         }
         return $address;
@@ -39,9 +39,6 @@ class CheckoutLayoutPlugin
 
     public function afterProcess(\Magento\Checkout\Block\Checkout\LayoutProcessor $processor, $jsLayout)
     {
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $customerSession = $objectManager->get('Magento\Customer\Model\Session');
-
         if ($this->_klaviyoScopeSetting->getConsentAtCheckoutSMSIsActive()) {
 
             $smsConsentCheckbox = [
@@ -64,7 +61,7 @@ class CheckoutLayoutPlugin
                 'id' => 'kl_sms_consent',
             ];
 
-            $address = $this->_getDefaultAddressIfSetForCustomer($objectManager, $customerSession);
+            $address = $this->_getDefaultAddressIfSetForCustomer();
 
             if (!$address)
                 $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['shipping-address-fieldset']['children']['kl_sms_consent'] = $smsConsentCheckbox;
@@ -92,7 +89,7 @@ class CheckoutLayoutPlugin
             }
         }
 
-        if (!$customerSession->isLoggedIn() && $this->_klaviyoScopeSetting->getConsentAtCheckoutEmailIsActive())
+        if (!$this->_customerSession->isLoggedIn() && $this->_klaviyoScopeSetting->getConsentAtCheckoutEmailIsActive())
         {
             $emailConsentCheckbox = [
                 'component' => 'Magento_Ui/js/form/element/abstract',
