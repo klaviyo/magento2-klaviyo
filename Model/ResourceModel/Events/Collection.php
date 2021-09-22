@@ -28,4 +28,21 @@ class Collection extends AbstractCollection
         return $eventsCollection;
     }
 
+    public function getIdsToDelete()
+    {
+        $now = new \DateTime('now');
+        $date = $now->sub( new \DateInterval('P2D') )->format('Y-m-d H:i:s');
+
+        $tableName = $this->getMainTable();
+
+        $idsToDelete = $this->getConnection()->fetchAll( "select id from (
+                                                            select id, timestampdiff(day, created_at, \"$date\") as row_age_in_days
+                                                            from $tableName
+                                                            where status = '".self::MOVED."'
+                                                            having row_age_in_days > 2
+                                                          ) as age_of_rows;"
+        );
+
+        return $idsToDelete;
+    }
 }

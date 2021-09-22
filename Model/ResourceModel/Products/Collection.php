@@ -17,7 +17,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         );
     }
 
-    public function getKlProductsToQueueForSync()
+    public function getProductsToUpdate()
     {
         $productsCollection = $this->addFieldToSelect( ['id','payload','status','topic', 'klaviyo_id'] )
             ->addFieldToFilter( 'status','NEW' )
@@ -27,7 +27,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         return $productsCollection;
     }
 
-    public function getRowsToDelete()
+    public function getIdsToDelete()
     {
         $now = new \DateTime('now');
         $date = $now->sub( new \DateInterval('P2D') )->format('Y-m-d H:i:s');
