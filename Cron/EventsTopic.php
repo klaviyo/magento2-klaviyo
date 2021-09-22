@@ -96,7 +96,7 @@ class EventsTopic
     {
         // Delete rows that have been moved to sync table
         $this->_klaviyoLogger->log('Event Cleanup Cron running: Deleting all rows that have been moved to Sync table');
-        $idsToDelete = $this->_eventsResource->getIdsToDelete();
+        $idsToDelete = $this->_eventsCollectionFactory->create()->getIdsToDelete();
 
         $this->_eventsResource->deleteMovedRows($idsToDelete);
         $this->_klaviyoLogger->log('Event Cleanup Cron complete: Deleted all rows moved to Sync table');

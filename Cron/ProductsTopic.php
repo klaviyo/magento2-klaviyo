@@ -55,7 +55,7 @@ class ProductsTopic
     public function queueKlProductsForSync()
     {
         $klProductsCollection = $this->_klProductCollectionFactory->create();
-        $klProductsToSync = $klProductsCollection->getKlProductsToQueueForSync()->getData();
+        $klProductsToSync = $klProductsCollection->getProductsToUpdate()->getData();
 
         if (empty($klProductsToSync))
         {
@@ -88,7 +88,7 @@ class ProductsTopic
     public function clean()
     {
         $klProductsCollection = $this->_klProductCollectionFactory->create();
-        $idsToDelete = $klProductsCollection->getRowsToDelete();
+        $idsToDelete = $klProductsCollection->getIdsToDelete();
 
         $this->_klProduct->deleteMovedRows($idsToDelete);
 

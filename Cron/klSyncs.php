@@ -85,7 +85,7 @@ class klSyncs
      {
          $this->_klaviyoLogger->log('Klaviyo Clean Sync Table Cron Running');
 
-         $idsToDelete = $this->_syncResource->getIdsToDelete();
+         $idsToDelete = $this->_syncCollectionFactory->create()->getIdsToDelete();
 
          $this->_klaviyoLogger->log('Row Ids with status FAILED');
          $this->_klaviyoLogger->log( print_r( $idsToDelete, true ) );
@@ -97,8 +97,6 @@ class klSyncs
          }
 
          $this->_klaviyoLogger->log('Klaviyo Clean Sync Table Cron Complete');
-
-         return;
      }
 
     /**
