@@ -4,14 +4,37 @@
 namespace Klaviyo\Reclaim\Plugin;
 
 use Klaviyo\Reclaim\Helper\ScopeSetting;
+use Magento\Customer\Model\CustomerFactory;
+use Magento\Customer\Model\Session;
 
 
 class CheckoutLayoutPlugin
 {
     public function __construct(
-        ScopeSetting $klaviyoScopeSetting
+        ScopeSetting $klaviyoScopeSetting,
+        Session $customerSession,
+        CustomerFactory $customerFactory
     ) {
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
+        $this->_customerSession = $customerSession;
+        $this->_customerFactory = $customerFactory;
+    }
+
+    /**
+     * Checks if logged in user has a default address set, if not returns false.
+     *
+     * @return Magento\Customer\Model\Address|false
+     */
+    public function _getDefaultAddressIfSetForCustomer()
+    {
+        $address = false;
+        if ($this->_customerSession->isLoggedIn()) {
+            $customerData = $this->_customerSession->getCustomer()->getData();
+            $customerId = $customerData["entity_id"];
+            $customer = $this->_customerFactory->create()->load($customerId);
+            $address = $customer->getDefaultShippingAddress();
+        }
+        return $address;
     }
 
     public function afterProcess(\Magento\Checkout\Block\Checkout\LayoutProcessor $processor, $jsLayout)
@@ -38,14 +61,35 @@ class CheckoutLayoutPlugin
                 'id' => 'kl_sms_consent',
             ];
 
-            $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['shipping-address-fieldset']['children']['kl_sms_consent'] = $smsConsentCheckbox;
-        }
-        // Open to ideas here, since we don't overwrite the customer-email section
-        // we need to distinguish if the customer is logged in or not, object manager is an easy way to do so
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $customerSession = $objectManager->get('Magento\Customer\Model\Session');
+            $address = $this->_getDefaultAddressIfSetForCustomer();
 
-        if (!$customerSession->isLoggedIn() && $this->_klaviyoScopeSetting->getConsentAtCheckoutEmailIsActive())
+            if (!$address)
+                $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['shipping-address-fieldset']['children']['kl_sms_consent'] = $smsConsentCheckbox;
+            else {
+
+                // extra un-editable field with saved phone number to display to logged in users with default address set
+                $smsConsentTelephone = [
+                    'component' => 'Magento_Ui/js/form/element/abstract',
+                    'config' =>
+                        [
+                            'customScope' => 'shippingAddress',
+                            'template' => 'ui/form/field',
+                            'elementTmpl' => 'ui/form/element/input',
+                        ],
+                    'label' => 'Phone Number',
+                    'provider' => 'checkoutProvider',
+                    'sortOrder' => '120',
+                    'disabled' => true,
+                    'visible' => true,
+                    'value' => $address->getTelephone()
+                ];
+
+                $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['before-form']['children']['kl_sms_phone_number'] = $smsConsentTelephone;
+                $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['before-form']['children']['kl_sms_consent'] = $smsConsentCheckbox;
+            }
+        }
+
+        if (!$this->_customerSession->isLoggedIn() && $this->_klaviyoScopeSetting->getConsentAtCheckoutEmailIsActive())
         {
             $emailConsentCheckbox = [
                 'component' => 'Magento_Ui/js/form/element/abstract',
