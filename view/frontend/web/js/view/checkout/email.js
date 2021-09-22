@@ -1,8 +1,9 @@
 define([
   'uiComponent',
+  'mage/url',
   'jquery',
   'domReady!'
-], function (Component, $) {
+], function (Component, url, $) {
   'use strict';
   // initialize the customerData prior to returning the component
   var _klaviyoCustomerData = window.customerData;
@@ -41,7 +42,7 @@ define([
         }
 
         self._email = jQuery(this).val();
-        if (!window._learnq.identify().email) {
+        if (!window._learnq.isIdentified()) {
           window._learnq.push(['identify', {
             '$email': self._email
           }]);
@@ -50,15 +51,8 @@ define([
       });
     },
     postUserEmail: function (customer_email) {
-      var path = window.location.pathname;
-      if (path.slice(-1) == '/') {
-        path = path.slice(0, -1);
-      }
-
-      var url = window.location.protocol + '//' + window.location.host + path.substring(0, path.lastIndexOf("/"));
-
       $.ajax({
-        url: url + '/reclaim/checkout/email',
+        url: url.build('reclaim/checkout/email'),
         method: 'POST',
         data: {
           'email': customer_email
