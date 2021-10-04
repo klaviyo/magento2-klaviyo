@@ -2,47 +2,23 @@
 
 namespace Klaviyo\Reclaim\Model\ResourceModel;
 
-use Klaviyo\Reclaim\Helper\Logger;
-
-class Products extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
+use Klaviyo\Reclaim\Setup\SchemaInterface;
+use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+/*
+ * Klaviyo Products Table ResourceModel.
+ *
+ * The ResourceModel for any Model has the ability to query and make transactions with its associated table in the database.
+ * This queries through the Zend\Db adapter which is connected to the Databse using the etc/env.php file.
+ * The ResourceModel requires the Model to create DataObject instances and requires the table name and its idFieldName
+ * to be defined.
+ */
+class Products extends AbstractDb
 {
-    protected $_klaviyoLogger;
+    /**
+     * Define main table
+     */
     protected function _construct()
     {
-        $this->_init('kl_products', 'id');
-    }
-
-    public function __construct(
-        \Magento\Framework\Model\ResourceModel\Db\Context $context,
-        Logger $klaviyoLogger
-    )
-    {
-        parent::__construct($context);
-        $this->_klaviyoLogger = $klaviyoLogger;
-    }
-
-    public function updateRowsToMoved($ids)
-    {
-        if (empty($ids)) {
-            return;
-        }
-
-        $this->getConnection()->update(
-            $this->getMainTable(),
-            ['status' => 'MOVED'],
-            ['id IN(?)' => $ids]
-        );
-    }
-
-    public function deleteMovedRows($ids)
-    {
-        if (empty($ids)) {
-            return;
-        }
-
-        $this->getConnection()->delete(
-            $this->getMainTable(),
-            ['id IN(?)' => $ids]
-        );
+        $this->_init(SchemaInterface::KL_PRODUCTS_TOPIC_TABLE, 'id');
     }
 }

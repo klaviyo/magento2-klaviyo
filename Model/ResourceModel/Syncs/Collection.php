@@ -2,54 +2,27 @@
 
 namespace Klaviyo\Reclaim\Model\ResourceModel\Syncs;
 
-class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
+use Klaviyo\Reclaim\Model\KlaviyoCollection;
+
+/*
+ * Klaviyo Syncs Collection Class
+ *
+ * Magento Collections are encapsulating the sets of models and related functionality, such as filtering, sorting and paging.
+ * When creating a Resource Collection, you need to specify which model it corresponds to, so that i can instantiate the
+ * apporpriate classes after loading a list of records. It is also necessary to know the matching resource model to be able
+ * to access the database. A Resource Collection is necessary to create a set of model instances and operate on them.
+ * Collections are very close to the database layer.
+ */
+class Collection extends KlaviyoCollection
 {
     /**
      * Define model & resource model
      */
     protected function _construct()
     {
-    $this->_init(
+        $this->_init(
         'Klaviyo\Reclaim\Model\Syncs',
         'Klaviyo\Reclaim\Model\ResourceModel\Syncs'
-    );
-
-    }
-
-    public function getRowsForSync()
-    {
-      $syncCollection = $this->addFieldToFilter( 'status','NEW' )
-          ->addOrder( 'id', self::SORT_ORDER_ASC )
-          ->setPageSize( 100 );
-
-      return $syncCollection;
-    }
-
-    public function getRowsForRetrySync()
-    {
-      $syncCollection = $this->addFieldToFilter( 'status','RETRY' )
-          ->addOrder( 'id', self::SORT_ORDER_ASC )
-          ->setPageSize( 100 );
-
-      return $syncCollection;
-    }
-
-    public function getIdsToDelete()
-    {
-        $now = new \DateTime('now');
-        $date = $now->sub( new \DateInterval('P2D') )->format('Y-m-d H:i:s');
-
-        $tableName = $this->getMainTable();
-
-        $idsToDelete = $this->getConnection()->fetchAll( "select id from (
-                                                            select id, timestampdiff(day, created_at, \"$date\") as row_age_in_days
-                                                            from $tableName
-                                                            where status = '".self::SYNCED."'
-                                                            having row_age_in_days > 2
-                                                          ) as age_of_rows;"
         );
-
-        return $idsToDelete;
-
     }
 }

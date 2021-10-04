@@ -3,9 +3,7 @@
 namespace Klaviyo\Reclaim\Cron;
 
 use Klaviyo\Reclaim\Helper\Logger;
-
 use Klaviyo\Reclaim\Model\SyncsFactory;
-use Klaviyo\Reclaim\Model\Resourcemodel\Events;
 use Klaviyo\Reclaim\Model\Resourcemodel\Events\CollectionFactory;
 
 class EventsTopic
@@ -15,13 +13,6 @@ class EventsTopic
      * @var Logger
      */
     protected $_klaviyoLogger;
-
-    /**
-     * Klaviyo Events ResourceModel
-     * @var Events
-     */
-    protected $_eventsResource;
-
     /**
      * Klaviyo Events Collection Factory
      * @var CollectionFactory
@@ -36,19 +27,16 @@ class EventsTopic
 
     /**
      * @param Logger $klaviyoLogger
-     * @param Events $eventsresource
      * @param CollectionFactory $eventsCollectionFactory
      * @param SyncsFactory $klSyncFactory
      */
     public function __construct(
         Logger $klaviyoLogger,
-        Events $eventsresource,
         CollectionFactory $eventsCollectionFactory,
         SyncsFactory $klSyncFactory
     )
     {
         $this->_klaviyoLogger = $klaviyoLogger;
-        $this->_eventsResource = $eventsresource;
         $this->_eventsCollectionFactory = $eventsCollectionFactory;
         $this->_klSyncFactory = $klSyncFactory;
     }
@@ -58,15 +46,13 @@ class EventsTopic
      */
     public function moveRowsToSync()
     {
-        $this->_klaviyoLogger->log('Events Topic sync running: Moving rows to Synced Table');
-
         // New Events to be moved to kl_sync table and update status of these to Moved, limit 500
-        $events = $this->_eventsCollectionFactory->create();
-        $eventsData = $events->getEventsToUpdate()->getData();
+        $eventsCollection = $this->_eventsCollectionFactory->create();
+        $eventsData = $eventsCollection->getRowsForSync('NEW')
+            ->addFieldToSelect(['id','event','payload','user_properties'])
+            ->getData();
 
         if (empty( $eventsData )){
-            $this->_klaviyoLogger->log('Events Topic sync running: No events to move, returning');
-            $this->_klaviyoLogger->log('Events Topic sync aborted');
             return;
         }
 
@@ -82,24 +68,25 @@ class EventsTopic
                 'user_properties' => $event['user_properties'],
                 'payload' => $event['payload']
             ]);
-            $sync->save();
-
-            array_push( $idsMoved, $event['id'] );
+            try {
+                $sync->save();
+                array_push($idsMoved, $event['id']);
+            } catch (\Exception $e) {
+                $this->_klaviyoLogger->log(sprintf("Unable to move row: %s", $e));
+            }
         }
 
         // Update Status of rows in kl_events table to Moved
-        $this->_eventsResource->updateRowsToMoved($idsMoved);
-        $this->_klaviyoLogger->log('Event Topic sync complete: Rows moved to Sync table and status updated in Topic table');
+        $eventsCollection->updateRowStatus($idsMoved, 'MOVED');
     }
 
     public function deleteMovedRows()
     {
         // Delete rows that have been moved to sync table
-        $this->_klaviyoLogger->log('Event Cleanup Cron running: Deleting all rows that have been moved to Sync table');
-        $idsToDelete = $this->_eventsCollectionFactory->create()->getIdsToDelete();
+        $eventsCollection = $this->_eventsCollectionFactory->create();
+        $idsToDelete = $eventsCollection->getIdsToDelete('MOVED');
 
-        $this->_eventsResource->deleteMovedRows($idsToDelete);
-        $this->_klaviyoLogger->log('Event Cleanup Cron complete: Deleted all rows moved to Sync table');
+        $eventsCollection->deleteRows($idsToDelete);
     }
 
 

@@ -16,12 +16,6 @@ class ProductsTopic
     protected $_klaviyoLogger;
 
     /**
-     * Klaviyo Products Resource Model
-     * @var Products
-     */
-    protected $_klProduct;
-
-    /**
      * Klaviyo Products Collection
      * @var CollectionFactory
      */
@@ -35,19 +29,16 @@ class ProductsTopic
 
     /**
      * @param Logger $klaviyoLogger
-     * @param Products $klProduct
      * @param SyncsFactory $klSyncFactory
      * @param CollectionFactory $klProductCollectionFactory
      */
     public function __construct(
         Logger $klaviyoLogger,
-        Products $klProduct,
         SyncsFactory $klSyncFactory,
         CollectionFactory $klProductCollectionFactory
     )
     {
         $this->_klaviyoLogger = $klaviyoLogger;
-        $this->_klProduct = $klProduct;
         $this->_klSyncFactory = $klSyncFactory;
         $this->_klProductCollectionFactory = $klProductCollectionFactory;
     }
@@ -55,7 +46,9 @@ class ProductsTopic
     public function queueKlProductsForSync()
     {
         $klProductsCollection = $this->_klProductCollectionFactory->create();
-        $klProductsToSync = $klProductsCollection->getProductsToUpdate()->getData();
+        $klProductsToSync = $klProductsCollection->getRowsForSync('NEW')
+            ->addFieldToSelect(['id','payload','status','topic', 'klaviyo_id'])
+            ->getData();
 
         if (empty($klProductsToSync))
         {
@@ -68,29 +61,29 @@ class ProductsTopic
         {
             $klSync = $this->_klSyncFactory->create();
             $klSync->setData([
-                "payload"=> $klProductToSync["payload"],
-                "topic"=> $klProductToSync["topic"],
-                "klaviyo_id"=>$klProductToSync["klaviyo_id"],
-                "status"=> "NEW"
+                'payload'=> $klProductToSync['payload'],
+                'topic'=> $klProductToSync['topic'],
+                'klaviyo_id'=>$klProductToSync['klaviyo_id'],
+                'status'=> 'NEW'
             ]);
             try {
                 $klSync->save();
-                array_push($idsToUpdate, $klProductToSync["id"]);
+                array_push($idsToUpdate, $klProductToSync['id']);
             } catch (\Exception $e) {
-                $this->_klaviyoLogger->log(sprintf("Unable to move row: %s", $e));
+                $this->_klaviyoLogger->log("Unable to move row due to: $e");
             }
         }
 
-        $this->_klProduct->updateRowsToMoved($idsToUpdate);
+        $klProductsCollection->updateRowStatus($idsToUpdate, 'MOVED');
         return;
     }
 
     public function clean()
     {
         $klProductsCollection = $this->_klProductCollectionFactory->create();
-        $idsToDelete = $klProductsCollection->getIdsToDelete();
+        $idsToDelete = $klProductsCollection->getIdsToDelete('MOVED');
 
-        $this->_klProduct->deleteMovedRows($idsToDelete);
+        $klProductsCollection->deleteRows($idsToDelete);
 
         return;
     }

@@ -4,11 +4,12 @@ namespace Klaviyo\Reclaim\Helper;
 use \Klaviyo\Reclaim\Helper\ScopeSetting;
 use \Magento\Framework\App\Helper\Context;
 use \Klaviyo\Reclaim\Helper\Logger;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const USER_AGENT = 'Klaviyo/1.0';
-    const KLAVIYO_HOST = 'http://local-klaviyo.com:8080/';
+    const KLAVIYO_HOST = 'https://a.klaviyo.com/';
     const LIST_V2_API = 'api/v2/list/';
 
     /**
@@ -138,7 +139,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             return 'You must identify a user by email or ID.';
         }
         $params = array(
-            'token' => $this->_klaviyoScopeSetting->getPublicApiKey($storeId),
+            'token' => '',
             'event' => $event,
             'properties' => $properties,
             'customer_properties' => $customer_properties
@@ -155,9 +156,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return 'data=' . urlencode(base64_encode(json_encode($params)));
     }
 
+    protected function unwrap_params($params) {
+        return json_decode(base64_decode(urldecode(substr($params,5))), true);
+    }
+
     protected function make_request($path, $params) {
         $url = self::KLAVIYO_HOST . $path . '?' . $params;
         $response = file_get_contents($url);
+
+        if ($response == '0'){
+            $dataString = print_r($this->unwrap_params($params),true);
+            $this->_klaviyoLogger->log("Unable to send event to Track API with data: $dataString");
+        }
+
         return $response == '1';
     }
 

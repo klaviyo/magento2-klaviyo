@@ -2,80 +2,23 @@
 
 namespace Klaviyo\Reclaim\Model\ResourceModel;
 
-class Syncs extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
+use Klaviyo\Reclaim\Setup\SchemaInterface;
+use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+/*
+ * Klaviyo Syncs Table ResourceModel.
+ *
+ * The ResourceModel for any Model has the ability to query and make transactions with its associated table in the database.
+ * This queries through the Zend\Db adapter which is connected to the Databse using the etc/env.php file.
+ * The ResourceModel requires the Model to create DataObject instances and requires the table name and its idFieldName
+ * to be defined.
+ */
+class Syncs extends AbstractDb
 {
-    const SYNCED = 'SYNCED';
-
     /**
      * Define main table
      */
     protected function _construct()
     {
-      $this->_init('kl_sync', 'id');
-    }
-
-    public function updateRowsToSynced($ids)
-    {
-      if (empty($ids)) {
-          return;
-      }
-
-      $this->getConnection()->update(
-          $this->getMainTable(),
-          ['status' => 'SYNCED'],
-          $where = ['id IN(?)' => $ids]
-      );
-    }
-
-    public function updateRowsToRetry($ids)
-    {
-      if (empty($ids)) {
-          return;
-      }
-
-      $this->getConnection()->update(
-          $this->getMainTable(),
-          ['status' => 'RETRY'],
-          $where = ['id IN(?)' => $ids]
-      );
-    }
-
-    public function updateRowsToFailed($ids)
-    {
-      if (empty($ids)) {
-          return;
-      }
-
-      $this->getConnection()->update(
-          $this->getMainTable(),
-          ['status' => 'FAILED'],
-          $where = ['id IN(?)' => $ids]
-      );
-    }
-
-    public function deleteSyncedRows($ids)
-    {
-        if (empty($ids)) {
-            return;
-        }
-
-        $this->getConnection()->delete(
-          $this->getMainTable(),
-          $where = ['id IN(?)' => $ids]
-        );
-    }
-
-    public function deleteFailedRows($ids)
-    {
-        if (empty($ids)) {
-            return;
-        }
-
-        $where = ['id IN(?)' => $ids];
-
-        $this->getConnection()->delete(
-            $this->getMainTable(),
-            $where
-        );
+      $this->_init(SchemaInterface::KL_SYNC_TOPIC_TABLE, 'id');
     }
 }
