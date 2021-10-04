@@ -112,7 +112,6 @@ class KlSyncs
      */
      private function sendUpdatesToApp($groupedRows, bool $isRetry = false)
      {
-         $this->_klaviyoLogger->log('Entering the sendUpdatesToApp method');
          $responseManifest = ['1' => [], '0' => []];
          foreach($groupedRows as $topic => $rows){
              if ($topic == 'product/save' && !empty($rows)) {
@@ -144,7 +143,7 @@ class KlSyncs
      }
 
     /**
-     * Update statues of rows to SYNCED, RETRY and FAILED based on response and ifRetry run
+     * Update statues of rows to SYNCED, RETRY and FAILED based on response and if Retry cron run
      * @param $responseManifest
      * @param $isRetry
      */

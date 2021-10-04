@@ -19,6 +19,6 @@ class Syncs extends AbstractDb
      */
     protected function _construct()
     {
-      $this->_init(SchemaInterface::KL_SYNC_TOPIC_TABLE, 'id');
+      $this->_init(SchemaInterface::KL_SYNC_TABLE, 'id');
     }
 }
