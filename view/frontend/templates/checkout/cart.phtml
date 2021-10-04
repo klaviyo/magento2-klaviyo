@@ -1,10 +1,11 @@
 <?php if ( $block->isKlaviyoEnabled() && $block->getPublicApiKey() ): ?>
     <script>
         require([
-           'jquery'
-        ], function (jQuery) {
+           'jquery',
+           'mage/url'
+        ], function (jQuery, url) {
           jQuery.ajax({
-              url: window.location.protocol + '//' + window.location.hostname + '/reclaim/checkout/reload',
+              url: url.build('reclaim/checkout/reload'),
               method: 'POST',
               data: {}
           });

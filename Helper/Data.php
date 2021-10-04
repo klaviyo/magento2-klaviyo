@@ -128,7 +128,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $response;
     }
 
-    public function klaviyoTrackEvent($event, $customer_properties=array(), $properties=array(), $timestamp=NULL)
+    public function klaviyoTrackEvent($event, $customer_properties = [], $properties = [], $timestamp = null, $storeId = null)
     {
         if ((!array_key_exists('$email', $customer_properties) || empty($customer_properties['$email']))
             && (!array_key_exists('$id', $customer_properties) || empty($customer_properties['$id']))) {
@@ -136,7 +136,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             return 'You must identify a user by email or ID.';
         }
         $params = array(
-            'token' => $this->_klaviyoScopeSetting->getPublicApiKey(),
+            'token' => $this->_klaviyoScopeSetting->getPublicApiKey($storeId),
             'event' => $event,
             'properties' => $properties,
             'customer_properties' => $customer_properties

@@ -6,7 +6,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 
+### [3.0.9] - 2021-09-21
+
+#### Fixed
+- SMS Consent checkbox for logged in users with default address set
+- URL construction works when store URL has subdirectories
+- Remove reference to deprecated _learnq functionality
+
+### [3.0.8] - 2021-09-02
+
+#### Fixed
+- Fixes infinite loop issue produced by [Magento bug](https://github.com/magento/magento2/issues/33675)
+
+### [3.0.7] - 2021-08-27
+
+#### Fixed
+- Right trim trailing slash from Custom Media Url setting from Klaviyo Extension 
+- Properly escape the public api for onsite tag
+- Handle newsletter subscriptions in all areas
+- Fixing bug with newsletter subscribes for anonymous users (not registered accounts)
+
+### [3.0.6] - 2021-07-01
+
+#### Added
+- Add an ability to pass the Store ID during track event
+
+#### Fixed
+- Keep existing extension attributes when extending shipping payload request
+
+### [3.0.5] - 2021-06-08
+
+#### Added
+- Updates composer requirement to use module quote >=101.1.3
+- Add ability to retrieve config values for specified store id
+
+#### Fixed
+- Fix issue with newsletter subscription
+
+### [3.0.4] - 2021-06-08
+
+#### Fixed
+- Use `Magento\Framework\Api\SearchResults` to support Magento 2 versions 2.3.0 to 2.3.3
+
+### [3.0.3] - 2021-06-01
+
+#### Added
+- OAuth observer to create Magento2 Integration OAuth configuration
+
+#### Removed
+- Section about Setup Klaviyo User
+
 ### [3.0.2] - 2021-05-26
+
 #### Fixed
 - Missing quote in module
 
@@ -28,7 +79,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Fixes
 - Update checkout to not use quote for rebuilding
-
 
 ### [2.1.1] - 2021-05-17
 
@@ -79,8 +129,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CSP now uses report-only mode
 
 
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.2...HEAD
-[3.0.1]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.1...3.0.2
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.9...HEAD
+[3.0.9]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.8...3.0.9
+[3.0.8]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.7...3.0.8
+[3.0.7]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.6...3.0.7
+[3.0.6]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.5...3.0.6
+[3.0.5]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.4...3.0.5
+[3.0.4]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.3...3.0.4
+[3.0.3]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.2...3.0.3
+[3.0.2]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.1...3.0.2
 [3.0.1]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.0...3.0.1
 [3.0.0]: https://github.com/klaviyo/magento2-klaviyo/compare/2.2.0...3.0.0
 [2.2.0]: https://github.com/klaviyo/magento2-klaviyo/compare/2.1.1...2.2.0

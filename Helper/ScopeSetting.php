@@ -27,12 +27,11 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     const CONSENT_AT_CHECKOUT_SMS_LABEL_TEXT = 'klaviyo_reclaim_consent_at_checkout/sms_consent/label_text';
 
     const KLAVIYO_NAME_DEFAULT = 'klaviyo';
-    const KLAVIYO_USERNAME = 'klaviyo_reclaim_user/klaviyo_user/username';
-    const KLAVIYO_PASSWORD = 'klaviyo_reclaim_user/klaviyo_user/password';
-    const KLAVIYO_EMAIL = 'klaviyo_reclaim_user/klaviyo_user/email';
 
     const WEBHOOK_SECRET = 'klaviyo_reclaim_webhook/klaviyo_webhooks/webhook_secret';
     const PRODUCT_DELETE_BEFORE = 'klaviyo_reclaim_webhook/klaviyo_webhooks/using_product_delete_before_webhook';
+    
+    const KLAVIYO_OAUTH_NAME = 'klaviyo_reclaim_oauth/klaviyo_oauth/integration_name';
 
     protected $_scopeConfig;
     protected $_request;
@@ -139,14 +138,14 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
             ->getOne(self::MODULE_NAME)['setup_version'];
     }
 
-    public function getWebhookSecret()
+    public function getWebhookSecret($storeId = null)
     {
-        return $this->getScopeSetting(self::WEBHOOK_SECRET);
+        return $this->getScopeSetting(self::WEBHOOK_SECRET, $storeId);
     }
 
-    public function isEnabled()
+    public function isEnabled($storeId = null)
     {
-        return $this->getScopeSetting(self::ENABLE);
+        return $this->getScopeSetting(self::ENABLE, $storeId);
     }
 
     public function getPublicApiKey($storeId = null)
@@ -154,9 +153,9 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->getScopeSetting(self::PUBLIC_API_KEY, $storeId);
     }
 
-    public function getPrivateApiKey()
+    public function getPrivateApiKey($storeId = null)
     {
-        return $this->getScopeSetting(self::PRIVATE_API_KEY);
+        return $this->getScopeSetting(self::PRIVATE_API_KEY, $storeId);
     }
 
     public function setPrivateApiKey($value)
@@ -164,98 +163,78 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->setScopeSetting(self::PRIVATE_API_KEY, $value);
     }
 
-    public function isLoggerEnabled()
+    public function isLoggerEnabled($storeId = null)
     {
-        return $this->getScopeSetting(self::USING_KLAVIYO_LOGGER);
+        return $this->getScopeSetting(self::USING_KLAVIYO_LOGGER, $storeId);
     }
 
-    public function getKlaviyoUsername()
+    public function getKlaviyoOauthName($storeId = null)
     {
-        return $this->getScopeSetting(self::KLAVIYO_USERNAME);
+        return $this->getScopeSetting(self::KLAVIYO_OAUTH_NAME, $storeId);
     }
 
-    public function unsetKlaviyoUsername()
+    public function getCustomMediaURL($storeId = null)
     {
-        return $this->setScopeSetting(self::KLAVIYO_USERNAME, self::KLAVIYO_NAME_DEFAULT);
+        return $this->getScopeSetting(self::CUSTOM_MEDIA_URL, $storeId);
     }
 
-    public function getKlaviyoPassword()
+    public function getNewsletter($storeId = null)
     {
-        return $this->getScopeSetting(self::KLAVIYO_PASSWORD);
+        return $this->getScopeSetting(self::NEWSLETTER, $storeId);
     }
 
-    public function unsetKlaviyoPassword()
+    public function getOptInSetting($storeId = null)
     {
-        return $this->setScopeSetting(self::KLAVIYO_PASSWORD, '');
-    }
-
-    public function getKlaviyoEmail()
-    {
-        return $this->getScopeSetting(self::KLAVIYO_EMAIL);
-    }
-
-    public function unsetKlaviyoEmail()
-    {
-        return $this->setScopeSetting(self::KLAVIYO_EMAIL, '');
-    }
-
-    public function getCustomMediaURL()
-    {
-        return $this->getScopeSetting(self::CUSTOM_MEDIA_URL);
-    }
-
-    public function getNewsletter()
-    {
-        return $this->getScopeSetting(self::NEWSLETTER);
-    }
-
-    public function getOptInSetting()
-    {
-        if ($this->getScopeSetting(self::USING_KLAVIYO_LIST_OPT_IN)) {
+        if ($this->getScopeSetting(self::USING_KLAVIYO_LIST_OPT_IN, $storeId)) {
             return self::API_SUBSCRIBE;
         } else {
             return self::API_MEMBERS;
         }
     }
 
+    public function getConsentAtCheckoutEmailIsActive($storeId = null)
+    {
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_EMAIL_IS_ACTIVE, $storeId);
+    }
 
-    public function getConsentAtCheckoutEmailIsActive()
+    public function getConsentAtCheckoutEmailListId($storeId = null)
     {
-        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_EMAIL_IS_ACTIVE);
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_EMAIL_LIST_ID, $storeId);
     }
-    public function getConsentAtCheckoutEmailListId()
+
+    public function getConsentAtCheckoutEmailText($storeId = null)
     {
-        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_EMAIL_LIST_ID);
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_EMAIL_CONSENT_TEXT, $storeId);
     }
-    public function getConsentAtCheckoutEmailText()
-    {
-        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_EMAIL_CONSENT_TEXT);
-    }
-    public function getConsentAtCheckoutEmailSortOrder()
+
+    public function getConsentAtCheckoutEmailSortOrder($storeId = null)
     {
         return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_EMAIL_SORT_ORDER);
     }
 
+    public function getConsentAtCheckoutSMSIsActive($storeId = null)
+    {
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_IS_ACTIVE, $storeId);
+    }
 
-    public function getConsentAtCheckoutSMSIsActive()
+    public function getConsentAtCheckoutSMSListId($storeId = null)
     {
-        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_IS_ACTIVE);
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_LIST_ID, $storeId);
     }
-    public function getConsentAtCheckoutSMSListId()
+    
+    public function getConsentAtCheckoutSMSConsentText($storeId = null)
     {
-        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_LIST_ID);
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_CONSENT_TEXT, $storeId);
     }
-    public function getConsentAtCheckoutSMSConsentText()
+
+    public function getConsentAtCheckoutSMSConsentSortOrder($storeId = null)
     {
-        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_CONSENT_TEXT);
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_SORT_ORDER, $storeId);
     }
-    public function getConsentAtCheckoutSMSConsentSortOrder()
+
+    public function getConsentAtCheckoutSMSConsentLabelText($storeId = null)
     {
-        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_SORT_ORDER);
-    }
-    public function getConsentAtCheckoutSMSConsentLabelText()
-    {
-        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_LABEL_TEXT);
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_LABEL_TEXT, $storeId);
     }
 
 

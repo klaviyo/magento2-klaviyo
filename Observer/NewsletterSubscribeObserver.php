@@ -2,29 +2,83 @@
 
 namespace Klaviyo\Reclaim\Observer;
 
-use Magento\Framework\Event\ObserverInterface;
+use Klaviyo\Reclaim\Helper\Data;
+use Klaviyo\Reclaim\Helper\ScopeSetting;
+use Magento\Customer\Api\CustomerRepositoryInterface;
+use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Framework\Event\Observer;
+use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Newsletter\Model\Subscriber;
 
 class NewsletterSubscribeObserver implements ObserverInterface
 {
-    protected $_dataHelper;
-    protected $_klaviyoScopeSetting;
+    /**
+     * @var Data
+     */
+    protected $helper;
+    /**
+     * @var ScopeSetting
+     */
+    protected $scopeSetting;
+    /**
+     * @var CustomerRepositoryInterface
+     */
+    protected $customerRepository;
 
     public function __construct(
-        \Klaviyo\Reclaim\Helper\Data $_dataHelper,
-        \Klaviyo\Reclaim\Helper\ScopeSetting $_klaviyoScopeSetting,
-        \Magento\Framework\App\RequestInterface $request
+        Data $helper,
+        ScopeSetting $scopeSetting,
+        CustomerRepositoryInterface $customerRepository
     ) {
-        $this->_dataHelper = $_dataHelper;
-        $this->_klaviyoScopeSetting = $_klaviyoScopeSetting;
-        $this->request = $request;
+        $this->helper = $helper;
+        $this->scopeSetting = $scopeSetting;
+        $this->customerRepository = $customerRepository;
     }
 
-    public function execute(\Magento\Framework\Event\Observer $observer)
+    public function execute(Observer $observer)
     {
-        if (!$this->_klaviyoScopeSetting->isEnabled()) return;
+        if (!$this->scopeSetting->isEnabled()) {
+            return;
+        }
 
-        $email = $this->request->getParam('email');
-        $this->_dataHelper->subscribeEmailToKlaviyoList($email);
+        /** @var Subscriber $subscriber */
+        $subscriber = $observer->getDataObject();
+
+        if ($subscriber->hasDataChanges()) {
+            $customer = $this->getCustomer($subscriber);
+
+            if ($subscriber->isSubscribed()) {
+                $this->helper->subscribeEmailToKlaviyoList(
+                    $customer ? $customer->getEmail() : $subscriber->getEmail(),
+                    $customer ? $customer->getFirstname() : $subscriber->getFirstname(),
+                    $customer ? $customer->getLastname() : $subscriber->getLastname()
+                );
+            } else {
+                $this->helper->unsubscribeEmailFromKlaviyoList(
+                    $customer ? $customer->getEmail() : $subscriber->getEmail()
+                );
+            }
+        }
+    }
+
+    /**
+     * @param Subscriber $subscriber
+     * @return CustomerInterface|null
+     */
+    private function getCustomer(Subscriber $subscriber)
+    {
+        $customer = null;
+
+        if ($subscriber->getCustomerId()) {
+            try {
+                $customer = $this->customerRepository->getById($subscriber->getCustomerId());
+            } catch (NoSuchEntityException $e) {
+                // If the customer doesn't exist - return null
+            }
+        }
+
+        return $customer;
     }
 }

@@ -1,7 +1,7 @@
 <?php $klaviyoKey = $block->getPublicApiKey(); ?>
 <?php if ( $block->isKlaviyoEnabled() && $klaviyoKey ): ?>
 <script type="application/javascript" async 
- src="https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=<?= $klaviyoKey; ?>"></script>
+ src="https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=<?= $block->escapeHtml($klaviyoKey); ?>"></script>
 
     <script type="text/x-magento-init">
         {
