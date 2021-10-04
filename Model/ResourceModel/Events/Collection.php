@@ -2,47 +2,30 @@
 
 namespace Klaviyo\Reclaim\Model\ResourceModel\Events;
 
-use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+use Klaviyo\Reclaim\Model\KlaviyoCollection;
 
-class Collection extends AbstractCollection
+/*
+ * Klaviyo Events Collection Class
+ *
+ * Magento Collections are encapsulating the sets of models and related functionality, such as filtering, sorting and paging.
+ * When creating a Resource Collection, you need to specify which model it corresponds to, so that it can instantiate the
+ * appropriate classes after loading a list of records. It is also necessary to know the matching resource model to be able
+ * to access the database. A Resource Collection is necessary to create a set of model instances and operate on them.
+ * Collections are very close to the database layer.
+ */
+
+class Collection extends KlaviyoCollection
 {
-    protected $_idFieldName = 'id';
-
     /**
-     * Define resource model
+     * Define model & resource model
      *
      * @return void
      */
     protected function _construct()
     {
-        $this->_init( 'Klaviyo\Reclaim\Model\Events', 'Klaviyo\Reclaim\Model\ResourceModel\Events' );
-    }
-
-    public function getEventsToUpdate()
-    {
-        $eventsCollection = $this->addFieldToSelect( ['id','event','payload','user_properties'] )
-            ->addFieldToFilter( 'status','New' )
-            ->addOrder( 'created_at', self::SORT_ORDER_ASC )
-            ->setPageSize( 500 );
-
-        return $eventsCollection;
-    }
-
-    public function getIdsToDelete()
-    {
-        $now = new \DateTime('now');
-        $date = $now->sub( new \DateInterval('P2D') )->format('Y-m-d H:i:s');
-
-        $tableName = $this->getMainTable();
-
-        $idsToDelete = $this->getConnection()->fetchAll( "select id from (
-                                                            select id, timestampdiff(day, created_at, \"$date\") as row_age_in_days
-                                                            from $tableName
-                                                            where status = '".self::MOVED."'
-                                                            having row_age_in_days > 2
-                                                          ) as age_of_rows;"
+        $this->_init(
+            'Klaviyo\Reclaim\Model\Events',
+            'Klaviyo\Reclaim\Model\ResourceModel\Events'
         );
-
-        return $idsToDelete;
     }
 }
