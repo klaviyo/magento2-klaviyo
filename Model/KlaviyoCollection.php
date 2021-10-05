@@ -17,8 +17,8 @@ abstract class KlaviyoCollection extends AbstractCollection
      */
     public function getRowsForSync($status)
     {
-        $syncCollection = $this->addFieldToFilter('status',$status)
-            ->addOrder('id',self::SORT_ORDER_ASC)
+        $syncCollection = $this->addFieldToFilter('status', $status)
+            ->addOrder('id', self::SORT_ORDER_ASC)
             ->setPageSize(500);
 
         return $syncCollection;
