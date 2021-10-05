@@ -3,6 +3,7 @@
 namespace Klaviyo\Reclaim\Cron;
 
 use Exception;
+
 use Klaviyo\Reclaim\Helper\Logger;
 use Klaviyo\Reclaim\Helper\Webhook;
 use Klaviyo\Reclaim\Helper\Data;
@@ -60,14 +61,11 @@ class KlSyncs
      public function sync()
      {
          $syncCollection = $this->_syncCollectionFactory->create();
-
          $groupedRows = $this->getGroupedRows( $syncCollection->getRowsForSync('NEW')->getData() );
-
-//         $this->sendProductUpdates($groupedRows);
-//         $this->sendEvents($groupedRows);
 
          $this->sendUpdatesToApp($groupedRows);
 
+         return;
      }
 
     /**
@@ -84,6 +82,8 @@ class KlSyncs
          if ($klSyncTableSize > 10000 ){
              $this->_klaviyoLogger->log("Klaviyo Clean Sync: kl_sync table size greater than 10000, currently sitting at $klSyncTableSize");
          }
+
+         return;
      }
 
     /**
@@ -94,9 +94,6 @@ class KlSyncs
      {
          $syncCollection = $this->_syncCollectionFactory->create();
          $groupedRows = $this->getGroupedRows( $syncCollection->getRowsForSync('RETRY')->getData() );
-
-//         $this->sendProductUpdates($groupedRows, true);
-//         $this->sendEvents($groupedRows, true);
 
          $this->sendUpdatesToApp($groupedRows, true);
 
@@ -125,6 +122,7 @@ class KlSyncs
                          $row['payload'],
                          $row['klaviyo_id']
                      );
+                     if (!$response) {$response = '0';}
 
                      array_push( $responseManifest["$response"], $row['id']);
                  }
@@ -138,6 +136,7 @@ class KlSyncs
                          json_decode($row['payload'], true ),
                          strtotime($row['created_at'])
                      );
+                     if (!$response) {$response = '0';}
 
                      array_push( $responseManifest["$response"], $row['id']);
                  }
@@ -172,9 +171,9 @@ class KlSyncs
      private function getGroupedRows( $allRows )
      {
          $groupedRows = [];
-         foreach ( $allRows as $row )
+         foreach ($allRows as $row)
          {
-             if ( array_key_exists($row['topic'], $groupedRows) )
+             if (array_key_exists($row['topic'], $groupedRows))
              {
                  array_push($groupedRows[$row['topic']], $row);
              }
@@ -187,42 +186,4 @@ class KlSyncs
          return $groupedRows;
      }
 
-//     private function sendProductUpdates($rowsToSync, $isRetry = false)
-//     {
-//         if( empty($rowsToSync['product/save']) ) { return; }
-//
-//         $responseManifest = ['1' => [], '0' => []];
-//         foreach ($rowsToSync['product/save'] as $product)
-//         {
-//             $response = $this->_webhookHelper->makeWebhookRequest(
-//                 $product['topic'],
-//                 $product['payload'],
-//                 $product['klaviyo_id']
-//             );
-//
-//             array_push( $responseManifest["$response"], $product['id']);
-//         }
-//
-//         $this->updateRowStatuses( $responseManifest, $isRetry );
-//     }
-//
-//     private function sendEvents($rowsToSync, $isRetry = false)
-//     {
-//         if( empty($rowsToSync['Added To Cart']) ){ return; }
-//
-//         $responseManifest = ['1' => [], '0' => []];
-//         foreach ($rowsToSync['Added To Cart'] as $event)
-//         {
-//             $response = $this->_dataHelper->klaviyoTrackEvent(
-//                 $event['topic'],
-//                 json_decode( $event['user_properties'], true ),
-//                 json_decode( $event['payload'], true ),
-//                 strtotime($event['created_at'])
-//             );
-//
-//             array_push( $responseManifest["$response"], $event['id']);
-//         }
-//
-//         $this->updateRowStatuses( $responseManifest, $isRetry );
-//     }
 }
