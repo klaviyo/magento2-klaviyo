@@ -139,7 +139,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             return 'You must identify a user by email or ID.';
         }
         $params = array(
-            'token' => '',
+            'token' => $this->_klaviyoScopeSetting->getPublicApiKey($storeId),
             'event' => $event,
             'properties' => $properties,
             'customer_properties' => $customer_properties
