@@ -112,9 +112,13 @@ class KlSyncs
      */
      private function sendUpdatesToApp($groupedRows, bool $isRetry = false)
      {
+         $webhookTopics = ['product/save']; //List of topics that use webhooks
+         $trackApiTopics = ['Added To Cart']; //List of topics that use the Track API
+
          $responseManifest = ['1' => [], '0' => []];
+
          foreach($groupedRows as $topic => $rows){
-             if ($topic == 'product/save' && !empty($rows)) {
+             if (in_array($topic, $webhookTopics) && !empty($rows)) {
                  foreach($rows as $row) {
                      $response = $this->_webhookHelper->makeWebhookRequest(
                          $row['topic'],
@@ -126,7 +130,7 @@ class KlSyncs
                  }
              }
 
-             if ($topic == 'Added to Cart' && !empty($rows)) {
+             if (in_array($topic, $trackApiTopics) && !empty($rows)) {
                  foreach($rows as $row) {
                      $response = $this->_dataHelper->klaviyoTrackEvent(
                          $row['topic'],
@@ -160,6 +164,11 @@ class KlSyncs
 
      }
 
+    /**
+     * Groups rows from kl_sync table based on topics
+     * @param $allRows
+     * @return array
+     */
      private function getGroupedRows( $allRows )
      {
          $groupedRows = [];
