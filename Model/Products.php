@@ -21,6 +21,5 @@ class Products extends AbstractModel
     protected function _construct()
     {
         $this->_init('Klaviyo\Reclaim\Model\ResourceModel\Products');
-        parent::_construct();
     }
 }

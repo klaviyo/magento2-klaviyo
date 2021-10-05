@@ -4,7 +4,7 @@ namespace Klaviyo\Reclaim\Model;
 
 use Magento\Framework\Model\AbstractModel;
 
-/***
+/**
  * Klaviyo Syncs Model is used to represent the kl_syncs table created using db_schema.xml file using declarative schema.
  * https://devdocs.magento.com/guides/v2.4/extension-dev-guide/declarative-schema/
  * The Model doesn't have the capability to query the DB directly but is required by the ResourceModel to create Magento DataObject instances
@@ -21,6 +21,5 @@ class Syncs extends AbstractModel
     protected function _construct()
     {
         $this->_init('Klaviyo\Reclaim\Model\ResourceModel\Syncs');
-        parent::_construct();
     }
 }
