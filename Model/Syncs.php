@@ -21,6 +21,5 @@ class Syncs extends AbstractModel
     protected function _construct()
     {
       $this->_init('Klaviyo\Reclaim\Model\ResourceModel\Syncs');
-      parent::_construct();
     }
 }
