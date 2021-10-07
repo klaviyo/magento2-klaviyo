@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
     <event name="sales_model_service_quote_submit_before">
         <observer name="custom_fields_sales_address_save" instance="Klaviyo\Reclaim\Observer\SaveOrderMarketingConsent" />
     </event>
-
     <event name="newsletter_subscriber_save_commit_after">
         <observer name="klaviyo_reclaim" instance="Klaviyo\Reclaim\Observer\NewsletterSubscribeObserver" />
+    </event>
+    <event name="sales_quote_product_add_after">
+        <observer name="klaviyo_reclaim_atc" instance="Klaviyo\Reclaim\Observer\SalesQuoteProductAddAfter" />
+    </event>
+    <event name="sales_quote_save_after" >
+        <observer name="klaviyo_reclaim_atc" instance="Klaviyo\Reclaim\Observer\SalesQuoteSaveAfter" />
     </event>
 </config>
