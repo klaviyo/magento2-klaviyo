@@ -4,6 +4,7 @@ namespace Klaviyo\Reclaim\Cron;
 
 use Klaviyo\Reclaim\Helper\Logger;
 use Klaviyo\Reclaim\Model\SyncsFactory;
+use Klaviyo\Reclaim\Model\Quote\QuoteIdMask;
 use Klaviyo\Reclaim\Model\Resourcemodel\Events\CollectionFactory;
 
 class EventsTopic
@@ -13,8 +14,15 @@ class EventsTopic
      * @var Logger
      */
     protected $_klaviyoLogger;
+
     /**
-     * Klaviyo Events Collection Factory
+     * Klaviyo QuoteIdMask ResourceModel
+     * @var QuoteIdMask
+     */
+    protected $_quoteIdMaskResource;
+
+    /**
+     * Klaviyo Events Collection Facd ..ctory
      * @var CollectionFactory
      */
     protected $_eventsCollectionFactory;
@@ -29,16 +37,19 @@ class EventsTopic
      * @param Logger $klaviyoLogger
      * @param CollectionFactory $eventsCollectionFactory
      * @param SyncsFactory $klSyncFactory
+     * @param QuoteIdMask $quoteIdMaskResource
      */
     public function __construct(
         Logger $klaviyoLogger,
         CollectionFactory $eventsCollectionFactory,
-        SyncsFactory $klSyncFactory
+        SyncsFactory $klSyncFactory,
+        QuoteIdMask $quoteIdMaskResource
     )
     {
         $this->_klaviyoLogger = $klaviyoLogger;
         $this->_eventsCollectionFactory = $eventsCollectionFactory;
         $this->_klSyncFactory = $klSyncFactory;
+        $this->_quoteIdMaskResource = $quoteIdMaskResource;
     }
 
     /**
@@ -66,7 +77,7 @@ class EventsTopic
                 'status' => 'NEW',
                 'topic' => $event['event'],
                 'user_properties' => $event['user_properties'],
-                'payload' => $event['payload']
+                'payload' => $this->addMaskedQuoteIdToEventPayload(json_decode($event['payload'], true))
             ]);
             try {
                 $sync->save();
@@ -89,5 +100,19 @@ class EventsTopic
         $eventsCollection->deleteRows($idsToDelete);
     }
 
+    /**
+     * @param $payload
+     * @return false|string
+     */
+    public function addMaskedQuoteIdToEventPayload( $payload )
+    {
+        $maskedQuoteId = $this->_quoteIdMaskResource->getMaskedQuoteId(( $payload['QuoteId'] ));
+        unset($payload['QuoteId']);
+
+        return $payload = json_encode(array_merge(
+            $payload,
+            array('MaskedQuoteId' => $maskedQuoteId)
+        ));
+    }
 
 }

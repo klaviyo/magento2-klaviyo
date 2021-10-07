@@ -79,8 +79,7 @@ class SalesQuoteSaveAfter implements ObserverInterface
         } else { return; }
 
         $quote = $observer->getData('quote');
-        $maskedQuoteId = $this->_cartSearchRepository->getMaskedIdFromQuoteId( $quote->getId() );
-        $klAddedToCartPayload = array_merge( $klAddedToCartPayload, array( 'MaskedQuoteId' => $maskedQuoteId ) );
+        $klAddedToCartPayload = array_merge( $klAddedToCartPayload, array( 'QuoteId' => $quote->getId() ) );
 
         $newEvent = [
             'status' => 'NEW',
