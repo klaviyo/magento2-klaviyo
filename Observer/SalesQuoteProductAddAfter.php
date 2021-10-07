@@ -41,8 +41,8 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         $quote = $observer->getData('items')[0]->getQuote();
         $addedItems = $observer->getData('items');
 
-        foreach ( $addedItems as $item ){
-            $this->klAddedToCartItemData( $quote, $item );
+        foreach ($addedItems as $item){
+            $this->klAddedToCartItemData($quote, $item);
         }
     }
 
@@ -51,12 +51,12 @@ class SalesQuoteProductAddAfter implements ObserverInterface
      * @param $quote
      * @param $addedItem
      */
-    public function klAddedToCartItemData( $quote, $addedItem )
+    public function klAddedToCartItemData($quote, $addedItem)
     {
         $addedProduct = $addedItem->getProduct();
         $addedItemData = array(
-            'AddedItemCategories' => (array) $this->getCategoryName( $addedProduct->getCategoryIds() ),
-            'AddedItemDescription' => (string) strip_tags( $addedProduct->getDescription() ),
+            'AddedItemCategories' => (array) $this->getCategoryName($addedProduct->getCategoryIds()),
+            'AddedItemDescription' => (string) strip_tags($addedProduct->getDescription()),
             'AddedItemImageUrlKey' => (string) $addedProduct->getData('small_image'),
             'AddedItemPrice' => (float) $addedProduct->get_price(),
             'AddedItemQuantity' => (int) $addedItem->getQty(),
@@ -81,18 +81,18 @@ class SalesQuoteProductAddAfter implements ObserverInterface
      * @param $addedItem
      * @return array
      */
-    public function klBuildCartData( $quote, $addedItem )
+    public function klBuildCartData($quote, $addedItem)
     {
-        $cartItems = $quote->getItems() ? $quote->getitems() : array();
+        $cartItems = $quote->getItems() ?? array();
         $cartQty = 0;
         $items = array();
         $cartItemNames = array();
         $cartItemCategories = array();
 
-        foreach( $cartItems as $item ) {
+        foreach($cartItems as $item) {
             $product = $item->getProduct();
             $cartItemId = $product->getId();
-            $itemCategories = $this->getCategoryName( $product->getCategoryIds() );
+            $itemCategories = $this->getCategoryName($product->getCategoryIds());
             $itemName = $item->getName();
             $currentProduct = array(
                 'Categories' => (array) $itemCategories,
@@ -100,14 +100,14 @@ class SalesQuoteProductAddAfter implements ObserverInterface
                 'ProductId' => (int) $cartItemId,
                 'Price' => (float) $product->getPrice(),
                 'Title' => (string) $itemName,
-                'Description' => (string) strip_tags( $product->getDescription() ),
+                'Description' => (string) strip_tags($product->getDescription()),
                 'Url' => (string) $product->getProductUrl(),
                 'Quantity' => (int) $item->getQty()
             );
             $cartQty += $item->getQty();
-            array_push( $items, $currentProduct );
-            array_push( $cartItemNames, $itemName );
-            $cartItemCategories = $this->uniqueArrayOfStrings( $cartItemCategories, $itemCategories );
+            array_push($items, $currentProduct);
+            array_push($cartItemNames, $itemName);
+            $cartItemCategories = $this->uniqueArrayOfStrings($cartItemCategories, $itemCategories);
         }
 
         return array(
@@ -115,8 +115,7 @@ class SalesQuoteProductAddAfter implements ObserverInterface
             'ItemNames' => (array) $cartItemNames,
             'Items' => (array) $items,
             'ItemCount' => (int) $cartQty,
-            'Categories' => (array) $cartItemCategories,
-            '$service' => 'magento_two'
+            'Categories' => (array) $cartItemCategories
         );
     }
 
@@ -125,13 +124,14 @@ class SalesQuoteProductAddAfter implements ObserverInterface
      * @param array $categoryIds
      * @return array
      */
-    public function getCategoryName( array $categoryIds )
+    public function getCategoryName(array $categoryIds)
     {
+        $categoryFactory = $this->_categoryFactory->create();
         $categoryNames = [];
         foreach ( $categoryIds as $id ) {
-            $category = $this->_categoryFactory->create()->load( $id );
+            $category = $categoryFactory->load($id);
             $categoryName = $category->getName();
-            array_push( $categoryNames, $categoryName );
+            array_push($categoryNames, $categoryName);
         }
 
         return $categoryNames;
@@ -143,10 +143,10 @@ class SalesQuoteProductAddAfter implements ObserverInterface
      * @param $array_two
      * @return array
      */
-    public function uniqueArrayOfStrings( $array_one, $array_two ): array
+    public function uniqueArrayOfStrings($array_one, $array_two): array
     {
-        return array_values( array_unique(
-            array_merge( $array_one, $array_two ),
+        return array_values(array_unique(
+            array_merge($array_one, $array_two),
             SORT_REGULAR
         )) ;
     }

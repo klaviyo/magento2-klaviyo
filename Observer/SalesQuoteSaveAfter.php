@@ -69,31 +69,31 @@ class SalesQuoteSaveAfter implements ObserverInterface
         $public_key = $this->_scopeSetting->getPublicApiKey();
         if ( !isset( $public_key ) ) { return; }
 
-        if ( ! isset( $_COOKIE['__kla_id'] )) { return; }
+        if ( !isset($_COOKIE['__kla_id'] )) { return; }
 
-        $kl_decoded_cookie = json_decode( base64_decode( $_COOKIE['__kla_id'] ), true );
+        $kl_decoded_cookie = json_decode(base64_decode($_COOKIE['__kla_id']), true );
         if ( !isset( $kl_decoded_cookie ) ) { return; }
 
-        if ( isset( $kl_decoded_cookie['$exchange_id'] )) {
+        if ( isset($kl_decoded_cookie['$exchange_id'])) {
             $kl_user_properties = array('$exchange_id' => $kl_decoded_cookie['$exchange_id']);
-        } elseif ( isset( $kl_decoded_cookie['$email'] )) {
+        } elseif (isset($kl_decoded_cookie['$email'])) {
             $kl_user_properties = array('$email' => $kl_decoded_cookie['$email']);
         } else { return; }
 
         // Setting QuoteId at this point since the MaskedQuoteId is not updated when this event is dispatched,
         // MaskedQuoteId is set into the payload while the EventsTopic cron job moves rows into the Sync table
         $quote = $observer->getData('quote');
-        $klAddedToCartPayload = array_merge( $klAddedToCartPayload, array( 'QuoteId' => $quote->getId() ) );
+        $klAddedToCartPayload = array_merge($klAddedToCartPayload, array('QuoteId' => $quote->getId()));
 
         $newEvent = [
             'status' => 'NEW',
-            'user_properties' => json_encode( $kl_user_properties ),
+            'user_properties' => json_encode($kl_user_properties),
             'event'=> 'Added To Cart',
-            'payload' => json_encode( $klAddedToCartPayload )
+            'payload' => json_encode($klAddedToCartPayload)
         ];
 
         // Creating a new row in the kl_events table
-        $eventsData = $this->_eventsModel->setData( $newEvent );
+        $eventsData = $this->_eventsModel->setData($newEvent);
         $eventsData->save();
 
         //Unset the custom variable set in the checkout session
