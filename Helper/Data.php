@@ -4,7 +4,6 @@ namespace Klaviyo\Reclaim\Helper;
 use \Klaviyo\Reclaim\Helper\ScopeSetting;
 use \Magento\Framework\App\Helper\Context;
 use \Klaviyo\Reclaim\Helper\Logger;
-use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
