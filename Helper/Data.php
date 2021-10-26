@@ -23,6 +23,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected $_klaviyoScopeSetting;
 
+    /**
+     * Variable used for storage of klAddedToCartPayload between observers
+     * @var
+     */
+    public $tempPayload;
+
     public function __construct(
         Context $context,
         Logger $klaviyoLogger,

@@ -53,8 +53,7 @@ class EventsTopic
     }
 
     /**
-     * Cron method used by klaviyo_events_topic cron job
-     * Reads rows from kl_events table and writes to the kl_sync table
+     *
      */
     public function moveRowsToSync()
     {
@@ -78,7 +77,7 @@ class EventsTopic
                 'status' => 'NEW',
                 'topic' => $event['event'],
                 'user_properties' => $event['user_properties'],
-                'payload' => $this->addMaskedQuoteIdToEventPayload(json_decode($event['payload'], true))
+                'payload' => $this->replaceQuoteIdwithMaskedQuoteId($event['payload'])
             ]);
             try {
                 $sync->save();
@@ -92,10 +91,6 @@ class EventsTopic
         $eventsCollection->updateRowStatus($idsMoved, 'MOVED');
     }
 
-    /**
-     * Cron method used by the klaviyo_events_cleanup cron job
-     * Delete all rows marked as MOVED and older than 2 days in the kl_events table
-     */
     public function deleteMovedRows()
     {
         // Delete rows that have been moved to sync table
@@ -106,20 +101,19 @@ class EventsTopic
     }
 
     /**
-     * Helper method to get MaskedQuoteId from quote_id_mask table and replace QuoteId in payload
-     * This needs to be done here since MaskedQuoteId is unavailable when rows are recorded in kl_events table
-     * @param $payload
+     * Helper function to replace QuoteId in Added To Cart payload with Masked Quote Id
+     * @param array $payload
      * @return false|string
      */
-    public function addMaskedQuoteIdToEventPayload( $payload )
+    public function replaceQuoteIdwithMaskedQuoteId( array $payload )
     {
-        $maskedQuoteId = $this->_quoteIdMaskResource->getMaskedQuoteId(( $payload['QuoteId'] ));
-        unset($payload['QuoteId']);
+        $decoded_payload = json_decode($payload, true);
+        $maskedQuoteId = $this->_quoteIdMaskResource->getMaskedQuoteId(( $decoded_payload['QuoteId'] ));
+        unset($decoded_payload['QuoteId']);
 
         return $payload = json_encode(array_merge(
-            $payload,
-            array('MaskedQuoteId' => $maskedQuoteId)
+            $decoded_payload,
+            ['MaskedQuoteId' => $maskedQuoteId]
         ));
     }
-
 }
