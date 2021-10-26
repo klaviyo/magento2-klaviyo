@@ -53,7 +53,7 @@ class EventsTopic
     }
 
     /**
-     *
+     * 
      */
     public function moveRowsToSync()
     {
@@ -77,7 +77,7 @@ class EventsTopic
                 'status' => 'NEW',
                 'topic' => $event['event'],
                 'user_properties' => $event['user_properties'],
-                'payload' => $this->addMaskedQuoteIdToEventPayload(json_decode($event['payload'], true))
+                'payload' => $this->replaceQuoteIdwithMaskedQuoteId($event['payload'])
             ]);
             try {
                 $sync->save();
@@ -104,14 +104,15 @@ class EventsTopic
      * @param $payload
      * @return false|string
      */
-    public function addMaskedQuoteIdToEventPayload( $payload )
+    public function replaceQuoteIdwithMaskedQuoteId( $payload )
     {
-        $maskedQuoteId = $this->_quoteIdMaskResource->getMaskedQuoteId(( $payload['QuoteId'] ));
-        unset($payload['QuoteId']);
+        $decoded_payload = json_decode($payload, true);
+        $maskedQuoteId = $this->_quoteIdMaskResource->getMaskedQuoteId(( $decoded_payload['QuoteId'] ));
+        unset($decoded_payload['QuoteId']);
 
         return $payload = json_encode(array_merge(
-            $payload,
-            array('MaskedQuoteId' => $maskedQuoteId)
+            $decoded_payload,
+            ['MaskedQuoteId' => $maskedQuoteId]
         ));
     }
 

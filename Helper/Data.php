@@ -4,7 +4,6 @@ namespace Klaviyo\Reclaim\Helper;
 use \Klaviyo\Reclaim\Helper\ScopeSetting;
 use \Magento\Framework\App\Helper\Context;
 use \Klaviyo\Reclaim\Helper\Logger;
-use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -23,6 +22,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @var \Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting
      */
     protected $_klaviyoScopeSetting;
+    
+    /**
+     * Variable used for storage of klAddedToCartPayload between observers
+     * @var
+     */
+    public $tempPayload;
 
     public function __construct(
         Context $context,

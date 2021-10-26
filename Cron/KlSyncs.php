@@ -80,7 +80,7 @@ class KlSyncs
 
          $klSyncTableSize = $syncCollection->count();
          if ($klSyncTableSize > 10000 ){
-             $this->_klaviyoLogger->log("Klaviyo Clean Sync: kl_sync table size greater than 10000, currently sitting at $klSyncTableSize");
+             $this->_klaviyoLogger->log("WARNING: kl_sync table size greater than 10000, currently sitting at $klSyncTableSize");
          }
 
          return;
