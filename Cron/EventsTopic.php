@@ -22,7 +22,7 @@ class EventsTopic
     protected $_quoteIdMaskResource;
 
     /**
-     * Klaviyo Events Collection Facd ..ctory
+     * Klaviyo Events Collection Factory
      * @var CollectionFactory
      */
     protected $_eventsCollectionFactory;
@@ -63,14 +63,14 @@ class EventsTopic
             ->addFieldToSelect(['id','event','payload','user_properties'])
             ->getData();
 
-        if (empty( $eventsData )){
+        if (empty($eventsData)){
             return;
         }
 
         $idsMoved = [];
 
         // Capture all events that have been moved and add data to Sync table
-        foreach ( $eventsData as $event ){
+        foreach ($eventsData as $event){
             //TODO: This can probably be done as one bulk update instead of individual inserts
             $sync = $this->_klSyncFactory->create();
             $sync->setData([
@@ -108,10 +108,10 @@ class EventsTopic
      * @param array $payload
      * @return false|string
      */
-    public function replaceQuoteIdwithMaskedQuoteId( array $payload )
+    public function replaceQuoteIdwithMaskedQuoteId(array $payload)
     {
         $decoded_payload = json_decode($payload, true);
-        $maskedQuoteId = $this->_quoteIdMaskResource->getMaskedQuoteId(( $decoded_payload['QuoteId'] ));
+        $maskedQuoteId = $this->_quoteIdMaskResource->getMaskedQuoteId(($decoded_payload['QuoteId']));
         unset($decoded_payload['QuoteId']);
 
         return $payload = json_encode(array_merge(

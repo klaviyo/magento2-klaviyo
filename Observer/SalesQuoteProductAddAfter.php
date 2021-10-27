@@ -78,7 +78,7 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         ];
 
         $klAddedToCartPayload = array_merge(
-            $this->klBuildCartData( $quote, $addedItem ),
+            $this->klBuildCartData($quote, $addedItem),
             $addedItemData
         );
 

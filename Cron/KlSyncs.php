@@ -61,7 +61,7 @@ class KlSyncs
     public function sync()
     {
         $syncCollection = $this->_syncCollectionFactory->create();
-        $groupedRows = $this->getGroupedRows( $syncCollection->getRowsForSync('NEW')->getData() );
+        $groupedRows = $this->getGroupedRows($syncCollection->getRowsForSync('NEW')->getData());
 
         $this->sendUpdatesToApp($groupedRows);
 
@@ -93,7 +93,7 @@ class KlSyncs
     public function retry()
     {
         $syncCollection = $this->_syncCollectionFactory->create();
-        $groupedRows = $this->getGroupedRows( $syncCollection->getRowsForSync('RETRY')->getData() );
+        $groupedRows = $this->getGroupedRows($syncCollection->getRowsForSync('RETRY')->getData());
 
         $this->sendUpdatesToApp($groupedRows, true);
 
@@ -138,11 +138,11 @@ class KlSyncs
                     );
                     if (!$response) {$response = '0';}
 
-                    array_push( $responseManifest["$response"], $row['id']);
+                    array_push($responseManifest["$response"], $row['id']);
                 }
             }
         }
-        $this->updateRowStatuses( $responseManifest, $isRetry );
+        $this->updateRowStatuses($responseManifest, $isRetry);
     }
 
     /**
@@ -150,7 +150,7 @@ class KlSyncs
      * @param array $responseManifest
      * @param bool $isRetry
      */
-    private function updateRowStatuses( array $responseManifest, bool $isRetry )
+    private function updateRowStatuses(array $responseManifest, bool $isRetry)
     {
         $syncCollection = $this->_syncCollectionFactory->create();
         $syncCollection->updateRowStatus($responseManifest['1'], 'SYNCED');
@@ -167,7 +167,7 @@ class KlSyncs
      * @param array $allRows
      * @return array
      */
-    private function getGroupedRows( array $allRows )
+    private function getGroupedRows(array $allRows)
     {
         $groupedRows = [];
         foreach ($allRows as $row)

@@ -50,7 +50,7 @@ class SalesQuoteSaveAfter implements ObserverInterface
     {
         // Checking if the cookie is set here, if not it will return undefined and break the code
         if ( !isset($_COOKIE['__kla_id'] )) { return; }
-        $kl_decoded_cookie = json_decode(base64_decode($_COOKIE['__kla_id']), true );
+        $kl_decoded_cookie = json_decode(base64_decode($_COOKIE['__kla_id']), true);
 
         // Get the custom variable set in the DataHelper object via the SalesQuoteProductAddAfter observer.
         // Check if the public key and Added to Cart payload are set
