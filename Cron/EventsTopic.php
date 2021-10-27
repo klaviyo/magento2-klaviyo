@@ -53,7 +53,7 @@ class EventsTopic
     }
 
     /**
-     *
+     * Gets 500 rows from the kl_events table and move to the kl_sync table
      */
     public function moveRowsToSync()
     {
@@ -91,6 +91,9 @@ class EventsTopic
         $eventsCollection->updateRowStatus($idsMoved, 'MOVED');
     }
 
+    /**
+     * Deletes rows moved to the kl_syncs table that are older than 2 days
+     */
     public function deleteMovedRows()
     {
         // Delete rows that have been moved to sync table
