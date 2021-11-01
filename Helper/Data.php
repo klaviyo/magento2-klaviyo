@@ -162,7 +162,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     protected function unwrap_params($params) {
-        return json_decode(base64_decode(urldecode(substr($params,5))), true);
+        return base64_decode(urldecode(substr($params,5)));
     }
 
     protected function make_request($path, $params) {
@@ -170,7 +170,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $response = file_get_contents($url);
 
         if ($response == '0'){
-            $dataString = print_r($this->unwrap_params($params),true);
+            $dataString = $this->unwrap_params($params);
             $this->_klaviyoLogger->log("Unable to send event to Track API with data: $dataString");
         }
 

@@ -39,18 +39,25 @@ class SalesQuoteProductAddAfter implements ObserverInterface
     {
         $quote = $observer->getData('items')[0]->getQuote();
         $addedItems = $observer->getData('items');
+
+        // Create a list of Simple Product Ids being added as part of a bundle.
+        // We collect the Item name and Qty added to cart, to be sent as AddedItemBundleOptions with the payload.
         $childrenIds = [];
 
         foreach ($addedItems as $item){
             if ($item->getProductType() == 'bundle') {
                 $children = $item->getChildren();
                 foreach ($children as $child){
-                    array_push($childrenIds, $child->getId());
+                    if (!in_array($child->getId(), $childrenIds)) {
+                        array_push($childrenIds, $child->getId());
+                    }
                 }
+            } elseif (!is_null($item->getParentItem()) && !in_array($item->getId(), $childrenIds)) { //If child comes  before Parent, collect those too
+                array_push($childrenIds, $item->getId());
             }
 
             if (in_array( $item->getId(), $childrenIds )){
-                return;
+                continue;
             } else {
                 $this->klAddedToCartItemData($quote, $item);
             }
@@ -66,7 +73,7 @@ class SalesQuoteProductAddAfter implements ObserverInterface
     {
         $addedProduct = $addedItem->getProduct();
         $addedItemData = [
-            'AddedItemCategories' => (array) $this->getCategoryName($addedProduct->getCategoryIds()),
+            'AddedItemCategories' => (array) $addedProduct->getCategoryIds(),
             'AddedItemDescription' => (string) strip_tags($addedProduct->getDescription() ?? $addedItem->getDescription()),
             'AddedItemImageUrlKey' => (string) stripslashes($addedProduct->getData('small_image')),
             'AddedItemPrice' => (float) $addedProduct->getFinalPrice(),
@@ -110,7 +117,7 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         foreach($cartItems as $item) {
             $product = $item->getProduct();
             $cartItemId = $product->getId();
-            $itemCategories = $this->getCategoryName($product->getCategoryIds());
+            $itemCategories = $product->getCategoryIds();
             $itemName = $item->getName();
             $currentProduct = [
                 'Categories' => (array) $itemCategories,
@@ -137,19 +144,6 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         ];
     }
 
-    public function getCategoryName($categoryIds)
-    {
-        $categoryFactory = $this->_categoryFactory->create();
-        $categoryNames = [];
-        foreach ( $categoryIds as $id ) {
-            $category = $categoryFactory->load($id);
-            $categoryName = $category->getName();
-            array_push($categoryNames, $categoryName);
-        }
-
-        return $categoryNames;
-    }
-
     /**
      * Helper function to ensure no duplicates in array
      * @param $array_one
@@ -169,7 +163,7 @@ class SalesQuoteProductAddAfter implements ObserverInterface
      * @param $addedItem
      * @return array
      */
-    public function getBundleProductOptions($addedItem)
+    public function getBundleProductOptions($addedItem): array
     {
         $productOptions = $addedItem->getChildren();
         $bundleOptionsData = [];

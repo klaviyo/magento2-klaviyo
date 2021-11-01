@@ -24,7 +24,7 @@ class SalesQuoteSaveAfter implements ObserverInterface
     protected $_dataHelper;
 
     /**
-     * Added To Cart Model
+     * Events Model
      * @var Events
      */
     protected $_eventsModel;

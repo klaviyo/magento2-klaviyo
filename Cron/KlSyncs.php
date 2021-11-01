@@ -133,8 +133,7 @@ class KlSyncs
                     $response = $this->_dataHelper->klaviyoTrackEvent(
                         $row['topic'],
                         json_decode($row['user_properties'], true ),
-                        json_decode($row['payload'], true ),
-                        strtotime($row['created_at'])
+                        json_decode($row['payload'], true )
                     );
                     if (!$response) {$response = '0';}
 

@@ -7,6 +7,8 @@ use Klaviyo\Reclaim\Model\SyncsFactory;
 use Klaviyo\Reclaim\Model\Quote\QuoteIdMask;
 use Klaviyo\Reclaim\Model\Resourcemodel\Events\CollectionFactory;
 
+use Magento\Catalog\Model\CategoryFactory;
+
 class EventsTopic
 {
     /**
@@ -34,22 +36,31 @@ class EventsTopic
     protected $_klSyncFactory;
 
     /**
+     * Magento Category Factory
+     * @var CategoryFactory
+     */
+    protected $_categoryFactory;
+
+    /**
      * @param Logger $klaviyoLogger
      * @param CollectionFactory $eventsCollectionFactory
      * @param SyncsFactory $klSyncFactory
      * @param QuoteIdMask $quoteIdMaskResource
+     * @param CategoryFactory $categoryFactory
      */
     public function __construct(
         Logger $klaviyoLogger,
         CollectionFactory $eventsCollectionFactory,
         SyncsFactory $klSyncFactory,
-        QuoteIdMask $quoteIdMaskResource
+        QuoteIdMask $quoteIdMaskResource,
+        CategoryFactory $categoryFactory
     )
     {
         $this->_klaviyoLogger = $klaviyoLogger;
         $this->_eventsCollectionFactory = $eventsCollectionFactory;
         $this->_klSyncFactory = $klSyncFactory;
         $this->_quoteIdMaskResource = $quoteIdMaskResource;
+        $this->_categoryFactory = $categoryFactory;
     }
 
     /**
@@ -71,13 +82,17 @@ class EventsTopic
 
         // Capture all events that have been moved and add data to Sync table
         foreach ($eventsData as $event){
+            if ($event['topic'] == 'Added To Cart') {
+                $event['payload'] = json_encode($this->replaceQuoteIdAndCategoryIds($event['payload']));
+            }
+
             //TODO: This can probably be done as one bulk update instead of individual inserts
             $sync = $this->_klSyncFactory->create();
             $sync->setData([
                 'status' => 'NEW',
                 'topic' => $event['event'],
                 'user_properties' => $event['user_properties'],
-                'payload' => $this->replaceQuoteIdwithMaskedQuoteId($event['payload'])
+                'payload' => $event['payload']
             ]);
             try {
                 $sync->save();
@@ -104,19 +119,72 @@ class EventsTopic
     }
 
     /**
-     * Helper function to replace QuoteId in Added To Cart payload with Masked Quote Id
-     * @param array $payload
-     * @return false|string
+     * Helper function to replace QuoteId with MaskedQuoteId and CategoryIds with CategoryNames in Added To Cart payload
+     * @param string $payload
+     * @return array
      */
-    public function replaceQuoteIdwithMaskedQuoteId(array $payload)
+    public function replaceQuoteIdAndCategoryIds(string $payload): array
     {
         $decoded_payload = json_decode($payload, true);
         $maskedQuoteId = $this->_quoteIdMaskResource->getMaskedQuoteId(($decoded_payload['QuoteId']));
+        $decoded_payload['MaskedQuoteId'] = $maskedQuoteId;
         unset($decoded_payload['QuoteId']);
 
-        return $payload = json_encode(array_merge(
-            $decoded_payload,
-            ['MaskedQuoteId' => $maskedQuoteId]
-        ));
+        // Replace CategoryIds for Added Item, Quote Items with resp. CategoryNames
+        $decoded_payload = $this->replaceCategoryIdsWithNames($decoded_payload);
+
+        return $decoded_payload;
+    }
+
+    /**
+     * Replace all CategoryIds in event payload with their respective names
+     * @param $payload
+     * @return array
+     */
+    public function replaceCategoryIdsWithNames(array $payload): array
+    {
+        $categoryMap = $this->getCategoryMap($payload['Categories']);
+
+        foreach ($payload['Items'] as &$item){
+            $item['Categories'] = $this->searchCategoryMapAndReturnNames($item['Categories'], $categoryMap);
+        }
+
+        $payload['AddedItemCategories'] = $this->searchCategoryMapAndReturnNames($payload['AddedItemCategories'], $categoryMap);
+        $payload['Categories'] = array_values($categoryMap);
+
+        return $payload;
+    }
+
+    /**
+     * Retrieve categoryNames using from category factory using Ids
+     * @param array $categoryIds
+     * @return array
+     */
+    public function getCategoryMap(array $categoryIds): array
+    {
+        $categoryFactory = $this->_categoryFactory->create();
+        $categoryMap = [];
+
+        foreach($categoryIds as $categoryId){
+            $categoryMap[$categoryId] = $categoryFactory->load($categoryId)->getName();
+        }
+
+        return $categoryMap;
+    }
+
+    /**
+     * Return array of CategoryNames from CategoryMap using ids
+     * @param array $categoryIds
+     * @param array $categoryMap
+     * @return array
+     */
+    public function searchCategoryMapAndReturnNames(array $categoryIds, array $categoryMap): array
+    {
+        $categoryNames = [];
+        foreach ($categoryIds as $id){
+            array_push($categoryNames, $categoryMap[$id]);
+        }
+
+        return $categoryNames;
     }
 }
