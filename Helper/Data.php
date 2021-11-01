@@ -39,15 +39,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
     }
 
-    public function getObserverPayload(){
+    public function getObserverAtcPayload(){
        return $this->observerAtcPayload;
     }
 
-    public function setObserverPayload($data){
+    public function setObserverAtcPayload($data){
         $this->observerAtcPayload = $data;
     }
 
-    public function unsetObserverPayload(){
+    public function unsetObserverAtcPayload(){
         unset($this->observerAtcPayload);
     }
 
