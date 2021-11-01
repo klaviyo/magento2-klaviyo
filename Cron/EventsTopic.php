@@ -156,7 +156,7 @@ class EventsTopic
     }
 
     /**
-     * Retrieve categoryNames using from category factory using Ids
+     * Retrieve categoryNames from category factory using Ids
      * @param array $categoryIds
      * @return array
      */

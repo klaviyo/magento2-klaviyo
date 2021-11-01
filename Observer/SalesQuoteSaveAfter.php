@@ -55,7 +55,7 @@ class SalesQuoteSaveAfter implements ObserverInterface
         // Get the custom variable set in the DataHelper object via the SalesQuoteProductAddAfter observer.
         // Check if the public key and Added to Cart payload are set
         $public_key = $this->_scopeSetting->getPublicApiKey();
-        $klAddedToCartPayload = $this->_dataHelper->tempPayload;
+        $klAddedToCartPayload = $this->_dataHelper->getObserverPayload();
         if ( !isset($klAddedToCartPayload) or !isset($public_key)) { return; }
 
         // Make sure we have an identifier for the customer set in the cookie
@@ -82,6 +82,6 @@ class SalesQuoteSaveAfter implements ObserverInterface
         $eventsData->save();
 
         //Unset the custom variable set in DataHelper Object
-        unset($this->_dataHelper->tempPayload);
+        $this->_dataHelper->unsetObserverPayload();
     }
 }

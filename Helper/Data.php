@@ -27,7 +27,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * Variable used for storage of klAddedToCartPayload between observers
      * @var
      */
-    public $tempPayload;
+    private $observerAtcPayload;
 
     public function __construct(
         Context $context,
@@ -37,6 +37,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         parent::__construct($context);
         $this->_klaviyoLogger = $klaviyoLogger;
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
+    }
+
+    public function getObserverPayload(){
+       return $this->observerAtcPayload;
+    }
+
+    public function setObserverPayload($data){
+        $this->observerAtcPayload = $data;
+    }
+
+    public function unsetObserverPayload(){
+        unset($this->observerAtcPayload);
     }
 
     public function getKlaviyoLists($api_key=null){

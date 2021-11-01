@@ -97,7 +97,7 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         }
 
         // Storing payload in the DataHelper object for SalesQuoteSaveAfter Observer since quoteId is not set at this point for guest checkouts
-        $this->_dataHelper->tempPayload = $klAddedToCartPayload;
+        $this->_dataHelper->setObserverPayload($klAddedToCartPayload);
     }
 
     /**
