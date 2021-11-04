@@ -37,8 +37,8 @@ class SalesQuoteProductAddAfter implements ObserverInterface
 
     public function execute(Observer $observer)
     {
-        $quote = $observer->getData('items')[0]->getQuote();
         $addedItems = $observer->getData('items');
+        $quote = $addedItems[0]->getQuote();
 
         // Create a list of Simple Product Ids being added as part of a bundle.
         // We collect the Item name and Qty added to cart, to be sent as AddedItemBundleOptions with the payload.
@@ -56,9 +56,7 @@ class SalesQuoteProductAddAfter implements ObserverInterface
                 array_push($childrenIds, $item->getId());
             }
 
-            if (in_array( $item->getId(), $childrenIds )){
-                continue;
-            } else {
+            if (!in_array($item->getId(), $childrenIds)){
                 $this->klAddedToCartItemData($quote, $item);
             }
         }

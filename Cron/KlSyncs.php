@@ -64,8 +64,6 @@ class KlSyncs
         $groupedRows = $this->getGroupedRows($syncCollection->getRowsForSync('NEW')->getData());
 
         $this->sendUpdatesToApp($groupedRows);
-
-        return;
     }
 
     /**
@@ -82,8 +80,6 @@ class KlSyncs
         if ($klSyncTableSize > 10000 ){
             $this->_klaviyoLogger->log("WARNING: kl_sync table size greater than 10000, currently sitting at $klSyncTableSize");
         }
-
-        return;
     }
 
     /**
@@ -96,8 +92,6 @@ class KlSyncs
         $groupedRows = $this->getGroupedRows($syncCollection->getRowsForSync('RETRY')->getData());
 
         $this->sendUpdatesToApp($groupedRows, true);
-
-        return;
     }
 
     /**
@@ -154,11 +148,7 @@ class KlSyncs
         $syncCollection = $this->_syncCollectionFactory->create();
         $syncCollection->updateRowStatus($responseManifest['1'], 'SYNCED');
 
-        if ($isRetry){
-            $syncCollection->updateRowStatus($responseManifest['0'], 'FAILED');
-        } else {
-            $syncCollection->updateRowStatus($responseManifest['0'], 'RETRY');
-        }
+        $syncCollection->updateRowStatus($responseManifest['0'], $isRetry ? 'FAILED' : 'RETRY');
     }
 
     /**
@@ -171,12 +161,9 @@ class KlSyncs
         $groupedRows = [];
         foreach ($allRows as $row)
         {
-            if (array_key_exists($row['topic'], $groupedRows))
-            {
+            if (array_key_exists($row['topic'], $groupedRows)) {
                 array_push($groupedRows[$row['topic']], $row);
-            }
-            else
-            {
+            } else {
                 $groupedRows[$row['topic']] = [$row];
             }
         }

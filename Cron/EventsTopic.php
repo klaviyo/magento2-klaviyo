@@ -42,6 +42,12 @@ class EventsTopic
     protected $_categoryFactory;
 
     /**
+     * Category Map of ids to names
+     * @var array
+     */
+    protected $categoryMap = [];
+
+    /**
      * @param Logger $klaviyoLogger
      * @param CollectionFactory $eventsCollectionFactory
      * @param SyncsFactory $klSyncFactory
@@ -82,7 +88,7 @@ class EventsTopic
 
         // Capture all events that have been moved and add data to Sync table
         foreach ($eventsData as $event){
-            if ($event['topic'] == 'Added To Cart') {
+            if ($event['event'] == 'Added To Cart') {
                 $event['payload'] = json_encode($this->replaceQuoteIdAndCategoryIds($event['payload']));
             }
 
@@ -98,7 +104,7 @@ class EventsTopic
                 $sync->save();
                 array_push($idsMoved, $event['id']);
             } catch (\Exception $e) {
-                $this->_klaviyoLogger->log(sprintf("Unable to move row: %s", $e));
+                $this->_klaviyoLogger->log(sprintf("Unable to move row: %s", $e->getMessage()));
             }
         }
 
@@ -143,48 +149,42 @@ class EventsTopic
      */
     public function replaceCategoryIdsWithNames(array $payload): array
     {
-        $categoryMap = $this->getCategoryMap($payload['Categories']);
+        $this->updateCategoryMap($payload['Categories']);
 
         foreach ($payload['Items'] as &$item){
-            $item['Categories'] = $this->searchCategoryMapAndReturnNames($item['Categories'], $categoryMap);
+            $item['Categories'] = $this->searchCategoryMapAndReturnNames($item['Categories']);
         }
 
-        $payload['AddedItemCategories'] = $this->searchCategoryMapAndReturnNames($payload['AddedItemCategories'], $categoryMap);
-        $payload['Categories'] = array_values($categoryMap);
+        $payload['AddedItemCategories'] = $this->searchCategoryMapAndReturnNames($payload['AddedItemCategories']);
+        $payload['Categories'] = $this->searchCategoryMapAndReturnNames($payload['Categories']);
 
         return $payload;
     }
 
     /**
-     * Retrieve categoryNames from category factory using Ids
+     * Retrieve categoryNames using categoryIds
      * @param array $categoryIds
-     * @return array
      */
-    public function getCategoryMap(array $categoryIds): array
+    public function updateCategoryMap(array $categoryIds)
     {
         $categoryFactory = $this->_categoryFactory->create();
-        $categoryMap = [];
 
         foreach($categoryIds as $categoryId){
-            $categoryMap[$categoryId] = $categoryFactory->load($categoryId)->getName();
+            if (!in_array($categoryId, $this->categoryMap)){
+                $this->categoryMap[$categoryId] = $categoryFactory->load($categoryId)->getName();
+            }
         }
-
-        return $categoryMap;
     }
 
     /**
      * Return array of CategoryNames from CategoryMap using ids
      * @param array $categoryIds
-     * @param array $categoryMap
      * @return array
      */
-    public function searchCategoryMapAndReturnNames(array $categoryIds, array $categoryMap): array
+    public function searchCategoryMapAndReturnNames(array $categoryIds): array
     {
-        $categoryNames = [];
-        foreach ($categoryIds as $id){
-            array_push($categoryNames, $categoryMap[$id]);
-        }
-
-        return $categoryNames;
+        return array_values(
+            array_intersect_key($this->categoryMap, array_flip($categoryIds))
+        );
     }
 }
