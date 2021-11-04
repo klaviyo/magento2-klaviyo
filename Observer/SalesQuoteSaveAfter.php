@@ -24,7 +24,7 @@ class SalesQuoteSaveAfter implements ObserverInterface
     protected $_dataHelper;
 
     /**
-     * Added To Cart Model
+     * Events Model
      * @var Events
      */
     protected $_eventsModel;
@@ -46,16 +46,16 @@ class SalesQuoteSaveAfter implements ObserverInterface
         $this->_eventsModel = $eventsModel;
     }
 
-    public function execute( Observer $observer )
+    public function execute(Observer $observer)
     {
         // Checking if the cookie is set here, if not it will return undefined and break the code
         if ( !isset($_COOKIE['__kla_id'] )) { return; }
-        $kl_decoded_cookie = json_decode(base64_decode($_COOKIE['__kla_id']), true );
+        $kl_decoded_cookie = json_decode(base64_decode($_COOKIE['__kla_id']), true);
 
         // Get the custom variable set in the DataHelper object via the SalesQuoteProductAddAfter observer.
         // Check if the public key and Added to Cart payload are set
         $public_key = $this->_scopeSetting->getPublicApiKey();
-        $klAddedToCartPayload = $this->_dataHelper->tempPayload;
+        $klAddedToCartPayload = $this->_dataHelper->getObserverAtcPayload();
         if ( !isset($klAddedToCartPayload) or !isset($public_key)) { return; }
 
         // Make sure we have an identifier for the customer set in the cookie
@@ -82,6 +82,6 @@ class SalesQuoteSaveAfter implements ObserverInterface
         $eventsData->save();
 
         //Unset the custom variable set in DataHelper Object
-        unset($this->_dataHelper->tempPayload);
+        $this->_dataHelper->unsetObserverAtcPayload();
     }
 }

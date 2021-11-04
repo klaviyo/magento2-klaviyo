@@ -1,9 +1,9 @@
 <?php
 namespace Klaviyo\Reclaim\Helper;
 
+use Klaviyo\Reclaim\Helper\Logger;
 use \Klaviyo\Reclaim\Helper\ScopeSetting;
 use \Magento\Framework\App\Helper\Context;
-use \Klaviyo\Reclaim\Helper\Logger;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -22,12 +22,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @var \Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting
      */
     protected $_klaviyoScopeSetting;
-    
+
     /**
      * Variable used for storage of klAddedToCartPayload between observers
      * @var
      */
-    public $tempPayload;
+    private $observerAtcPayload;
 
     public function __construct(
         Context $context,
@@ -39,11 +39,23 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
     }
 
+    public function getObserverAtcPayload(){
+        return $this->observerAtcPayload;
+    }
+
+    public function setObserverAtcPayload($data){
+        $this->observerAtcPayload = $data;
+    }
+
+    public function unsetObserverAtcPayload(){
+        unset($this->observerAtcPayload);
+    }
+
     public function getKlaviyoLists($api_key=null){
         if (!$api_key) $api_key = $this->_klaviyoScopeSetting->getPrivateApiKey();
 
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'http://local-klaviyo.com:8080/api/v2/lists?api_key=' . $api_key);
+        curl_setopt($ch, CURLOPT_URL, 'https://a.klaviyo.com/api/v2/lists?api_key=' . $api_key);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
 
@@ -162,7 +174,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     protected function unwrap_params($params) {
-        return json_decode(base64_decode(urldecode(substr($params,5))), true);
+        return base64_decode(urldecode(substr($params,5)));
     }
 
     protected function make_request($path, $params) {
@@ -170,7 +182,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $response = file_get_contents($url);
 
         if ($response == '0'){
-            $dataString = print_r($this->unwrap_params($params),true);
+            $dataString = $this->unwrap_params($params);
             $this->_klaviyoLogger->log("Unable to send event to Track API with data: $dataString");
         }
 

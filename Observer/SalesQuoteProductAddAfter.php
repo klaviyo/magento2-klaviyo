@@ -37,8 +37,11 @@ class SalesQuoteProductAddAfter implements ObserverInterface
 
     public function execute(Observer $observer)
     {
-        $quote = $observer->getData('items')[0]->getQuote();
         $addedItems = $observer->getData('items');
+        $quote = $addedItems[0]->getQuote();
+
+        // Create a list of Simple Product Ids being added as part of a bundle.
+        // We collect the Item name and Qty added to cart, to be sent as AddedItemBundleOptions with the payload.
         $childrenIds = [];
 
         foreach ($addedItems as $item){
@@ -47,11 +50,12 @@ class SalesQuoteProductAddAfter implements ObserverInterface
                 foreach ($children as $child){
                     array_push($childrenIds, $child->getId());
                 }
+            } elseif (!is_null($item->getParentItem()) && !in_array($item->getId(), $childrenIds)) {
+                //If child comes  before Parent, collect those too
+                array_push($childrenIds, $item->getId());
             }
 
-            if (in_array( $item->getId(), $childrenIds )){
-                return;
-            } else {
+            if (!in_array($item->getId(), $childrenIds)){
                 $this->klAddedToCartItemData($quote, $item);
             }
         }
@@ -66,7 +70,7 @@ class SalesQuoteProductAddAfter implements ObserverInterface
     {
         $addedProduct = $addedItem->getProduct();
         $addedItemData = [
-            'AddedItemCategories' => (array) $this->getCategoryName($addedProduct->getCategoryIds()),
+            'AddedItemCategories' => (array) $addedProduct->getCategoryIds(),
             'AddedItemDescription' => (string) strip_tags($addedProduct->getDescription() ?? $addedItem->getDescription()),
             'AddedItemImageUrlKey' => (string) stripslashes($addedProduct->getData('small_image')),
             'AddedItemPrice' => (float) $addedProduct->getFinalPrice(),
@@ -78,7 +82,7 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         ];
 
         $klAddedToCartPayload = array_merge(
-            $this->klBuildCartData( $quote, $addedItem ),
+            $this->klBuildCartData($quote, $addedItem),
             $addedItemData
         );
 
@@ -90,7 +94,7 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         }
 
         // Storing payload in the DataHelper object for SalesQuoteSaveAfter Observer since quoteId is not set at this point for guest checkouts
-        $this->_dataHelper->tempPayload = $klAddedToCartPayload;
+        $this->_dataHelper->setObserverAtcPayload($klAddedToCartPayload);
     }
 
     /**
@@ -110,13 +114,13 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         foreach($cartItems as $item) {
             $product = $item->getProduct();
             $cartItemId = $product->getId();
-            $itemCategories = $this->getCategoryName($product->getCategoryIds());
+            $itemCategories = $product->getCategoryIds();
             $itemName = $item->getName();
             $currentProduct = [
                 'Categories' => (array) $itemCategories,
                 'ImageUrlKey' => (string) stripslashes($product->getData('small_image')),
                 'ProductId' => (int) $cartItemId,
-                'Price' => (float) $product->getPrice(),
+                'Price' => (float) $product->getFinalPrice(),
                 'Title' => (string) $itemName,
                 'Description' => (string) strip_tags($product->getDescription() ?? $item->getDescription()),
                 'Url' => (string) stripslashes($product->getProductUrl()),
@@ -137,19 +141,6 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         ];
     }
 
-    public function getCategoryName($categoryIds)
-    {
-        $categoryFactory = $this->_categoryFactory->create();
-        $categoryNames = [];
-        foreach ( $categoryIds as $id ) {
-            $category = $categoryFactory->load($id);
-            $categoryName = $category->getName();
-            array_push($categoryNames, $categoryName);
-        }
-
-        return $categoryNames;
-    }
-
     /**
      * Helper function to ensure no duplicates in array
      * @param $array_one
@@ -164,7 +155,12 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         )) ;
     }
 
-    public function getBundleProductOptions($addedItem)
+    /**
+     * Helper function to get Simple Product Quantities and Names for Bundled Product added to cart
+     * @param $addedItem
+     * @return array
+     */
+    public function getBundleProductOptions($addedItem): array
     {
         $productOptions = $addedItem->getChildren();
         $bundleOptionsData = [];
