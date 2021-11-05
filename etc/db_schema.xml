@@ -3,8 +3,9 @@
     <table name="kl_sync" resource="default" engine="innodb" comment="Klaviyo Sync table">
         <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true"
                 comment="Primary key"/>
+        <column xsi:type="text" name="user_properties" nullable="true" comment="User Properties"/>
         <column xsi:type="text" name="payload" nullable="true" comment="Event payload"/>
-        <column xsi:type="varchar" name="status" nullable="false" length="30" comment="Status of row (NEW, MOVED)"/>
+        <column xsi:type="varchar" name="status" nullable="false" length="30" comment="Status of row (NEW, SYNCED, RETRY, FAILED)"/>
         <column xsi:type="varchar" name="topic" nullable="false" length="255" comment="Klaviyo Topic name"/>
         <column xsi:type="text" name="klaviyo_id" nullable="true" comment="Klaviyo ID"/>
         <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Creation time"/>
@@ -29,7 +30,7 @@
         <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true"
                 comment="Primary key"/>
         <column xsi:type="text" name="payload" nullable="true" comment="Event payload"/>
-        <column xsi:type="varchar" name="status" nullable="false" length="30" comment="Status of row (NEW, SYNCED, RETRY, FAILED)"/>
+        <column xsi:type="varchar" name="status" nullable="false" length="30" comment="Status of row (NEW, MOVED)"/>
         <column xsi:type="varchar" name="topic" nullable="false" length="255" comment="Klaviyo webhook topic"/>
         <column xsi:type="text" name="klaviyo_id" nullable="true" comment="Klaviyo ID"/>
         <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Creation time"/>

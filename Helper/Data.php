@@ -23,6 +23,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected $_klaviyoScopeSetting;
 
+    /**
+     * Variable used for storage of klAddedToCartPayload between observers
+     * @var
+     */
+    private $observerAtcPayload;
+
     public function __construct(
         Context $context,
         Logger $klaviyoLogger,
@@ -31,6 +37,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         parent::__construct($context);
         $this->_klaviyoLogger = $klaviyoLogger;
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
+    }
+
+    public function getObserverAtcPayload(){
+       return $this->observerAtcPayload;
+    }
+
+    public function setObserverAtcPayload($data){
+        $this->observerAtcPayload = $data;
+    }
+
+    public function unsetObserverAtcPayload(){
+        unset($this->observerAtcPayload);
     }
 
     public function getKlaviyoLists($api_key=null){
@@ -131,7 +149,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function klaviyoTrackEvent($event, $customer_properties = [], $properties = [], $timestamp = null, $storeId = null)
     {
         if ((!array_key_exists('$email', $customer_properties) || empty($customer_properties['$email']))
-            && (!array_key_exists('$id', $customer_properties) || empty($customer_properties['$id']))) {
+            && (!array_key_exists('$id', $customer_properties) || empty($customer_properties['$id']))
+            && (!array_key_exists('$exchange_id', $customer_properties) || empty($customer_properties['$exchange_id'])))
+        {
 
             return 'You must identify a user by email or ID.';
         }
@@ -153,9 +173,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return 'data=' . urlencode(base64_encode(json_encode($params)));
     }
 
+    protected function unwrap_params($params) {
+        return base64_decode(urldecode(substr($params,5)));
+    }
+
     protected function make_request($path, $params) {
         $url = self::KLAVIYO_HOST . $path . '?' . $params;
         $response = file_get_contents($url);
+
+        if ($response == '0'){
+            $dataString = $this->unwrap_params($params);
+            $this->_klaviyoLogger->log("Unable to send event to Track API with data: $dataString");
+        }
+
         return $response == '1';
     }
 
