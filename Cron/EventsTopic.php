@@ -132,7 +132,7 @@ class EventsTopic
     public function replaceQuoteIdAndCategoryIds(string $payload): array
     {
         $decoded_payload = json_decode($payload, true);
-        $maskedQuoteId = $this->_quoteIdMaskResource->getMaskedQuoteId(($decoded_payload['QuoteId']));
+        $maskedQuoteId = $this->_quoteIdMaskResource->getMaskedQuoteId($decoded_payload['QuoteId']);
         $decoded_payload['MaskedQuoteId'] = $maskedQuoteId;
         unset($decoded_payload['QuoteId']);
 
