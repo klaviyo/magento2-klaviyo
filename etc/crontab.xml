@@ -16,5 +16,11 @@
         <job name="klaviyo_events_cleanup" instance="Klaviyo\Reclaim\Cron\EventsTopic" method="deleteMovedRows">
             <schedule>59 23 * * *</schedule>
         </job>
+        <job name="klaviyo_products_topic" instance="Klaviyo\Reclaim\Cron\ProductsTopic" method="queueKlProductsForSync">
+            <schedule>*/5 * * * *</schedule>
+        </job>
+        <job name="klaviyo_product_cleanup" instance="Klaviyo\Reclaim\Cron\ProductsTopic" method="clean">
+            <schedule>59 23 * * *</schedule>
+        </job>
     </group>
 </config>

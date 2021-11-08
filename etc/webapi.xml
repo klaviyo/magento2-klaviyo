@@ -54,6 +54,12 @@
             <resource ref="Magento_Backend::admin"/>
         </resources>
     </route>
+    <route url="/V1/klaviyo/reclaim/webhooks" method="GET">
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="getWebhooks"/>
+        <resources>
+            <resource ref="Magento_Backend::admin"/>
+        </resources>
+    </route>
     <route url="/V1/klaviyo/reclaim/log" method="GET">
         <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="getLog"/>
         <resources>

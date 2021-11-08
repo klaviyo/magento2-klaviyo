@@ -30,7 +30,8 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
 
     const WEBHOOK_SECRET = 'klaviyo_reclaim_webhook/klaviyo_webhooks/webhook_secret';
     const PRODUCT_DELETE_BEFORE = 'klaviyo_reclaim_webhook/klaviyo_webhooks/using_product_delete_before_webhook';
-    
+    const PRODUCT_SAVE_AFTER = 'klaviyo_reclaim_webhook/klaviyo_webhooks/using_product_save_after_webhook';
+
     const KLAVIYO_OAUTH_NAME = 'klaviyo_reclaim_oauth/klaviyo_oauth/integration_name';
 
     protected $_scopeConfig;
@@ -143,6 +144,19 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->getScopeSetting(self::WEBHOOK_SECRET, $storeId);
     }
 
+    public function getWebhooks()
+    {
+        $registeredWebhooks = [];
+
+        $product_delete = $this->getProductDeleteBeforeSetting();
+        $product_save = $this->getProductSaveAfterSetting();
+
+        array_push($registeredWebhooks, ['product/delete', $product_delete)];
+        array_push($registeredWebhooks, ['product/save', $product_save]);
+
+        return $registeredWebhooks;
+    }
+
     public function isEnabled($storeId = null)
     {
         return $this->getScopeSetting(self::ENABLE, $storeId);
@@ -221,7 +235,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_LIST_ID, $storeId);
     }
-    
+
     public function getConsentAtCheckoutSMSConsentText($storeId = null)
     {
         return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_CONSENT_TEXT, $storeId);
@@ -264,5 +278,9 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->getScopeSetting(self::PRODUCT_DELETE_BEFORE, $storeId);
     }
 
-}
+    public function getProductSaveAfterSetting($storeId = null)
+    {
+        return $this->getScopeSetting(self::PRODUCT_SAVE_AFTER, $storeId);
+    }
 
+}

@@ -33,14 +33,13 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * @param string $webhookType
-     * @param array $data
+     * @param string $data
      * @param string $klaviyoId
      * @return string
      * @throws Exception
      */
     public function makeWebhookRequest($webhookType, $data, $klaviyoId=null)
     {
-
         if (!$klaviyoId) {
             $klaviyoId = $this->_klaviyoScopeSetting->getPublicApiKey();
         }
@@ -51,12 +50,12 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
             CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => json_encode($data),
+            CURLOPT_POSTFIELDS => $data,
             CURLOPT_USERAGENT => self::USER_AGENT,
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json',
                 'Magento-two-signature: ' . $this->createWebhookSecurity($data),
-                'Content-Length: '. strlen(json_encode($data)),
+                'Content-Length: '. strlen($data),
                 'Topic: ' . $webhookType
             ),
         ]);
@@ -66,24 +65,23 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
         $err = curl_errno($curl);
 
         if ($err) {
-            $this->_klaviyoLogger->log(sprintf('Unable to send webhook to %s with data: %s', $url, json_encode($data)));
+            $this->_klaviyoLogger->log(sprintf('Unable to send webhook to %s with data: %s', $url, $data));
         }
 
         // Close cURL session handle
         curl_close($curl);
+
         return $response;
     }
 
     /**
-     * @param array data
+     * @param string data
      * @return string
      * @throws Exception
      */
-    private function createWebhookSecurity(array $data)
+    private function createWebhookSecurity(string $data)
     {
         $webhookSecret = $this->_klaviyoScopeSetting->getWebhookSecret();
-        return hash_hmac('sha256', json_encode($data), $webhookSecret);
-
+        return hash_hmac('sha256', $data, $webhookSecret);
     }
 }
-

@@ -158,6 +158,11 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>This will remove deleted products from the Klaviyo catalog.</comment>
                 </field>
+                <field id="using_product_save_after_webhook" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Use Product Save Webhook?</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>This will update or create saved products in the Klaviyo catalog.</comment>
+                </field>
             </group>
         </section>
     </system>
