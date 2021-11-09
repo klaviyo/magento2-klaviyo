@@ -59,10 +59,7 @@ class ProductsTopic
             ->addFieldToSelect(['id','payload','status','topic', 'klaviyo_id'])
             ->getData();
 
-        if (empty($klProductsToSync))
-        {
-            return;
-        }
+        if (empty($klProductsToSync)){return;}
 
         $idsToUpdate = [];
 
