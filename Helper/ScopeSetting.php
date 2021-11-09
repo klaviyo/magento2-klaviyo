@@ -151,7 +151,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
         $product_delete = $this->getProductDeleteBeforeSetting();
         $product_save = $this->getProductSaveAfterSetting();
 
-        array_push($registeredWebhooks, ['product/delete', $product_delete)];
+        array_push($registeredWebhooks, ['product/delete', $product_delete]);
         array_push($registeredWebhooks, ['product/save', $product_save]);
 
         return $registeredWebhooks;
