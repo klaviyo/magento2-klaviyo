@@ -76,12 +76,9 @@ class ProductSaveAfter implements ObserverInterface
         $storeIdKlaviyoMap = $this->_klaviyoScopeSetting->getStoreIdKlaviyoAccountSetMap($storeIds);
 
         foreach ($storeIdKlaviyoMap as $klaviyoId => $storeIds) {
-            if (empty($storeIds)) {
-                continue;
-            }
+            if (empty($storeIds)) {continue;}
 
             if ($this->_klaviyoScopeSetting->getWebhookSecret() && $this->_klaviyoScopeSetting->getProductSaveAfterSetting($storeIds[0])) {
-
               $normalizedProduct = $this->normalizeProduct($product);
               $data = [
                 "status"=>"NEW",
@@ -92,23 +89,15 @@ class ProductSaveAfter implements ObserverInterface
               $klProduct = $this->_klProductFactory->create();
               $klProduct->setData($data);
               $klProduct->save();
-
-              // $this->_klaviyoLogger->log( print_r("Created new row?", true));
-
-              // $this->_webhookHelper->makeWebhookRequest('product/save', $normalizedProduct, $klaviyoId);
             }
         }
     }
 
     private function normalizeProduct($product=null)
     {
-      if ($product == null) {
-        return;
-      }
+      if ($product == null) {return;}
 
       $product_id = $product->getId();
-
-      // remove thumnbail image url?
 
       $product_info = array(
         'product' => array(
