@@ -131,7 +131,7 @@ class ProductSaveAfter implements ObserverInterface
       $category_factory = $this->_categoryFactory->create();
       foreach ($product_category_ids as $category_id) {
         $category = $category_factory->load($category_id);
-        $product_info['categories'][$category_id] = $category->getName();
+        $product_info['product']['categories'][$category_id] = $category->getName();
       }
 
       return $product_info;
