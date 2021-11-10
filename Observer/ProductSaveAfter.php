@@ -100,8 +100,8 @@ class ProductSaveAfter implements ObserverInterface
       $product_id = $product->getId();
 
       $product_info = array(
+        'store_ids' => $product->getStoreIds(),
         'product' => array(
-          'store_ids' => $product->getStoreIds(),
           'ID' => $product_id,
           'TypeID' => $product->getTypeId(),
           'Name' => $product->getName(),
