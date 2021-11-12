@@ -4,12 +4,9 @@ namespace Klaviyo\Reclaim\Observer;
 
 use Exception;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
-use Klaviyo\Reclaim\Helper\Webhook;
-use Klaviyo\Reclaim\Helper\Logger;
 use Klaviyo\Reclaim\Model\ProductsFactory;
 
 use Magento\Catalog\Model\CategoryFactory;
-use Magento\Catalog\Model\Product;
 use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
@@ -24,41 +21,38 @@ class ProductSaveAfter implements ObserverInterface
     protected $_klaviyoScopeSetting;
 
     /**
-     * Klaviyo logger helper
-     * @var \Klaviyo\Reclaim\Helper\Logger $klaviyoLogger
+     * Magento product category helper
+     * @var CategoryFactory $categoryFactory
      */
-    protected $_klaviyoLogger;
-
-    /**
-     * @var Webhook $webhookHelper
-     */
-    protected $_webhookHelper;
     protected $_categoryFactory;
-    protected $_klProductFactory;
-    protected $_stockRegistry;
-    protected $product_category_names = [];
 
     /**
-     * @param Webhook $webhookHelper
+     * Klaviyo product factory
+     * @var klProductFactory
+     */
+    protected $_klProductFactory;
+
+    /**
+     * Magento stock registry api interface
+     * @var $stockRegistry
+     */
+    protected $_stockRegistry;
+
+    /**
      * @param ScopeSetting $klaviyoScopeSetting
      * @param CategoryFactory $categoryFactory
      * @param ProductsFactory $klProductFactory
      * @param StockRegistryInterface $stockRegistry
-     * @param Logger $klaviyoLogger
      */
     public function __construct(
-        Webhook $webhookHelper,
         ScopeSetting $klaviyoScopeSetting,
         CategoryFactory $categoryFactory,
         ProductsFactory $klProductFactory,
-        StockRegistryInterface $stockRegistry,
-        Logger $klaviyoLogger
+        StockRegistryInterface $stockRegistry
     ) {
-        $this->_webhookHelper = $webhookHelper;
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
         $this->_categoryFactory = $categoryFactory;
         $this->_klProductFactory = $klProductFactory;
-        $this->_klaviyoLogger = $klaviyoLogger;
         $this->_stockRegistry = $stockRegistry;
     }
 
@@ -86,8 +80,7 @@ class ProductSaveAfter implements ObserverInterface
                 "klaviyo_id"=>$klaviyoId,
                 "payload"=>json_encode($normalizedProduct)
               ];
-              $klProduct = $this->_klProductFactory->create();
-              $klProduct->setData($data);
+              $klProduct = $this->_klProductFactory->setData($data);
               $klProduct->save();
             }
         }

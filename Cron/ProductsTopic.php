@@ -76,7 +76,7 @@ class ProductsTopic
                 $klSync->save();
                 array_push($idsToUpdate, $klProductToSync['id']);
             } catch (\Exception $e) {
-                $this->_klaviyoLogger->log(sprintf('Unable to move row: %s', $e));
+                $this->_klaviyoLogger->log(sprintf('Unable to move row: %s', $e->getMessage()));
             }
         }
 
