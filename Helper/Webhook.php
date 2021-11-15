@@ -65,7 +65,7 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
         $err = curl_errno($curl);
 
         if ($err) {
-            $this->_klaviyoLogger->log(sprintf("Unable to send webhook to %s with data: %s", $url, $data));
+            $this->_klaviyoLogger->log(sprintf("Unable to send webhook to $url with data: $data"));
         }
 
         // Close cURL session handle
