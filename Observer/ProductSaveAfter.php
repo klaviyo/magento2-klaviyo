@@ -6,7 +6,6 @@ use Exception;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Klaviyo\Reclaim\Model\ProductsFactory;
 
-use Magento\Catalog\Model\CategoryFactory;
 use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
@@ -19,12 +18,6 @@ class ProductSaveAfter implements ObserverInterface
      * @var ScopeSetting $klaviyoScopeSetting
      */
     protected $_klaviyoScopeSetting;
-
-    /**
-     * Magento product category helper
-     * @var CategoryFactory $categoryFactory
-     */
-    protected $_categoryFactory;
 
     /**
      * Klaviyo product factory
@@ -46,12 +39,10 @@ class ProductSaveAfter implements ObserverInterface
      */
     public function __construct(
         ScopeSetting $klaviyoScopeSetting,
-        CategoryFactory $categoryFactory,
         ProductsFactory $klProductFactory,
         StockRegistryInterface $stockRegistry
     ) {
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
-        $this->_categoryFactory = $categoryFactory;
         $this->_klProductFactory = $klProductFactory;
         $this->_stockRegistry = $stockRegistry;
     }
@@ -72,15 +63,16 @@ class ProductSaveAfter implements ObserverInterface
         foreach ($storeIdKlaviyoMap as $klaviyoId => $storeIds) {
             if (empty($storeIds)) {continue;}
 
-            if ($this->_klaviyoScopeSetting->getWebhookSecret() && $this->_klaviyoScopeSetting->getProductSaveAfterSetting($storeIds[0])) {
+            if ($this->_klaviyoScopeSetting->getWebhookSecret() && $this->_klaviyoScopeSetting->getProductSaveWebhookSetting($storeIds[0])) {
               $normalizedProduct = $this->normalizeProduct($product);
               $data = [
-                "status"=>"NEW",
-                "topic"=>"product/save",
-                "klaviyo_id"=>$klaviyoId,
-                "payload"=>json_encode($normalizedProduct)
+                'status'=>'NEW',
+                'topic'=>'product/save',
+                'klaviyo_id'=>$klaviyoId,
+                'payload'=>json_encode($normalizedProduct)
               ];
-              $klProduct = $this->_klProductFactory->setData($data);
+              $klProduct = $this->_klProductFactory->create();
+              $klProduct->setData($data);
               $klProduct->save();
             }
         }
@@ -110,7 +102,7 @@ class ProductSaveAfter implements ObserverInterface
             'price' => $product->getPrice(),
             'sku' => $product->getSku()
           ),
-          'categories' => []
+          'categories' => $product->getCategoryIds()
         )
       );
 
@@ -119,14 +111,6 @@ class ProductSaveAfter implements ObserverInterface
         $product_info['metadata']['special_from_date'] = $product->getSpecialFromDate();
         $product_info['metadata']['special_to_date'] = $product->getSpecialToDate();
       }
-
-      $product_category_ids = $product->getCategoryIds();
-      $category_factory = $this->_categoryFactory->create();
-      foreach ($product_category_ids as $category_id) {
-        $category = $category_factory->load($category_id);
-        $product_info['product']['categories'][$category_id] = $category->getName();
-      }
-
       return $product_info;
     }
 }
