@@ -147,8 +147,8 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     public function getWebhooks()
     {
         return $registeredWebhooks = [
-          ['product/delete' => $this->getProductDeleteWebhookSetting()],
-          ['product/save' => $this->getProductSaveWebhookSetting()],
+          ['product/delete', $this->getProductDeleteWebhookSetting()],
+          ['product/save', $this->getProductSaveWebhookSetting()],
         ];
     }
 
