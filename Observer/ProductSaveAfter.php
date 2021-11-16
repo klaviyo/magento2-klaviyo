@@ -84,13 +84,12 @@ class ProductSaveAfter implements ObserverInterface
 
       $product_id = $product->getId();
 
-      $product_info = array(
+      $product_info = [
         'store_ids' => $product->getStoreIds(),
-        'product' => array(
+        'product' => [
           'ID' => $product_id,
           'TypeID' => $product->getTypeId(),
           'Name' => $product->getName(),
-          'qty' => $this->_stockRegistry->getStockItem($product_id)->getQty(),
           'Visibility' => $product->getVisibility(),
           'IsInStock' => $product->isInStock(),
           'Status' => $product->getStatus(),
@@ -98,18 +97,18 @@ class ProductSaveAfter implements ObserverInterface
           'UpdatedAt' => $product->getUpdatedAt(),
           'FirstImageURL' => $product->getImage(),
           'ThumbnailImageURL' => $product->getThumbnail(),
-          'metadata' => array(
+          'Metadata' => [
             'price' => $product->getPrice(),
             'sku' => $product->getSku()
-          ),
-          'categories' => $product->getCategoryIds()
-        )
-      );
+          ],
+          'Categories' => $product->getCategoryIds()
+        ]
+      ];
 
       if ($product->getSpecialPrice()) {
-        $product_info['metadata']['special_price'] = $product->getSpecialPrice();
-        $product_info['metadata']['special_from_date'] = $product->getSpecialFromDate();
-        $product_info['metadata']['special_to_date'] = $product->getSpecialToDate();
+        $product_info['Metadata']['special_price'] = $product->getSpecialPrice();
+        $product_info['Metadata']['special_from_date'] = $product->getSpecialFromDate();
+        $product_info['Metadata']['special_to_date'] = $product->getSpecialToDate();
       }
       return $product_info;
     }

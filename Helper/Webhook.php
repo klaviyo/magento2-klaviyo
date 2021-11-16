@@ -52,12 +52,12 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => $data,
             CURLOPT_USERAGENT => self::USER_AGENT,
-            CURLOPT_HTTPHEADER => array(
+            CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
                 'Magento-two-signature: ' . $this->createWebhookSecurity($data),
                 'Content-Length: '. strlen($data),
                 'Topic: ' . $webhookType
-            ),
+            ],
         ]);
 
         // Submit the request
@@ -65,7 +65,7 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
         $err = curl_errno($curl);
 
         if ($err) {
-            $this->_klaviyoLogger->log(sprintf("Unable to send webhook to $url with data: $data"));
+            $this->_klaviyoLogger->log("Unable to send webhook to $url with data: $data");
         }
 
         // Close cURL session handle
@@ -75,8 +75,8 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @param string data
-     * @return string
+     * @param string $data json payload used to create hmac signature
+     * @return string an HMAC signature for webhooks
      * @throws Exception
      */
     private function createWebhookSecurity(string $data)
