@@ -5,7 +5,7 @@ namespace Klaviyo\Reclaim\Cron;
 use Klaviyo\Reclaim\Helper\Logger;
 use Klaviyo\Reclaim\Model\SyncsFactory;
 use Klaviyo\Reclaim\Model\Quote\QuoteIdMask;
-use Klaviyo\Reclaim\Model\Resourcemodel\Events\CollectionFactory;
+use Klaviyo\Reclaim\Model\ResourceModel\Events\CollectionFactory;
 
 use Magento\Catalog\Model\CategoryFactory;
 
