@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
     <group id="klaviyo_syncs">
-        <job name="klaviyo_webhook/event_sync" instance="Klaviyo\Reclaim\Cron\klSyncs" method="sync">
+        <job name="klaviyo_webhook/event_sync" instance="Klaviyo\Reclaim\Cron\KlSyncs" method="sync">
             <schedule>*/5 * * * *</schedule>
         </job>
-        <job name="klaviyo_webhook/event_cleanup" instance="Klaviyo\Reclaim\Cron\klSyncs" method="clean">
+        <job name="klaviyo_webhook/event_cleanup" instance="Klaviyo\Reclaim\Cron\KlSyncs" method="clean">
             <schedule>59 23 * * *</schedule>
         </job>
         <job name="klaviyo_webhook/event_retry" instance="Klaviyo\Reclaim\Cron\KlSyncs" method="retry">
