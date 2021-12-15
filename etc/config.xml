@@ -24,7 +24,7 @@
         </klaviyo_reclaim_consent_at_checkout>
         <klaviyo_reclaim_consent_at_checkout>
             <sms_consent>
-                <consent_text>**By checking this box and entering your phone number above, you consent to receive marketing text messages at the number provided from [company name], including messages sent by autodialer. Consent is not a condition of any purchase. Message and data rates may apply. Message frequency varies. Reply HELP for help or STOP to cancel. View our Privacy Policy and Terms of Service.</consent_text>
+                <consent_text>**By checking this box and entering your phone number above, you consent to receive marketing text messages (such as [promotion codes] and [cart reminders]) from [company name] at the number provided, including messages sent by autodialer. Consent is not a condition of any purchase. Message and data rates may apply. Message frequency varies. You can unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available) in one of our messages. View our Privacy Policy [link] and Terms of Service [link].</consent_text>
             </sms_consent>
         </klaviyo_reclaim_consent_at_checkout>
         <klaviyo_reclaim_consent_at_checkout>
