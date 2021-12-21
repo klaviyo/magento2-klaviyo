@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Added
 - Added to Cart metric collection
 
+### [3.0.11] - 2021-12-21
+
+#### Fixed
+- Error affecting customers using Magento's embedded footer forms
+
 ### [3.0.10] - 2021-11-10
 
 #### Changed
@@ -140,7 +145,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 [Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.0-beta...HEAD
-[4.0.0-beta]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.10...4.0.0-beta
+[4.0.0-beta]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.11...4.0.0-beta
+[3.0.11]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.10...3.0.11
 [3.0.10]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.9...3.0.10
 [3.0.9]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.8...3.0.9
 [3.0.8]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.7...3.0.8
