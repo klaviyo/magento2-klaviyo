@@ -46,7 +46,7 @@ class NewsletterSubscribeObserver implements ObserverInterface
         /** @var Subscriber $subscriber */
         $subscriber = $observer->getDataObject();
 
-        if ($subscriber->hasDataChanges()) {
+        if ($subscriber && $subscriber->hasDataChanges()) {
             $customer = $this->getCustomer($subscriber);
 
             if ($subscriber->isSubscribed()) {
