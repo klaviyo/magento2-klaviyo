@@ -4,6 +4,7 @@
            'jquery',
            'mage/url'
         ], function (jQuery, url) {
+          url.setBaseUrl(window.BASE_URL);
           jQuery.ajax({
               url: url.build('reclaim/checkout/reload'),
               method: 'POST',
