@@ -97,7 +97,7 @@ class SalesQuoteSaveAfter implements ObserverInterface
     }
 
     /**
-     * Check if customer isLoggedIn and return base64 encoded string for the ID
+     * Check if customer is logged in and return base64 encoded string for the ID
      * @param $quote
      * @return string|null
      */
