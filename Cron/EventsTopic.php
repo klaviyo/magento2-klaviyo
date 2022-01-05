@@ -132,8 +132,12 @@ class EventsTopic
     public function replaceQuoteIdAndCategoryIds(string $payload): array
     {
         $decoded_payload = json_decode($payload, true);
-        $maskedQuoteId = $this->_quoteIdMaskResource->getMaskedQuoteId($decoded_payload['QuoteId']);
-        $decoded_payload['MaskedQuoteId'] = $maskedQuoteId;
+
+        //Set MaskedQuoteId if customer is not logged in, otherwise the same identifier from Observer
+        $quoteId = $decoded_payload['QuoteId'];
+        $decoded_payload['MaskedQuoteId'] = strpos($quoteId, "kx_identifier_") !== false ?
+            $quoteId :
+            $this->_quoteIdMaskResource->getMaskedQuoteId((int)$quoteId);
         unset($decoded_payload['QuoteId']);
 
         // Replace CategoryIds for Added Item, Quote Items with resp. CategoryNames

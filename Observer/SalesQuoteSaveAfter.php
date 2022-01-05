@@ -8,6 +8,7 @@ use Klaviyo\Reclaim\Model\Events;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Customer\Model\Session;
 
 class SalesQuoteSaveAfter implements ObserverInterface
 {
@@ -30,20 +31,29 @@ class SalesQuoteSaveAfter implements ObserverInterface
     protected $_eventsModel;
 
     /**
+     * Customer Session Model
+     * @var Session
+     */
+    protected $_customerSession;
+
+    /**
      * SalesQuoteSaveAfter constructor
      * @param ScopeSetting $scopeSetting
      * @param Data $dataHelper
      * @param Events $eventsModel
+     * @param Session $customerSession
      */
     public function __construct(
         ScopeSetting $scopeSetting,
         Data $dataHelper,
-        Events $eventsModel
+        Events $eventsModel,
+        Session $customerSession
     )
     {
         $this->_scopeSetting = $scopeSetting;
         $this->_dataHelper = $dataHelper;
         $this->_eventsModel = $eventsModel;
+        $this->_customerSession = $customerSession;
     }
 
     public function execute(Observer $observer)
@@ -68,7 +78,8 @@ class SalesQuoteSaveAfter implements ObserverInterface
         // Setting QuoteId at this point since the MaskedQuoteId is not updated when this event is dispatched,
         // MaskedQuoteId is set into the payload while the EventsTopic cron job moves rows into the Sync table
         $quote = $observer->getData('quote');
-        $klAddedToCartPayload = array_merge($klAddedToCartPayload, ['QuoteId' => $quote->getId()]);
+        $customerId = $this->checkCustomerAndReturnId($quote);
+        $klAddedToCartPayload['QuoteId'] = isset($customerId) ? "kx_identifier_$customerId" : $quote->getId();
 
         $newEvent = [
             'status' => 'NEW',
@@ -83,5 +94,14 @@ class SalesQuoteSaveAfter implements ObserverInterface
 
         //Unset the custom variable set in DataHelper Object
         $this->_dataHelper->unsetObserverAtcPayload();
+    }
+
+    private function checkCustomerAndReturnId($quote) {
+        if ($this->_customerSession->isLoggedIn()) {
+            $customerId = $quote->getCustomer()->getId();
+            return base64_encode($customerId);
+        } else {
+            return null;
+        }
     }
 }
