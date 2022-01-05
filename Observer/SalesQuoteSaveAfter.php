@@ -78,8 +78,8 @@ class SalesQuoteSaveAfter implements ObserverInterface
         // Setting QuoteId at this point since the MaskedQuoteId is not updated when this event is dispatched,
         // MaskedQuoteId is set into the payload while the EventsTopic cron job moves rows into the Sync table
         $quote = $observer->getData('quote');
-        $customerId = $this->checkCustomerAndReturnId($quote);
-        $klAddedToCartPayload['QuoteId'] = isset($customerId) ? "kx_identifier_$customerId" : $quote->getId();
+        $encodedCustomerId = $this->checkCustomerAndReturnEncodedId($quote);
+        $klAddedToCartPayload['QuoteId'] = isset($encodedCustomerId) ? "kx_identifier_$encodedCustomerId" : $quote->getId();
 
         $newEvent = [
             'status' => 'NEW',
@@ -96,7 +96,12 @@ class SalesQuoteSaveAfter implements ObserverInterface
         $this->_dataHelper->unsetObserverAtcPayload();
     }
 
-    private function checkCustomerAndReturnId($quote) {
+    /**
+     * Check if customer isLoggedIn and return base64 encoded string for the ID
+     * @param $quote
+     * @return string|null
+     */
+    private function checkCustomerAndReturnEncodedId($quote) {
         if ($this->_customerSession->isLoggedIn()) {
             $customerId = $quote->getCustomer()->getId();
             return base64_encode($customerId);

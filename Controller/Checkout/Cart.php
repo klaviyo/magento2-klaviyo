@@ -46,7 +46,7 @@ class Cart extends \Magento\Framework\App\Action\Action
 
         unset($params['quote_id']);
 
-        // Check if the quote_id has kx_identifier, if yes, retreive active quote for customer, if not get QuoteId from masked QuoteId
+        // Check if the quote_id has kx_identifier, if yes, retrieve active quote for customer, if not get QuoteId from masked QuoteId
         if (strpos($quoteId, "kx_identifier_") !== false){
             $customerId = base64_decode( str_replace("kx_identifier_", "", $quoteId) );
             try {
