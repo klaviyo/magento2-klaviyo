@@ -138,7 +138,8 @@ class SalesQuoteProductAddAfter implements ObserverInterface
             'ItemNames' => (array) $cartItemNames,
             'Items' => (array) $items,
             'ItemCount' => (int) $cartQty,
-            'Categories' => (array) $cartItemCategories
+            'Categories' => (array) $cartItemCategories,
+            'time' => time()
         ];
     }
 

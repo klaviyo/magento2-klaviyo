@@ -124,10 +124,16 @@ class KlSyncs
 
             if (in_array($topic, $trackApiTopics) && !empty($rows)) {
                 foreach($rows as $row) {
+                    $decodedPayload = json_decode($row['payload'], true);
+
+                    $eventTime = $decodedPayload['time'];
+                    unset($decodedPayload['time']);
+
                     $response = $this->_dataHelper->klaviyoTrackEvent(
                         $row['topic'],
                         json_decode($row['user_properties'], true ),
-                        json_decode($row['payload'], true )
+                        $decodedPayload,
+                        $eventTime
                     );
                     if (!$response) {$response = '0';}
 
