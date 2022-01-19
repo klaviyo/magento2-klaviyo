@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 
+### [4.0.0] - 2022-01-19
+
+#### Fixed
+- Whitelisting Klaviyo onsite scripts
+- Identifying logged-in users correctly
+
+### [4.0.0-beta] - 2021-12-15
+
+#### Added
+- Added to Cart metric collection
+
 ### [3.0.11] - 2021-12-21
 
 #### Fixed
@@ -139,7 +150,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CSP now uses report-only mode
 
 
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.11...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.0...HEAD
+[4.0.0]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.0-beta...4.0.0
+[4.0.0-beta]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.11...4.0.0-beta
 [3.0.11]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.10...3.0.11
 [3.0.10]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.9...3.0.10
 [3.0.9]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.8...3.0.9
