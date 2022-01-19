@@ -1,0 +1,74 @@
+{
+    "kl_sync": {
+        "column": {
+            "id": true,
+            "user_properties": true,
+            "payload": true,
+            "status": true,
+            "topic": true,
+            "klaviyo_id": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "KL_SYNC_STATUS": true,
+            "KL_SYNC_TOPIC": true,
+            "KL_SYNC_CREATED_AT": true,
+            "KL_SYNC_UPDATED_AT": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "kl_products": {
+        "column": {
+            "id": true,
+            "payload": true,
+            "status": true,
+            "topic": true,
+            "klaviyo_id": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "KL_PRODUCTS_STATUS": true,
+            "KL_PRODUCTS_TOPIC": true,
+            "KL_PRODUCTS_CREATED_AT": true,
+            "KL_PRODUCTS_UPDATED_AT": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "kl_events": {
+        "column": {
+            "id": true,
+            "status": true,
+            "event": true,
+            "user_properties": true,
+            "payload": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "KL_EVENTS_STATUS": true,
+            "KL_EVENTS_CREATED_AT": true,
+            "KL_EVENTS_UPDATED_AT": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "quote": {
+        "column": {
+            "kl_sms_consent": true,
+            "kl_email_consent": true
+        }
+    },
+    "sales_order": {
+        "column": {
+            "kl_sms_consent": true,
+            "kl_email_consent": true
+        }
+    }
+}

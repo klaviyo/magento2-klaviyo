@@ -6,7 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 
-### [4.0.0] - 2022-01-19
+### [4.0.0] - 2022-01-20
+### Added
+- Declarative schema, patch data scripts available for backward compatibility
+
+#### Removed
+- InstallData/UpgradeData and InstallSchema/UpgradeSchema scripts
 
 #### Fixed
 - Whitelisting Klaviyo onsite scripts

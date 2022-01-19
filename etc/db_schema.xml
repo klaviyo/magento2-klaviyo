@@ -73,4 +73,12 @@
             <column name="updated_at"/>
         </index>
     </table>
+    <table name="quote" resource="default">
+        <column xsi:type="text" name="kl_sms_consent" nullable="true" comment="SMS Consent"/>
+        <column xsi:type="text" name="kl_email_consent" nullable="true" comment="Email Consent"/>
+    </table>
+    <table name="sales_order" resource="default">
+        <column xsi:type="text" name="kl_sms_consent" nullable="true" comment="SMS Consent"/>
+        <column xsi:type="text" name="kl_email_consent" nullable="true" comment="Email Consent"/>
+    </table>
 </schema>
