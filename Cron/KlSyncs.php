@@ -129,6 +129,7 @@ class KlSyncs
                     $eventTime = $decodedPayload['time'];
                     unset($decodedPayload['time']);
 
+                    //TODO: if conditional for backward compatibility, needs to be removed in future versions
                     $storeId = '';
                     if (isset($decodedPayload['StoreId']))
                     {
