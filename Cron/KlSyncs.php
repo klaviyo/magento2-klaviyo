@@ -129,11 +129,19 @@ class KlSyncs
                     $eventTime = $decodedPayload['time'];
                     unset($decodedPayload['time']);
 
+                    $storeId = '';
+                    if (isset($decodedPayload['StoreId']))
+                    {
+                        $storeId = $decodedPayload['StoreId'];
+                        unset($decodedPayload['StoreId']);
+                    }
+
                     $response = $this->_dataHelper->klaviyoTrackEvent(
                         $row['topic'],
                         json_decode($row['user_properties'], true ),
                         $decodedPayload,
-                        $eventTime
+                        $eventTime,
+                        $storeId
                     );
                     if (!$response) {$response = '0';}
 

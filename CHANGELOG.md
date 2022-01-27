@@ -6,8 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 
+### [4.0.1] - 2022-01-28
+
+#### Fixed
+- Add store scoping to Track Requests for Added to Cart
+
 ### [4.0.0] - 2022-01-20
-### Added
+
+#### Added
 - Declarative schema, patch data scripts available for backward compatibility
 
 #### Removed
@@ -155,7 +161,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CSP now uses report-only mode
 
 
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.0...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.1...HEAD
+[4.0.1]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.0...4.0.1
 [4.0.0]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.0-beta...4.0.0
 [4.0.0-beta]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.11...4.0.0-beta
 [3.0.11]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.10...3.0.11
