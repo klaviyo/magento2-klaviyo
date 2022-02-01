@@ -75,11 +75,14 @@ class SalesQuoteSaveAfter implements ObserverInterface
             $kl_user_properties = ['$email' => $kl_decoded_cookie['$email']];
         } else { return; }
 
-        // Setting QuoteId at this point since the MaskedQuoteId is not updated when this event is dispatched,
         // MaskedQuoteId is set into the payload while the EventsTopic cron job moves rows into the Sync table
         $quote = $observer->getData('quote');
         $encodedCustomerId = $this->checkCustomerAndReturnEncodedId($quote);
+
+        // Setting QuoteId at this point since the MaskedQuoteId is not updated when this event is dispatched,
         $klAddedToCartPayload['QuoteId'] = isset($encodedCustomerId) ? "kx_identifier_$encodedCustomerId" : $quote->getId();
+        // Setting StoreId in payload
+        $klAddedToCartPayload['StoreId'] = $quote->getStoreId();
 
         $newEvent = [
             'status' => 'NEW',
