@@ -72,7 +72,11 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         $addedProduct = $addedItem->getProduct();
         $addedItemData = [
             'AddedItemCategories' => (array) $addedProduct->getCategoryIds(),
-            'AddedItemDescription' => (string) strip_tags($addedProduct->getDescription() ?? $addedItem->getDescription()),
+            'AddedItemDescription' => (string) strip_tags(
+                $addedProduct->getDescription()
+                ?? $addedItem->getDescription()
+                ?? $addedItem->getShortDescription()
+            ),
             'AddedItemImageUrlKey' => (string) stripslashes($addedProduct->getData('small_image')),
             'AddedItemPrice' => (float) $addedProduct->getFinalPrice(),
             'AddedItemQuantity' => (int) $addedItem->getQty(),
@@ -123,7 +127,11 @@ class SalesQuoteProductAddAfter implements ObserverInterface
                 'ProductId' => (int) $cartItemId,
                 'Price' => (float) $product->getFinalPrice(),
                 'Title' => (string) $itemName,
-                'Description' => (string) strip_tags($product->getDescription() ?? $item->getDescription()),
+                'Description' => (string) strip_tags(
+                    $product->getDescription()
+                    ?? $item->getDescription()
+                    ?? $item->getShortDescription()
+                ),
                 'Url' => (string) stripslashes($product->getProductUrl()),
                 'Quantity' => (int) $item->getQty()
             ];
