@@ -166,7 +166,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         if (!is_null($timestamp)) {
             $params['time'] = $timestamp;
         }
-        // $encoded_params = $this->build_params($params);
         return $this->make_request('api/track', $params);
 
     }
