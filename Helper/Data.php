@@ -169,13 +169,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->make_request('api/track', $params);
 
     }
-    protected function build_params($params) {
-        return 'data=' . urlencode(base64_encode(json_encode($params)));
-    }
-
-    protected function unwrap_params($params) {
-        return base64_decode(urldecode(substr($params,5)));
-    }
 
     protected function make_request($path, $params) {
         $url = self::KLAVIYO_HOST . $path;
