@@ -165,8 +165,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         if (!is_null($timestamp)) {
             $params['time'] = $timestamp;
         }
-        $encoded_params = $this->build_params($params);
-        return $this->make_request('api/track', $encoded_params);
+        // $encoded_params = $this->build_params($params);
+        return $this->make_request('api/track', $params);
 
     }
     protected function build_params($params) {
@@ -178,11 +178,21 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     protected function make_request($path, $params) {
-        $url = self::KLAVIYO_HOST . $path . '?' . $params;
-        $response = file_get_contents($url);
+        $url = self::KLAVIYO_HOST . $path;
 
+        $options = array(
+            'http' => array(
+                'header'  => "Content-type: application/json\r\n",
+                'method'  => 'POST',
+                'content' => json_encode($params),
+            ),
+        );
+
+        $context  = stream_context_create($options);
+        $response = file_get_contents($url, false,$context);
+
+        $dataString = json_encode($params);
         if ($response == '0'){
-            $dataString = $this->unwrap_params($params);
             $this->_klaviyoLogger->log("Unable to send event to Track API with data: $dataString");
         }
 
