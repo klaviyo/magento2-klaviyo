@@ -180,18 +180,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected function make_request($path, $params) {
         $url = self::KLAVIYO_HOST . $path;
 
+        $dataString = json_encode($params);
         $options = array(
             'http' => array(
                 'header'  => "Content-type: application/json\r\n",
                 'method'  => 'POST',
-                'content' => json_encode($params),
+                'content' => $dataString,
             ),
         );
 
         $context  = stream_context_create($options);
         $response = file_get_contents($url, false,$context);
 
-        $dataString = json_encode($params);
         if ($response == '0'){
             $this->_klaviyoLogger->log("Unable to send event to Track API with data: $dataString");
         }
