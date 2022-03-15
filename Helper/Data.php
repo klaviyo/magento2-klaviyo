@@ -37,6 +37,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         parent::__construct($context);
         $this->_klaviyoLogger = $klaviyoLogger;
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
+        $this->observerAtcPayload = null;
     }
 
     public function getObserverAtcPayload(){
@@ -48,7 +49,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     public function unsetObserverAtcPayload(){
-        unset($this->observerAtcPayload);
+        $this->observerAtcPayload = null;
     }
 
     public function getKlaviyoLists($api_key=null){
