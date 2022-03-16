@@ -37,6 +37,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         parent::__construct($context);
         $this->_klaviyoLogger = $klaviyoLogger;
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
+        $this->observerAtcPayload = null;
     }
 
     public function getObserverAtcPayload(){
@@ -48,7 +49,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     public function unsetObserverAtcPayload(){
-        unset($this->observerAtcPayload);
+        $this->observerAtcPayload = null;
     }
 
     public function getKlaviyoLists($api_key=null){
@@ -165,24 +166,26 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         if (!is_null($timestamp)) {
             $params['time'] = $timestamp;
         }
-        $encoded_params = $this->build_params($params);
-        return $this->make_request('api/track', $encoded_params);
+        return $this->make_request('api/track', $params);
 
-    }
-    protected function build_params($params) {
-        return 'data=' . urlencode(base64_encode(json_encode($params)));
-    }
-
-    protected function unwrap_params($params) {
-        return base64_decode(urldecode(substr($params,5)));
     }
 
     protected function make_request($path, $params) {
-        $url = self::KLAVIYO_HOST . $path . '?' . $params;
-        $response = file_get_contents($url);
+        $url = self::KLAVIYO_HOST . $path;
+
+        $dataString = json_encode($params);
+        $options = array(
+            'http' => array(
+                'header'  => "Content-type: application/json\r\n",
+                'method'  => 'POST',
+                'content' => $dataString,
+            ),
+        );
+
+        $context  = stream_context_create($options);
+        $response = file_get_contents($url, false,$context);
 
         if ($response == '0'){
-            $dataString = $this->unwrap_params($params);
             $this->_klaviyoLogger->log("Unable to send event to Track API with data: $dataString");
         }
 
