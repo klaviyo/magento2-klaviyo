@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 
+### [4.0.2] - 2022-03-15
+
+#### Fixed
+- Updated Added to Cart track request to use POST to accommodate large payloads
+- Initialized observerAtcPayload to fix Undefined property error
+
 ### [4.0.1] - 2022-01-28
 
 #### Fixed
@@ -161,12 +167,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CSP now uses report-only mode
 
 
-<<<<<<< HEAD
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.1...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.2...HEAD
+[4.0.2]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.1...4.0.2
 [4.0.1]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.0...4.0.1
-=======
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.0...HEAD
->>>>>>> 817c32aee39e6700483b3a3d3bf409a033361674
 [4.0.0]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.0-beta...4.0.0
 [4.0.0-beta]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.11...4.0.0-beta
 [3.0.11]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.10...3.0.11
