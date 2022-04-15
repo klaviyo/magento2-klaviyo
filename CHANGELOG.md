@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### [Unreleased]
+- Moved webhooks url to async tier
+- Add install restriction for users on < 2.4.x (must use extension v3.0.11)
+- Removed descriptions for products in Added to Cart payloads
 
 ### [4.0.2] - 2022-03-15
 
