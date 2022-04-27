@@ -20,6 +20,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Fixed
 - Add store scoping to Track Requests for Added to Cart
 
+### [4.0.2] - 2022-03-15
+
+#### Fixed
+- Updated Added to Cart track request to use POST to accommodate large payloads
+- Initialized observerAtcPayload to fix Undefined property error
+
+### [4.0.1] - 2022-01-28
+
+#### Fixed
+- Add store scoping to Track Requests for Added to Cart
+
 ### [4.0.0] - 2022-01-20
 
 #### Added
