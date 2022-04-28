@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 
+### [4.0.3] - 2022-04-28
+
+#### Fixed
+- Moved webhooks url to async tier
+- Add install restriction for users on < 2.4.x (must use extension v3.0.11)
+- Removed product descriptions from Added to Cart payloads
+
 ### [4.0.2] - 2022-03-15
 
 #### Fixed
@@ -167,7 +174,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CSP now uses report-only mode
 
 
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.2...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.3...HEAD
+[4.0.3]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.2...4.0.3
 [4.0.2]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.1...4.0.2
 [4.0.1]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.0...4.0.1
 [4.0.0]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.0-beta...4.0.0
