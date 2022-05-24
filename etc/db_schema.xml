@@ -13,16 +13,16 @@
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="id"/>
         </constraint>
-        <index referenceId="KL_SYNC_STATUS">
+        <index indexType="btree" referenceId="KL_SYNC_STATUS">
             <column name="status"/>
         </index>
-        <index referenceId="KL_SYNC_TOPIC">
+        <index indexType="btree" referenceId="KL_SYNC_TOPIC">
             <column name="topic"/>
         </index>
-        <index referenceId="KL_SYNC_CREATED_AT">
+        <index indexType="btree" referenceId="KL_SYNC_CREATED_AT">
             <column name="created_at"/>
         </index>
-        <index referenceId="KL_SYNC_UPDATED_AT">
+        <index indexType="btree" referenceId="KL_SYNC_UPDATED_AT">
             <column name="updated_at"/>
         </index>
     </table>
@@ -38,16 +38,16 @@
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="id"/>
         </constraint>
-        <index referenceId="KL_PRODUCTS_STATUS">
+        <index indexType="btree" referenceId="KL_PRODUCTS_STATUS">
             <column name="status"/>
         </index>
-        <index referenceId="KL_PRODUCTS_TOPIC">
+        <index indexType="btree" referenceId="KL_PRODUCTS_TOPIC">
             <column name="topic"/>
         </index>
-        <index referenceId="KL_PRODUCTS_CREATED_AT">
+        <index indexType="btree" referenceId="KL_PRODUCTS_CREATED_AT">
             <column name="created_at"/>
         </index>
-        <index referenceId="KL_PRODUCTS_UPDATED_AT">
+        <index indexType="btree" referenceId="KL_PRODUCTS_UPDATED_AT">
             <column name="updated_at"/>
         </index>
     </table>
@@ -63,13 +63,13 @@
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="id"/>
         </constraint>
-        <index referenceId="KL_EVENTS_STATUS">
+        <index indexType="btree" referenceId="KL_EVENTS_STATUS">
             <column name="status"/>
         </index>
-        <index referenceId="KL_EVENTS_CREATED_AT">
+        <index indexType="btree" referenceId="KL_EVENTS_CREATED_AT">
             <column name="created_at"/>
         </index>
-        <index referenceId="KL_EVENTS_UPDATED_AT">
+        <index indexType="btree" referenceId="KL_EVENTS_UPDATED_AT">
             <column name="updated_at"/>
         </index>
     </table>

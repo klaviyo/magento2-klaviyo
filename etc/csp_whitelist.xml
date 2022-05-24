@@ -4,15 +4,22 @@
         <policy id="script-src">
             <values>
                 <value id="klaviyo-base" type="host">https://static.klaviyo.com</value>
+                <value id="klaviyo-forms" type="host">https://static-forms.klaviyo.com</value>
                 <value id="klaviyo-cdn" type="host">https://fast.a.klaviyo.com</value>
                 <value id="klaviyo-analytics" type="host">https://static-tracking.klaviyo.com/</value>
                 <value id="klaviyo-api" type="host">https://a.klaviyo.com/</value>
                 <value id="klaviyo-telemetrics" type="host">https://telemetrics.klaviyo.com/</value>
             </values>
         </policy>
+        <policy id="style-src">
+            <values>
+                <value id="klaviyo-base" type="host">https://static.klaviyo.com</value>
+            </values>
+        </policy>
         <policy id="connect-src">
             <values>
                 <value id="klaviyo-base" type="host">https://static.klaviyo.com</value>
+                <value id="klaviyo-forms" type="host">https://static-forms.klaviyo.com</value>
                 <value id="klaviyo-cdn" type="host">https://fast.a.klaviyo.com</value>
                 <value id="klaviyo-analytics" type="host">https://static-tracking.klaviyo.com/</value>
                 <value id="klaviyo-api" type="host">https://a.klaviyo.com/</value>
@@ -22,6 +29,7 @@
         <policy id="img-src">
             <values>
                 <value id="klaviyo-base" type="host">https://static.klaviyo.com</value>
+                <value id="klaviyo-forms" type="host">https://static-forms.klaviyo.com</value>
                 <value id="klaviyo-cdn" type="host">https://fast.a.klaviyo.com</value>
                 <value id="klaviyo-analytics" type="host">https://static-tracking.klaviyo.com/</value>
                 <value id="klaviyo-api" type="host">https://a.klaviyo.com/</value>
