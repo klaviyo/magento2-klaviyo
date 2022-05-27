@@ -67,7 +67,7 @@ class ProductDeleteBefore implements ObserverInterface
                     'store_ids' => $storeIds,
                     'product_id' => $product->getId(),
                 );
-                $this->_webhookHelper->makeWebhookRequest('product/delete', $data, $klaviyoId);
+                $this->_webhookHelper->makeWebhookRequest('product/delete', json_encode($data), $klaviyoId);
             }
         }
     }

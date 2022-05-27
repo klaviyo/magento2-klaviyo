@@ -33,14 +33,13 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * @param string $webhookType
-     * @param array $data
+     * @param string $data json payload to be sent in the body of the request
      * @param string $klaviyoId
      * @return string
      * @throws Exception
      */
     public function makeWebhookRequest($webhookType, $data, $klaviyoId=null)
     {
-
         if (!$klaviyoId) {
             $klaviyoId = $this->_klaviyoScopeSetting->getPublicApiKey();
         }
@@ -51,14 +50,14 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
             CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => json_encode($data),
+            CURLOPT_POSTFIELDS => $data,
             CURLOPT_USERAGENT => self::USER_AGENT,
-            CURLOPT_HTTPHEADER => array(
+            CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
                 'Magento-two-signature: ' . $this->createWebhookSecurity($data),
-                'Content-Length: '. strlen(json_encode($data)),
+                'Content-Length: '. strlen($data),
                 'Topic: ' . $webhookType
-            ),
+            ],
         ]);
 
         // Submit the request
@@ -66,24 +65,23 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
         $err = curl_errno($curl);
 
         if ($err) {
-            $this->_klaviyoLogger->log(sprintf('Unable to send webhook to %s with data: %s', $url, json_encode($data)));
+            $this->_klaviyoLogger->log("Unable to send webhook to $url with data: $data");
         }
 
         // Close cURL session handle
         curl_close($curl);
+
         return $response;
     }
 
     /**
-     * @param array data
-     * @return string
+     * @param string $data json payload used to create hmac signature
+     * @return string an HMAC signature for webhooks
      * @throws Exception
      */
-    private function createWebhookSecurity(array $data)
+    private function createWebhookSecurity(string $data)
     {
         $webhookSecret = $this->_klaviyoScopeSetting->getWebhookSecret();
-        return hash_hmac('sha256', json_encode($data), $webhookSecret);
-
+        return hash_hmac('sha256', $data, $webhookSecret);
     }
 }
-

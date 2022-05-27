@@ -73,6 +73,11 @@ class Reclaim implements ReclaimInterface
         return $this->_klaviyoScopeSetting->getWebhookSecret();
     }
 
+    public function getWebhooks()
+    {
+        return $this->_klaviyoScopeSetting->getWebhooks();
+    }
+
     /**
      * Returns the Klaviyo log file
      *

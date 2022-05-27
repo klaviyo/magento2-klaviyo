@@ -153,10 +153,15 @@
                     <label>Webhook Secret</label>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
-                <field id="using_product_delete_before_webhook" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="using_product_delete_webhook" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Use Product Delete Webhook?</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>This will remove deleted products from the Klaviyo catalog.</comment>
+                </field>
+                <field id="using_product_save_webhook" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Use Product Save Webhook?</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>This will update or create saved products in the Klaviyo catalog.</comment>
                 </field>
             </group>
         </section>

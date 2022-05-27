@@ -92,7 +92,7 @@ class SaveOrderMarketingConsent implements ObserverInterface
         }
 
         if (count($data["data"]) > 0) {
-            $this->_webhookHelper->makeWebhookRequest('custom/consent', $data);
+            $this->_webhookHelper->makeWebhookRequest('custom/consent', json_encode($data));
         }
 
         return $this;

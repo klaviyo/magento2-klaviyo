@@ -29,8 +29,9 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     const KLAVIYO_NAME_DEFAULT = 'klaviyo';
 
     const WEBHOOK_SECRET = 'klaviyo_reclaim_webhook/klaviyo_webhooks/webhook_secret';
-    const PRODUCT_DELETE_BEFORE = 'klaviyo_reclaim_webhook/klaviyo_webhooks/using_product_delete_before_webhook';
-    
+    const PRODUCT_DELETE_WEBHOOK = 'klaviyo_reclaim_webhook/klaviyo_webhooks/using_product_delete_webhook';
+    const PRODUCT_SAVE_WEBHOOK = 'klaviyo_reclaim_webhook/klaviyo_webhooks/using_product_save_webhook';
+
     const KLAVIYO_OAUTH_NAME = 'klaviyo_reclaim_oauth/klaviyo_oauth/integration_name';
 
     protected $_scopeConfig;
@@ -143,6 +144,19 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->getScopeSetting(self::WEBHOOK_SECRET, $storeId);
     }
 
+    public function getWebhooks()
+    {
+        return $registeredWebhooks = [
+          [
+            'topic' => 'product/delete',
+            'enabled' => $this->getProductDeleteWebhookSetting()
+          ],
+          [
+            'topic' => 'product/save',
+            'enabled' => $this->getProductSaveWebhookSetting()],
+        ];
+    }
+
     public function isEnabled($storeId = null)
     {
         return $this->getScopeSetting(self::ENABLE, $storeId);
@@ -221,7 +235,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_LIST_ID, $storeId);
     }
-    
+
     public function getConsentAtCheckoutSMSConsentText($storeId = null)
     {
         return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_CONSENT_TEXT, $storeId);
@@ -259,10 +273,14 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
         return $storeMap;
     }
 
-    public function getProductDeleteBeforeSetting($storeId = null)
+    public function getProductDeleteWebhookSetting($storeId = null)
     {
-        return $this->getScopeSetting(self::PRODUCT_DELETE_BEFORE, $storeId);
+        return $this->getScopeSetting(self::PRODUCT_DELETE_WEBHOOK, $storeId);
+    }
+
+    public function getProductSaveWebhookSetting($storeId = null)
+    {
+        return $this->getScopeSetting(self::PRODUCT_SAVE_WEBHOOK, $storeId);
     }
 
 }
-
