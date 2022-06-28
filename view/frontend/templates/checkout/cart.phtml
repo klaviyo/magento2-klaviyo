@@ -4,6 +4,7 @@
            'jquery',
            'mage/url'
         ], function (jQuery, url) {
+          url.setBaseUrl('<?= $block->escapeJs($block->escapeUrl($block->getBaseUrl())) ?>');
           jQuery.ajax({
               url: url.build('reclaim/checkout/reload'),
               method: 'POST',
