@@ -5,7 +5,7 @@
 ## Manual Testing Steps
 
 <!--
-Describe how we can recreate and test your change
+Describe how you tested your change.
 -->
 
 1.
