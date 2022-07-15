@@ -5,7 +5,7 @@
 ## Manual Testing Steps
 
 <!--
-Describe how you tested your change.
+Describe how you tested your change. If you are fixing a bug, please provide the version of Magento 2 along with steps to recreate.
 -->
 
 1.
@@ -16,8 +16,6 @@ Describe how you tested your change.
 - [ ] **Internal Only** - If this is a release, have you:
   - [ ] Updated the links in the CHANGELOG to point towards the new versions
   - [ ] Incremented the version in the following places: module.xml and composer.json
-
-______________________________________________________________________
 
 <!--
 Always Write Something™️... even in PR descriptions. It's rubber-duck-debugging for you and
