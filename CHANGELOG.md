@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
  - Fix 404 AJAX Request
+ - Fixed newsletter signup on account creation
 
 ### [4.0.4] - 2022-05-24
 - Skipped 4.0.3 due to cancelled extension in magento marketplace
