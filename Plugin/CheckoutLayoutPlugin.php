@@ -67,21 +67,22 @@ class CheckoutLayoutPlugin
                 $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['shipping-address-fieldset']['children']['kl_sms_consent'] = $smsConsentCheckbox;
             else {
 
-                // extra un-editable field with saved phone number to display to logged in users with default address set
                 $smsConsentTelephone = [
                     'component' => 'Magento_Ui/js/form/element/abstract',
                     'config' =>
                         [
-                            'customScope' => 'shippingAddress',
+                            'customScope' => 'shippingAddress.custom_attributes',
                             'template' => 'ui/form/field',
                             'elementTmpl' => 'ui/form/element/input',
+                            'id' => 'kl_sms_phone_number',
                         ],
+                    'dataScope' => 'shippingAddress.custom_attributes.kl_sms_phone_number',
                     'label' => 'Phone Number',
                     'provider' => 'checkoutProvider',
                     'sortOrder' => '120',
-                    'disabled' => true,
                     'visible' => true,
-                    'value' => $address->getTelephone()
+                    'value' => $address->getTelephone(),
+                    'id' => 'kl_sms_phone_number'
                 ];
 
                 $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['before-form']['children']['kl_sms_phone_number'] = $smsConsentTelephone;
