@@ -54,8 +54,10 @@ class SaveOrderMarketingConsent implements ObserverInterface
     {
         $order = $observer->getEvent()->getOrder();
         $quote = $observer->getEvent()->getQuote();
+        $smsConsent = $quote->getKlSmsConsent();
+        $phoneNumber = $quote->getKlSmsPhoneNumber();
 
-        if ($quote->getKlSmsConsent() && $quote->getKlSmsPhoneNumber()) {
+        if ($smsConsent && $phoneNumber) {
             $order->getShippingAddress()->setTelephone($phoneNumber);
             $quote->getShippingAddress()->setTelephone($phoneNumber);
             $customerAddressId = $quote->getShippingAddress()->getCustomerAddressId();
