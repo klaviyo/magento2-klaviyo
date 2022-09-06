@@ -6,7 +6,7 @@ namespace Klaviyo\Reclaim\Observer;
 use Exception;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Klaviyo\Reclaim\Helper\Webhook;
-
+use Magento\Customer\Api\AddressRepositoryInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 
@@ -25,15 +25,22 @@ class SaveOrderMarketingConsent implements ObserverInterface
     protected  $_webhookHelper;
 
     /**
+     * @var AddressRepositoryInterface $addressRepository
+     */
+    protected $addressRepository;
+
+    /**
      * @param Webhook $webhookHelper
      * @param ScopeSetting $klaviyoScopeSetting
      */
     public function __construct(
         Webhook $webhookHelper,
-        ScopeSetting $klaviyoScopeSetting
+        ScopeSetting $klaviyoScopeSetting,
+        AddressRepositoryInterface $addressRepository
     ) {
         $this->_webhookHelper = $webhookHelper;
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
+        $this->addressRepository = $addressRepository;
     }
 
     /**
@@ -47,6 +54,15 @@ class SaveOrderMarketingConsent implements ObserverInterface
     {
         $order = $observer->getEvent()->getOrder();
         $quote = $observer->getEvent()->getQuote();
+
+        if ($quote->getKlSmsConsent() && $quote->getKlSmsPhoneNumber()) {
+            $order->getShippingAddress()->setTelephone($phoneNumber);
+            $quote->getShippingAddress()->setTelephone($phoneNumber);
+            $customerAddressId = $quote->getShippingAddress()->getCustomerAddressId();
+            $address = $this->addressRepository->getById($customerAddressId);
+            $address->setTelephone($phoneNumber);
+            $this->addressRepository->save($address);
+        }
 
         $order->setData("kl_sms_consent", json_encode($quote->getKlSmsConsent()));
         $order->setData("kl_email_consent", json_encode($quote->getKlEmailConsent()));
