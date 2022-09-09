@@ -74,6 +74,7 @@
         </index>
     </table>
     <table name="quote" resource="default">
+        <column xsi:type="varchar" name="kl_sms_phone_number" nullable="true" comment="SMS Phone Number"/>
         <column xsi:type="text" name="kl_sms_consent" nullable="true" comment="SMS Consent"/>
         <column xsi:type="text" name="kl_email_consent" nullable="true" comment="Email Consent"/>
     </table>

@@ -61,6 +61,7 @@
     },
     "quote": {
         "column": {
+            "kl_sms_phone_number": true,
             "kl_sms_consent": true,
             "kl_email_consent": true
         }
