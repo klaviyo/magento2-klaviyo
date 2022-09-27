@@ -72,13 +72,13 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         $addedProduct = $addedItem->getProduct();
         $addedItemData = [
             'AddedItemCategories' => (array) $addedProduct->getCategoryIds(),
-            'AddedItemImageUrlKey' => (string) stripslashes($addedProduct->getData('small_image')),
+            'AddedItemImageUrlKey' => (string) is_null($addedProduct->getData('small_image')) ? "" : stripslashes($addedProduct->getData('small_image')),
             'AddedItemPrice' => (float) $addedProduct->getFinalPrice(),
             'AddedItemQuantity' => (int) $addedItem->getQty(),
             'AddedItemProductID' => (int) $addedProduct->getId(),
             'AddedItemProductName' => (string) $addedProduct->getName(),
             'AddedItemSku' => (string) $addedProduct->getSku(),
-            'AddedItemUrl' => (string) stripslashes($addedProduct->getProductUrl())
+            'AddedItemUrl' => (string) is_null($addedProduct->getProductUrl()) ? "" : stripslashes($addedProduct->getProductUrl()),
         ];
 
         $klAddedToCartPayload = array_merge(
@@ -118,11 +118,11 @@ class SalesQuoteProductAddAfter implements ObserverInterface
             $itemName = $item->getName();
             $currentProduct = [
                 'Categories' => (array) $itemCategories,
-                'ImageUrlKey' => (string) stripslashes($product->getData('small_image')),
+                'ImageUrlKey' => (string) is_null($product->getData('small_image')) ? "" : stripslashes($product->getData('small_image')),
                 'ProductId' => (int) $cartItemId,
                 'Price' => (float) $product->getFinalPrice(),
                 'Title' => (string) $itemName,
-                'Url' => (string) stripslashes($product->getProductUrl()),
+                'Url' => (string) is_null($product->getProductUrl()) ? "" : stripslashes($product->getProductUrl()),
                 'Quantity' => (int) $item->getQty()
             ];
             $cartQty += $item->getQty();
