@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### [Unreleased]
+- Fixed bug in Observer/SalesQuoteProductAddAfter.php passing null value to stripslashes
 
 ### [4.0.6] - 2022-09-19
 #### Fixed
