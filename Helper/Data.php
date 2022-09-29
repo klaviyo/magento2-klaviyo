@@ -102,12 +102,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $listId = $this->_klaviyoScopeSetting->getNewsletter();
         $optInSetting = $this->_klaviyoScopeSetting->getOptInSetting();
+        $storeName = $this->_klaviyoScopeSetting->getStoreName();
 
         $properties = [];
         $properties['email'] = $email;
         if ($firstName) $properties['$first_name'] = $firstName;
         if ($lastName) $properties['$last_name'] = $lastName;
         if ($source) $properties['$source'] = $source;
+        if ($storeName) $properties['storeName'] = $storeName;
         if ($optInSetting == ScopeSetting::API_SUBSCRIBE) $properties['$consent'] = ['email'];
 
         $propertiesVal = ['profiles' => $properties];
