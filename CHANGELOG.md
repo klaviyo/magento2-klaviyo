@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 - Fixed bug in Observer/SalesQuoteProductAddAfter.php passing null value to stripslashes
+- Updated Payload column type for kl_sync and kl_events tables, addresses issue with truncated Added to Cart payloads
 
 ### [4.0.6] - 2022-09-19
 #### Fixed
