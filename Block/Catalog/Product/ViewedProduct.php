@@ -120,6 +120,21 @@ class ViewedProduct extends Template
         if (!$this->price) {
             $_product = $this->getProduct();
             $this->price = $_product->getPrice();
+            if ($_product->getTypeId() == 'grouped') {
+                # if on a grouped product page, use the price of the lowest priced item in the group
+                $associatedProducts = $_product->getTypeInstance()->getAssociatedProducts($_product);
+                foreach ($associatedProducts as $associatedProduct){
+                    $associatedItemPrice = $associatedProduct->getPrice();
+                    if ($this->price == 0) {
+                        $this->price = $associatedItemPrice;
+                    }
+
+                    if ($this->price > $associatedItemPrice) {
+                        $this->price = $associatedItemPrice;
+                    }
+                }
+            }
+
 
             if ($_product->getTypeId() == 'configurable') {
                 $_children = $_product->getTypeInstance()->getUsedProducts($_product);
@@ -131,6 +146,12 @@ class ViewedProduct extends Template
                 }
             }
         }
+
+        if (!$this->price) {
+            // as a fallback, return null
+            return null;
+        }
+
 
         return number_format($this->price, 2);
     }
