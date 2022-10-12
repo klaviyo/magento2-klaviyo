@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 - Fixed bug in Observer/SalesQuoteProductAddAfter.php passing null value to stripslashes
+- Fixed bug in Block/Catalog/Product/ViewedProduct.php passing null value to number_format
 
 ### [4.0.6] - 2022-09-19
 #### Fixed
