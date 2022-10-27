@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### [Unreleased]
-
+- Add a name to the Klaviyo\Reclaim\Block\Initialize block, so it can be moved around via a layout xml 
 
 ### [4.0.5] - 2022-07-28
 #### Fixed 
