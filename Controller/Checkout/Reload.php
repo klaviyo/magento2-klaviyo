@@ -7,7 +7,7 @@ class Reload extends \Magento\Framework\App\Action\Action
     protected $resultJsonFactory;
 
     public function __construct(
-        \Magento\Backend\App\Action\Context $context,
+        \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
     ) {
         $this->resultJsonFactory = $resultJsonFactory;

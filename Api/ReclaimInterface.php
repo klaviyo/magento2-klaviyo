@@ -77,8 +77,8 @@ interface ReclaimInterface
      * Returns product by id range
      *
      * @api
-     * @param int $quote_id
-     * @param int $item_id
+     * @param int $start_id
+     * @param int $end_id
      * @return mixed[]
      */
     public function productinspector($start_id, $end_id);
