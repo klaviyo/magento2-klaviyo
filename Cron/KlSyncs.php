@@ -129,6 +129,13 @@ class KlSyncs
                     try {
                         $decodedPayload = json_decode($row['payload'], true);
 
+                        if (is_null($decodedPayload)) {
+                            // payload was likely truncated, default to failed response value for the row
+                            $this->_klaviyoLogger->log(sprintf("Truncated Payload - Unable to process and sync row %d: %s",$row['id']));
+                            array_push($responseManifest["0"], $row['id']);
+                            continue;
+                        }
+
                         $eventTime = $decodedPayload['time'];
                         unset($decodedPayload['time']);
 
@@ -140,6 +147,7 @@ class KlSyncs
                             unset($decodedPayload['StoreId']);
                         }
 
+                        // Call the Track API, which returns 0/1 for failed/successful requests
                         $response = $this->_dataHelper->klaviyoTrackEvent(
                             $row['topic'],
                             json_decode($row['user_properties'], true ),
@@ -149,9 +157,10 @@ class KlSyncs
                         );
                         if (!$response) {$response = '0';}
 
+                        // Add the response value to the manifest, all statuses will be updated after all rows have been processed.
                         array_push($responseManifest["$response"], $row['id']);
                     } catch ( \Exception $e) {
-                        // the payload was likely truncated, this will catch any indexing errors
+                        // Catch an exception raised while processing or sending the event
                         // defaults to a failed response and allows the other rows to continue syncing
                         $this->_klaviyoLogger->log(sprintf("Unable to process and sync row %d: %s",$row['id'],$e));
                         array_push($responseManifest["0"], $row['id']);

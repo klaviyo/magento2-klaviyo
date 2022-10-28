@@ -102,7 +102,7 @@ class SalesQuoteSaveAfter implements ObserverInterface
         // Check payload length to avoid truncated data being saved to payload column
         if (strlen($stringifiedPayload) > self::PAYLOAD_CHARACTER_LIMIT) {
             // TODO: add alerting here - don't want to drop events without letting customer know
-            $this->_klaviyoLogger->log(sprintf("Dropped Event - payload too long, character count:%d",strlen($stringifiedPayload)));
+            $this->_klaviyoLogger->log(sprintf("[SalesQuoteSaveAfter] Dropping event - payload too long, character count: %d",strlen($stringifiedPayload)));
         }
         else {
             $newEvent = [

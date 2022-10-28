@@ -109,7 +109,7 @@ class EventsTopic
             if (strlen($event['payload']) > self::PAYLOAD_CHARACTER_LIMIT) {
                 // Above processing resulted in a payload size that exceeds the limit
                 // defaults to a failed response and allows the other rows to continue syncing
-                $this->_klaviyoLogger->log(sprintf("Dropped Event - payload too long, character count:%d",strlen($event['payload'])));
+                $this->_klaviyoLogger->log(sprintf("[moveRowsToSync] Dropping event - payload too long, character count: %d",strlen($event['payload'])));
                 array_push($idsFailed, $event['id']);
                 continue;
             }
