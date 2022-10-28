@@ -26,23 +26,24 @@ abstract class KlaviyoCollection extends AbstractCollection
 
     /**
      * Collection Helper method to get rows to be deleted.
-     * Fetches all rows older than 2 days and having status `SYNCED` for sync table, `MOVED` for topic tables
+     * Fetches all rows older than 2 days and having status `FAILED` as well as`SYNCED` for sync table, `MOVED` for topic tables
      * and returns ids of these rows
-     * @param $status
+     * @param $statusesToDelete
      * @return mixed
      */
-    public function getIdsToDelete($status)
+    public function getIdsToDelete($statusesToDelete)
     {
         $now = new \DateTime('now');
         $date = $now->sub(new \DateInterval('P2D'))
             ->format('Y-m-d H:i:s');
 
         $tableName = $this->getMainTable();
+        $statusList = '("'.implode('","', $statusesToDelete).'")';
 
         $idsToDelete = $this->getConnection()->fetchAll( "select id from (
                                                             select id, timestampdiff(day, created_at, \"$date\") as row_age_in_days
                                                             from $tableName
-                                                            where status = '".$status."'
+                                                            where status in $statusList
                                                             having row_age_in_days > 2
                                                           ) as age_of_rows;"
         );

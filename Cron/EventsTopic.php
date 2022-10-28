@@ -11,6 +11,9 @@ use Magento\Catalog\Model\CategoryFactory;
 
 class EventsTopic
 {
+    // Character limit for a TEXT datatype field
+    const PAYLOAD_CHARACTER_LIMIT = 65535;
+
     /**
      * Klaviyo Logger
      * @var Logger
@@ -74,7 +77,7 @@ class EventsTopic
      */
     public function moveRowsToSync()
     {
-        // New Events to be moved to kl_sync table and update status of these to Moved, limit 500
+        // New Events to be moved to kl_sync table and update status of these to MOVED, limit 500
         $eventsCollection = $this->_eventsCollectionFactory->create();
         $eventsData = $eventsCollection->getRowsForSync('NEW')
             ->addFieldToSelect(['id','event','payload','user_properties'])
@@ -85,11 +88,30 @@ class EventsTopic
         }
 
         $idsMoved = [];
+        $idsFailed = [];
 
         // Capture all events that have been moved and add data to Sync table
+        // Additionally capture all events that have failed to move and continue processing remaining events
         foreach ($eventsData as $event){
             if ($event['event'] == 'Added To Cart') {
-                $event['payload'] = json_encode($this->replaceQuoteIdAndCategoryIds($event['payload']));
+                try {
+                    $event['payload'] = json_encode($this->replaceQuoteIdAndCategoryIds($event['payload']));
+                }
+                catch (\Exception $e) {
+                    // the payload was likely truncated, this will catch any indexing errors that occur during processing
+                    // defaults to a failed response and allows the other rows to continue syncing
+                    $this->_klaviyoLogger->log(sprintf("Unable to process Added to Cart data: %s", $e->getMessage()));
+                    array_push($idsFailed, $event['id']);
+                    continue;
+                }
+            }
+
+            if (strlen($event['payload']) > self::PAYLOAD_CHARACTER_LIMIT) {
+                // Above processing resulted in a payload size that exceeds the limit
+                // defaults to a failed response and allows the other rows to continue syncing
+                $this->_klaviyoLogger->log(sprintf("Dropped Event - payload too long, character count:%d",strlen($event['payload'])));
+                array_push($idsFailed, $event['id']);
+                continue;
             }
 
             //TODO: This can probably be done as one bulk update instead of individual inserts
@@ -105,21 +127,27 @@ class EventsTopic
                 array_push($idsMoved, $event['id']);
             } catch (\Exception $e) {
                 $this->_klaviyoLogger->log(sprintf("Unable to move row: %s", $e->getMessage()));
+                array_push($idsFailed, $event['id']);
             }
         }
 
-        // Update Status of rows in kl_events table to Moved
+        // Update Status of failed rows in kl_events table to FAILED
+        $eventsCollection->updateRowStatus($idsFailed, 'FAILED');
+
+        // Update Status of moved rows in kl_events table to MOVED
         $eventsCollection->updateRowStatus($idsMoved, 'MOVED');
     }
 
     /**
-     * Deletes rows moved to the kl_syncs table that are older than 2 days
+     * Deletes rows that failed to move or have been moved to the kl_syncs table that are older than 2 days
+     * A row gets marked as FAILED when there is an exception processing the event or moving it over to the sync table.
+     *  These will be cleaned to avoid them sitting in the db indefinitely.
      */
-    public function deleteMovedRows()
+    public function deleteMovedOrFailedRows()
     {
-        // Delete rows that have been moved to sync table
+        $statusesToClean = ['MOVED', 'FAILED'];
         $eventsCollection = $this->_eventsCollectionFactory->create();
-        $idsToDelete = $eventsCollection->getIdsToDelete('MOVED');
+        $idsToDelete = $eventsCollection->getIdsToDelete($statusesToClean);
 
         $eventsCollection->deleteRows($idsToDelete);
     }

@@ -67,12 +67,14 @@ class KlSyncs
     }
 
     /**
-     * Cleanup Cron job removing rows marked as SYNCED from kl_sync table
+     * Cleanup Cron job removing rows marked as SYNCED or FAILED from kl_sync table
+     * FAILED syncs should be removed so they don't
      */
     public function clean()
     {
+        $statusesToClean = ['SYNCED', 'FAILED'];
         $syncCollection = $this->_syncCollectionFactory->create();
-        $idsToDelete = $syncCollection->getIdsToDelete('SYNCED');
+        $idsToDelete = $syncCollection->getIdsToDelete($statusesToClean);
 
         $syncCollection->deleteRows($idsToDelete);
 
@@ -124,29 +126,37 @@ class KlSyncs
 
             if (in_array($topic, $trackApiTopics) && !empty($rows)) {
                 foreach($rows as $row) {
-                    $decodedPayload = json_decode($row['payload'], true);
+                    try {
+                        $decodedPayload = json_decode($row['payload'], true);
 
-                    $eventTime = $decodedPayload['time'];
-                    unset($decodedPayload['time']);
+                        $eventTime = $decodedPayload['time'];
+                        unset($decodedPayload['time']);
 
-                    //TODO: if conditional for backward compatibility, needs to be removed in future versions
-                    $storeId = '';
-                    if (isset($decodedPayload['StoreId']))
-                    {
-                        $storeId = $decodedPayload['StoreId'];
-                        unset($decodedPayload['StoreId']);
+                        //TODO: if conditional for backward compatibility, needs to be removed in future versions
+                        $storeId = '';
+                        if (isset($decodedPayload['StoreId']))
+                        {
+                            $storeId = $decodedPayload['StoreId'];
+                            unset($decodedPayload['StoreId']);
+                        }
+
+                        $response = $this->_dataHelper->klaviyoTrackEvent(
+                            $row['topic'],
+                            json_decode($row['user_properties'], true ),
+                            $decodedPayload,
+                            $eventTime,
+                            $storeId
+                        );
+                        if (!$response) {$response = '0';}
+
+                        array_push($responseManifest["$response"], $row['id']);
+                    } catch ( \Exception $e) {
+                        // the payload was likely truncated, this will catch any indexing errors
+                        // defaults to a failed response and allows the other rows to continue syncing
+                        $this->_klaviyoLogger->log(sprintf("Unable to process and sync row %d: %s",$row['id'],$e));
+                        array_push($responseManifest["0"], $row['id']);
+                        continue;
                     }
-
-                    $response = $this->_dataHelper->klaviyoTrackEvent(
-                        $row['topic'],
-                        json_decode($row['user_properties'], true ),
-                        $decodedPayload,
-                        $eventTime,
-                        $storeId
-                    );
-                    if (!$response) {$response = '0';}
-
-                    array_push($responseManifest["$response"], $row['id']);
                 }
             }
         }
