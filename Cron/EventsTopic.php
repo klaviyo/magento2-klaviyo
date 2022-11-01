@@ -100,7 +100,7 @@ class EventsTopic
                 catch (\Exception $e) {
                     // the payload was likely truncated, this will catch any indexing errors that occur during processing
                     // defaults to a failed response and allows the other rows to continue syncing
-                    $this->_klaviyoLogger->log(sprintf("Unable to process Added to Cart data: %s", $e->getMessage()));
+                    $this->_klaviyoLogger->log(sprintf("[moveRowsToSync] Unable to process Added to Cart data: %s", $e->getMessage()));
                     array_push($idsFailed, $event['id']);
                     continue;
                 }
@@ -126,7 +126,7 @@ class EventsTopic
                 $sync->save();
                 array_push($idsMoved, $event['id']);
             } catch (\Exception $e) {
-                $this->_klaviyoLogger->log(sprintf("Unable to move row: %s", $e->getMessage()));
+                $this->_klaviyoLogger->log(sprintf("[moveRowsToSync] Unable to move row: %s", $e->getMessage()));
                 array_push($idsFailed, $event['id']);
             }
         }

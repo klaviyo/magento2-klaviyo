@@ -117,7 +117,7 @@ class SalesQuoteSaveAfter implements ObserverInterface
                 $eventsData = $this->_eventsModel->setData($newEvent);
                 $eventsData->save();
             } catch (\Exception $e) {
-                $this->_klaviyoLogger->log(sprintf("Unable to save row to kl_events: %s", $e->getMessage()));
+                $this->_klaviyoLogger->log(sprintf("[SalesQuoteSaveAfterUnable] to save row to kl_events: %s", $e->getMessage()));
             }
         }
 

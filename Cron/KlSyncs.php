@@ -131,7 +131,7 @@ class KlSyncs
 
                         if (is_null($decodedPayload)) {
                             // payload was likely truncated, default to failed response value for the row
-                            $this->_klaviyoLogger->log(sprintf("Truncated Payload - Unable to process and sync row %d: %s",$row['id']));
+                            $this->_klaviyoLogger->log(sprintf("[sendUpdatesToApp] Truncated Payload - Unable to process and sync row %d: %s",$row['id']));
                             array_push($responseManifest["0"], $row['id']);
                             continue;
                         }
@@ -162,7 +162,7 @@ class KlSyncs
                     } catch ( \Exception $e) {
                         // Catch an exception raised while processing or sending the event
                         // defaults to a failed response and allows the other rows to continue syncing
-                        $this->_klaviyoLogger->log(sprintf("Unable to process and sync row %d: %s",$row['id'],$e));
+                        $this->_klaviyoLogger->log(sprintf("[sendUpdatesToApp] Unable to process and sync row %d: %s",$row['id'],$e));
                         array_push($responseManifest["0"], $row['id']);
                         continue;
                     }
