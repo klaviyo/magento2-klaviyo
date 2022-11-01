@@ -67,12 +67,14 @@ class KlSyncs
     }
 
     /**
-     * Cleanup Cron job removing rows marked as SYNCED from kl_sync table
+     * Cleanup Cron job removing rows marked as SYNCED or FAILED from kl_sync table
+     * FAILED syncs should be removed so they don't
      */
     public function clean()
     {
+        $statusesToClean = ['SYNCED', 'FAILED'];
         $syncCollection = $this->_syncCollectionFactory->create();
-        $idsToDelete = $syncCollection->getIdsToDelete('SYNCED');
+        $idsToDelete = $syncCollection->getIdsToDelete($statusesToClean);
 
         $syncCollection->deleteRows($idsToDelete);
 
@@ -124,29 +126,46 @@ class KlSyncs
 
             if (in_array($topic, $trackApiTopics) && !empty($rows)) {
                 foreach($rows as $row) {
-                    $decodedPayload = json_decode($row['payload'], true);
+                    try {
+                        $decodedPayload = json_decode($row['payload'], true);
 
-                    $eventTime = $decodedPayload['time'];
-                    unset($decodedPayload['time']);
+                        if (is_null($decodedPayload)) {
+                            // payload was likely truncated, default to failed response value for the row
+                            $this->_klaviyoLogger->log(sprintf("[sendUpdatesToApp] Truncated Payload - Unable to process and sync row %d: %s",$row['id']));
+                            array_push($responseManifest["0"], $row['id']);
+                            continue;
+                        }
 
-                    //TODO: if conditional for backward compatibility, needs to be removed in future versions
-                    $storeId = '';
-                    if (isset($decodedPayload['StoreId']))
-                    {
-                        $storeId = $decodedPayload['StoreId'];
-                        unset($decodedPayload['StoreId']);
+                        $eventTime = $decodedPayload['time'];
+                        unset($decodedPayload['time']);
+
+                        //TODO: if conditional for backward compatibility, needs to be removed in future versions
+                        $storeId = '';
+                        if (isset($decodedPayload['StoreId']))
+                        {
+                            $storeId = $decodedPayload['StoreId'];
+                            unset($decodedPayload['StoreId']);
+                        }
+
+                        // Call the Track API, which returns 0/1 for failed/successful requests
+                        $response = $this->_dataHelper->klaviyoTrackEvent(
+                            $row['topic'],
+                            json_decode($row['user_properties'], true ),
+                            $decodedPayload,
+                            $eventTime,
+                            $storeId
+                        );
+                        if (!$response) {$response = '0';}
+
+                        // Add the response value to the manifest, all statuses will be updated after all rows have been processed.
+                        array_push($responseManifest["$response"], $row['id']);
+                    } catch ( \Exception $e) {
+                        // Catch an exception raised while processing or sending the event
+                        // defaults to a failed response and allows the other rows to continue syncing
+                        $this->_klaviyoLogger->log(sprintf("[sendUpdatesToApp] Unable to process and sync row %d: %s",$row['id'],$e));
+                        array_push($responseManifest["0"], $row['id']);
+                        continue;
                     }
-
-                    $response = $this->_dataHelper->klaviyoTrackEvent(
-                        $row['topic'],
-                        json_decode($row['user_properties'], true ),
-                        $decodedPayload,
-                        $eventTime,
-                        $storeId
-                    );
-                    if (!$response) {$response = '0';}
-
-                    array_push($responseManifest["$response"], $row['id']);
                 }
             }
         }

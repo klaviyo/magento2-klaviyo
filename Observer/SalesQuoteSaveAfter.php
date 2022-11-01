@@ -4,6 +4,7 @@ namespace Klaviyo\Reclaim\Observer;
 
 use Klaviyo\Reclaim\Helper\Data;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
+use Klaviyo\Reclaim\Helper\Logger;
 use Klaviyo\Reclaim\Model\Events;
 
 use Magento\Framework\Event\Observer;
@@ -12,6 +13,9 @@ use Magento\Customer\Model\Session;
 
 class SalesQuoteSaveAfter implements ObserverInterface
 {
+    // Character limit for a TEXT datatype field
+    const PAYLOAD_CHARACTER_LIMIT = 65535;
+
     /**
      * Klaviyo Scope setting Helper
      * @var ScopeSetting
@@ -23,6 +27,12 @@ class SalesQuoteSaveAfter implements ObserverInterface
      * @var Data
      */
     protected $_dataHelper;
+
+    /**
+     * Klaviyo Logger
+     * @var Logger
+     */
+    protected $_klaviyoLogger;
 
     /**
      * Events Model
@@ -38,18 +48,21 @@ class SalesQuoteSaveAfter implements ObserverInterface
 
     /**
      * SalesQuoteSaveAfter constructor
+     * @param Logger $klaviyoLogger
      * @param ScopeSetting $scopeSetting
      * @param Data $dataHelper
      * @param Events $eventsModel
      * @param Session $customerSession
      */
     public function __construct(
+        Logger $klaviyoLogger,
         ScopeSetting $scopeSetting,
         Data $dataHelper,
         Events $eventsModel,
         Session $customerSession
     )
     {
+        $this->_klaviyoLogger = $klaviyoLogger;
         $this->_scopeSetting = $scopeSetting;
         $this->_dataHelper = $dataHelper;
         $this->_eventsModel = $eventsModel;
@@ -84,16 +97,29 @@ class SalesQuoteSaveAfter implements ObserverInterface
         // Setting StoreId in payload
         $klAddedToCartPayload['StoreId'] = $quote->getStoreId();
 
-        $newEvent = [
-            'status' => 'NEW',
-            'user_properties' => json_encode($kl_user_properties),
-            'event'=> 'Added To Cart',
-            'payload' => json_encode($klAddedToCartPayload)
-        ];
+        $stringifiedPayload = json_encode($klAddedToCartPayload);
 
-        // Creating a new row in the kl_events table
-        $eventsData = $this->_eventsModel->setData($newEvent);
-        $eventsData->save();
+        // Check payload length to avoid truncated data being saved to payload column
+        if (strlen($stringifiedPayload) > self::PAYLOAD_CHARACTER_LIMIT) {
+            // TODO: add alerting here - don't want to drop events without letting customer know
+            $this->_klaviyoLogger->log(sprintf("[SalesQuoteSaveAfter] Dropping event - payload too long, character count: %d",strlen($stringifiedPayload)));
+        }
+        else {
+            $newEvent = [
+                'status' => 'NEW',
+                'user_properties' => json_encode($kl_user_properties),
+                'event'=> 'Added To Cart',
+                'payload' => json_encode($klAddedToCartPayload)
+            ];
+
+            try {
+                // Creating a new row in the kl_events table
+                $eventsData = $this->_eventsModel->setData($newEvent);
+                $eventsData->save();
+            } catch (\Exception $e) {
+                $this->_klaviyoLogger->log(sprintf("[SalesQuoteSaveAfterUnable] to save row to kl_events: %s", $e->getMessage()));
+            }
+        }
 
         //Unset the custom variable set in DataHelper Object
         $this->_dataHelper->unsetObserverAtcPayload();
