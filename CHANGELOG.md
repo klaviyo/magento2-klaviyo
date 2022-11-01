@@ -4,8 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-### [Unreleased]
-- Add a name to the Klaviyo\Reclaim\Block\Initialize block, so it can be moved around via a layout xml 
+### [4.0.7] - 2022-11-01
+### Added
+- Add a name to the Klaviyo\Reclaim\Block\Initialize block, so it can be moved around via a layout xml
+### Fixed
 - Fixed bug in Observer/SalesQuoteProductAddAfter.php passing null value to stripslashes
 - Fixed bug in Block/Catalog/Product/ViewedProduct.php passing null value to number_format
 - Fixed issue when Controller/Checkout/Reload.php was loading backend classes on frontend
@@ -188,7 +190,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CSP now uses report-only mode
 
 
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.6...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.7...HEAD
+[4.0.7]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.6...4.0.7
 [4.0.6]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.5...4.0.6
 [4.0.5]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.4...4.0.5
 [4.0.4]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.2...4.0.4
