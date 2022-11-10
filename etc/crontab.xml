@@ -13,7 +13,7 @@
         <job name="klaviyo_events_topic" instance="Klaviyo\Reclaim\Cron\EventsTopic" method="moveRowsToSync">
             <schedule>*/5 * * * *</schedule>
         </job>
-        <job name="klaviyo_events_cleanup" instance="Klaviyo\Reclaim\Cron\EventsTopic" method="deleteMovedRows">
+        <job name="klaviyo_events_cleanup" instance="Klaviyo\Reclaim\Cron\EventsTopic" method="deleteMovedOrFailedRows">
             <schedule>59 23 * * *</schedule>
         </job>
     </group>
