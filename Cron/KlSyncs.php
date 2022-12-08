@@ -131,7 +131,7 @@ class KlSyncs
 
                         if (is_null($decodedPayload)) {
                             // payload was likely truncated, default to failed response value for the row
-                            $this->_klaviyoLogger->log(sprintf("[sendUpdatesToApp] Truncated Payload - Unable to process and sync row %d: %s",$row['id']));
+                            $this->_klaviyoLogger->log(sprintf("[sendUpdatesToApp] Truncated Payload - Unable to process and sync row %d",$row['id']));
                             array_push($responseManifest["0"], $row['id']);
                             continue;
                         }
