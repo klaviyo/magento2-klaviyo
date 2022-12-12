@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### Unreleased
+### Fixed
+- Fixed bug in logging for truncated payloads in the kl_syncs table.
+
 ### [4.0.8] - 2022-11-10
 ### Fixed
 - Fixed bug where cleanup cron wasn't referencing correct method name. 
@@ -195,7 +199,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 [Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.8...HEAD
-[4.0.7]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.7...4.0.8
+[4.0.8]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.7...4.0.8
 [4.0.7]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.6...4.0.7
 [4.0.6]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.5...4.0.6
 [4.0.5]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.4...4.0.5
