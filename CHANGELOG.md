@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixed bug in logging for truncated payloads in the kl_syncs table.
 
-
 ### [4.0.8] - 2022-11-10
 ### Fixed
 - Fixed bug where cleanup cron wasn't referencing correct method name. 
