@@ -7,7 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### [4.0.9] - 2023-01-03
 ### Changed
 - Updated default SMS consent language
-
 ### Fixed
 - Fixed bug in logging for truncated payloads in the kl_syncs table.
 
