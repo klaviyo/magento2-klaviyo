@@ -39,6 +39,8 @@ class CheckoutLayoutPlugin
 
     public function afterProcess(\Magento\Checkout\Block\Checkout\LayoutProcessor $processor, $jsLayout)
     {
+        $address = $this->_getDefaultAddressIfSetForCustomer();
+
         if ($this->_klaviyoScopeSetting->getConsentAtCheckoutSMSIsActive())
         {
             $smsConsentCheckbox = [
@@ -60,8 +62,6 @@ class CheckoutLayoutPlugin
                 'sortOrder' => $this->_klaviyoScopeSetting->getConsentAtCheckoutSMSConsentSortOrder(),
                 'id' => 'kl_sms_consent',
             ];
-
-            $address = $this->_getDefaultAddressIfSetForCustomer();
 
             if (!$address)
                 $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['shipping-address-fieldset']['children']['kl_sms_consent'] = $smsConsentCheckbox;
@@ -89,7 +89,7 @@ class CheckoutLayoutPlugin
             }
         }
 
-        if (!$this->_customerSession->isLoggedIn() && $this->_klaviyoScopeSetting->getConsentAtCheckoutEmailIsActive())
+        if ($this->_klaviyoScopeSetting->getConsentAtCheckoutEmailIsActive())
         {
             $emailConsentCheckbox = [
                 'component' => 'Magento_Ui/js/form/element/abstract',
@@ -110,7 +110,34 @@ class CheckoutLayoutPlugin
                 'id' => 'kl_email_consent',
             ];
 
-            $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['shipping-address-fieldset']['children']['kl_email_consent'] = $emailConsentCheckbox;
+            // extra un-editable field with saved email address to display to logged in users
+            $emailConsentField = [
+                'component' => 'Magento_Ui/js/form/element/abstract',
+                'config' =>
+                    [
+                        'customScope' => 'shippingAddress',
+                        'template' => 'ui/form/field',
+                        'elementTmpl' => 'ui/form/element/input',
+                    ],
+                'label' => 'Email Address',
+                'provider' => 'checkoutProvider',
+                'sortOrder' => '0',
+                'disabled' => true,
+                'visible' => true,
+                'value' => $this->_customerSession->getCustomer()->getEmail()
+            ];
+
+            if (!$address) {
+                $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['shipping-address-fieldset']['children']['kl_email_consent'] = $emailConsentCheckbox;
+                if($this->_customerSession->isLoggedIn())
+                {
+                    $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['shipping-address-fieldset']['children']['kl_email'] = $emailConsentField;
+                }
+            }
+            else  {
+                $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['before-form']['children']['kl_email_consent'] = $emailConsentCheckbox;
+                $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['before-form']['children']['kl_email'] = $emailConsentField;
+            }
         }
 
 
