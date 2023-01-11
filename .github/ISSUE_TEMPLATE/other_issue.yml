@@ -1,0 +1,16 @@
+name: Other issue
+description: Any other issue related to the Klaviyo extension that might not fit into the other categories.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        If you need support with your Klaviyo account or require help troubleshooting your
+        Magento 2 integration please reach out to Klaviyo's Support Team. Instructions for
+        how to do so are available in [Klaviyo's Help Center](https://help.klaviyo.com/hc/en-us/articles/115001002272-How-to-contact-support).
+  - type: textarea
+    attributes:
+      label: Description
+      description: |
+        Tell us about the issue you're experiencing.
+    validations:
+      required: true

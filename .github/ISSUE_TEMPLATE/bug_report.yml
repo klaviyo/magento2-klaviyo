@@ -1,0 +1,54 @@
+name: Bug report
+description: Report a technical issue with the Klaviyo extension
+body:
+  - type: textarea
+    attributes:
+      label: Environment details
+      description: |
+        Describe your environment.
+        Provide all the details that will help us to reproduce the bug.
+      value: |
+        PHP version: 
+        Magento version: 
+        Klaviyo extension version: 
+        Anything else that would help a developer reproduce the bug?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: |
+        Provide a set of clear steps to reproduce this bug.
+      placeholder: |
+        Example:
+          1. Navigate to storefront as a guest.
+          2. Open Test Category.
+          3. Click “Add to Cart” on the Virtual Product.
+          4. Open mini shopping cart and click “Proceed to Checkout”.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected result
+      description: |
+        Tell us what you expected to happen.
+      placeholder: |
+        Example:
+          Order is placed successfully, customer is redirected to the success page.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Actual result
+      description: |
+        Tell us what happened. Include error messages and issues.
+      placeholder: |
+        Example:
+          “Place order” button is not visible, order cannot be placed.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Additional information
+      description: |
+        Any other information you can provide that might help us triage this issue.
