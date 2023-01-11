@@ -64,7 +64,7 @@ class ReclaimTest extends TestCase
 
         $scopeSettingMock = $this->createMock(ScopeSetting::class);
         $scopeSettingMock->method('getVersion')->willReturn(SampleExtension::RECLAIM_VERSION);
-        $scopeSettingMock->method('isLoggerEnabled')->willReturn(TRUE);
+        $scopeSettingMock->method('isLoggerEnabled')->willReturn(true);
 
         /**
          * the logger and handler are linked and invoked using settings
@@ -108,8 +108,7 @@ class ReclaimTest extends TestCase
          * create test log file with dummy entries
          */
         $testLogFile = fopen(self::TEST_LOG_PATH, 'wb');
-        foreach (self::TEST_ENTRIES as $entry)
-        {
+        foreach (self::TEST_ENTRIES as $entry) {
             fwrite($testLogFile, $entry . "\r\n");
         }
         fclose($testLogFile);
@@ -141,17 +140,17 @@ class ReclaimTest extends TestCase
         /**
          * test unsuccessful retrieval scenarios
          */
-        $expectedResponse = array (
+        $expectedResponse =  [
             'message' => 'Unable to retrieve log file with error: file(' . self::TEST_LOG_PATH . '): failed to open stream: No such file or directory'
-        );
+        ];
         unlink(self::TEST_LOG_PATH);
         $this->assertSame($expectedResponse, $this->reclaim->getLog());
 
         $testLogFile = fopen(self::TEST_LOG_PATH, 'wb');
         fclose($testLogFile);
-        $expectedResponse = array (
+        $expectedResponse =  [
             'message' => 'Log file is empty'
-        );
+        ];
         $this->assertSame($expectedResponse, $this->reclaim->getLog());
     }
 

@@ -11,7 +11,6 @@ use Magento\Framework\View\Element\Template\Context;
 use Magento\Customer\Model\Session;
 use Magento\Customer\Api\Data\CustomerInterface;
 
-
 class InitializeTest extends TestCase
 {
     /**

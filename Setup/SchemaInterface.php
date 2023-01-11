@@ -1,6 +1,7 @@
 <?php
 
 namespace Klaviyo\Reclaim\Setup;
+
 /**
  * Provides a list of all Klaviyo tables in the Magento Database.
  */

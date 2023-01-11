@@ -5,7 +5,6 @@ namespace Klaviyo\Reclaim\Model;
 use Klaviyo\Reclaim\Api\ReclaimInterface;
 use \Magento\Framework\Exception\NotFoundException;
 
-
 class Reclaim implements ReclaimInterface
 {
     /**
@@ -45,8 +44,7 @@ class Reclaim implements ReclaimInterface
         \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection,
         \Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting,
         \Klaviyo\Reclaim\Helper\Logger $klaviyoLogger
-        )
-    {
+    ) {
         $this->quoteFactory = $quoteFactory;
         $this->_productFactory = $productFactory;
         $this->_objectManager = $objectManager;
@@ -84,17 +82,17 @@ class Reclaim implements ReclaimInterface
         try {
             $log = file($this->_klaviyoLogger->getPath());
         } catch (\Exception $e) {
-            return array (
+            return  [
                 'message' => 'Unable to retrieve log file with error: ' . $e->getMessage()
-            );
+            ];
         }
 
         if (!empty($log)) {
             return $log;
         } else {
-            return array (
+            return  [
                 'message' => 'Log file is empty'
-            );
+            ];
         }
     }
 
@@ -112,11 +110,10 @@ class Reclaim implements ReclaimInterface
 
         //check if we were able to parse the timestamp
         //if no timestamp, return failure message
-        if ($cursor == '')
-        {
-            $response = array(
+        if ($cursor == '') {
+            $response = [
                 'message' => 'Unable to parse timestamp: ' . $date
-            );
+            ];
             $this->_klaviyoLogger->log('cleanLog failed: unable to parse timestamp from: ' . $date);
             return $response;
         }
@@ -131,15 +128,13 @@ class Reclaim implements ReclaimInterface
         $output = fopen($path, 'wb');
 
         //loop through all of the lines in the log
-        while ($row = fgets($input))
-        {
+        while ($row = fgets($input)) {
             //parse timestamp from the line in the log
             //example formatting:
             //[2018-07-05 11:10:35] channel-name.INFO: This is a log entry
             preg_match('/\[.*?\]/', $row, $matches);
             $timestamp = strtotime(substr($matches[0], 1, -1));
-            if ($timestamp > $cursor)
-            {
+            if ($timestamp > $cursor) {
                 fwrite($output, $row);
             }
         }
@@ -156,9 +151,9 @@ class Reclaim implements ReclaimInterface
         $this->_klaviyoLogger->log('Cleaned all log entries before: ' . $date);
 
         //return success message
-        $response = array(
+        $response = [
             'message' => 'Cleaned all log entries before: ' . $date
-        );
+        ];
         return $response;
     }
 
@@ -175,9 +170,9 @@ class Reclaim implements ReclaimInterface
         $this->_klaviyoLogger->log($message);
 
         //return success message
-        return array(
+        return [
             'message' => 'Logged message: \'' . $message . '\''
-        );
+        ];
     }
 
     /**
@@ -192,9 +187,8 @@ class Reclaim implements ReclaimInterface
         $store_manager = $object_manager->get('\Magento\Store\Model\StoreManagerInterface');
         $stores = $store_manager->getStores();
 
-        $hydrated_stores = array();
-        foreach ($stores as $store)
-        {
+        $hydrated_stores = [];
+        foreach ($stores as $store) {
             $store_id = $store->getId();
             $store_website_id = $store->getWebsiteId();
             $store_name = $store->getName();
@@ -202,31 +196,32 @@ class Reclaim implements ReclaimInterface
             $base_url = $store->getBaseUrl();
             $media_base_url = $store->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA);
 
-            array_push($hydrated_stores, array(
+            array_push($hydrated_stores, [
               'id' => $store_id,
               'website_id' => $store_website_id,
               'name' => $store_name,
               'code' => $store_code,
               'base_url' => $base_url,
               'media_base_url' => $media_base_url,
-            ));
+            ]);
         }
 
         return $hydrated_stores;
     }
-    public function product($quote_id, $item_id) {
+    public function product($quote_id, $item_id)
+    {
 
-        if (!$quote_id || !$item_id){
+        if (!$quote_id || !$item_id) {
             throw new NotFoundException(__('quote id or item id not found'));
         }
 
         $quote = $this->quoteFactory->create()->load($quote_id);
-        if (!$quote){
+        if (!$quote) {
             throw new NotFoundException(__('quote not found'));
         }
 
         $item = $quote->getItemById($item_id);
-        if (!$item){
+        if (!$item) {
             throw new NotFoundException(__('item not found'));
         }
 
@@ -234,36 +229,36 @@ class Reclaim implements ReclaimInterface
 
         $image_array = $this->_getImages($product);
 
-        $response['$body'] = array(
+        $response['$body'] = [
             'id' => $item->getProductId(),
             'images' => $image_array
-        );
+        ];
 
         return $response;
     }
 
     /**
-    * @return mixed
-    */
-    public function productVariantInventory($product_id, $store_id=0)
+     * @return mixed
+     */
+    public function productVariantInventory($product_id, $store_id = 0)
     {
-        if (!$product_id){
+        if (!$product_id) {
             throw new NotFoundException(_('A product id is required'));
         }
         // if store_id is specified, use it
-        if ($store_id){
+        if ($store_id) {
             $product = $this->_productFactory->create()->setStoreId($store_id)->load($product_id);
         } else {
             $product = $this->_productFactory->create()->load($product_id);
         }
 
-        if (!$product){
+        if (!$product) {
             throw new NotFoundException(_('A product with id '. $product_id .' was not found'));
         }
 
         $productId = $product->getId();
 
-        $response = array(array(
+        $response = [[
             'id' => $productId,
             'sku' => $product->getSku(),
             'title' => $product->getName(),
@@ -271,7 +266,7 @@ class Reclaim implements ReclaimInterface
             'available' => true,
             'inventory_quantity' => $this->_stockItem->getStockQty($productId),
             'inventory_policy' => $this->_getStockItem($productId)
-        ));
+        ]];
         // check to see if the product has variants, if it doesn't just return the product information
         try {
             $_children = $product->getTypeInstance()->getUsedProducts($product);
@@ -280,49 +275,48 @@ class Reclaim implements ReclaimInterface
             return $response;
         }
 
-        foreach ($_children as $child){
-            $response['variants'][] = array(
+        foreach ($_children as $child) {
+            $response['variants'][] = [
                 'id' => $child->getId(),
                 'title' => $child->getName(),
                 'sku' => $child->getSku(),
                 'available' => $child->isAvailable(),
                 'inventory_quantity' => $this->_stockItem->getStockQty($child->getId()),
                 'inventory_policy' => $this->_getStockItem($child->getId()),
-            );
+            ];
         }
 
         return $response;
-
     }
 
     // handle inspector tasks to return products by id
-    public function productinspector($start_id, $end_id){
+    public function productinspector($start_id, $end_id)
+    {
 
-        if (($end_id - $start_id) > 100){
+        if (($end_id - $start_id) > 100) {
             throw new NotFoundException(__('100 is the max batch'));
         } elseif (!$start_id || !$end_id) {
             throw new NotFoundException(__('provide a start and end filter'));
         }
 
-        $response = array();
+        $response = [];
         foreach (range($start_id, $end_id) as $number) {
             $product = $this->_objectManager
                 ->create('Magento\Catalog\Model\Product')
                 ->load($number);
 
-            if (!$product){
+            if (!$product) {
                 continue;
             }
-            $response[] = array(
+            $response[] = [
                 'id' => $product->getId(),
                 'sku' => $product->getSku(),
                 'type_id' => $product->getTypeId(),
                 'price' => $product->getPrice()
-            );
+            ];
         }
 
         return $response;
-
     }
 
     public function getSubscribersCount()
@@ -331,17 +325,17 @@ class Reclaim implements ReclaimInterface
         return $subscriberCount;
     }
 
-    public function getSubscribersById($start_id, $end_id, $storeId=null)
+    public function getSubscribersById($start_id, $end_id, $storeId = null)
     {
-        if (!$start_id || !$end_id ){
+        if (!$start_id || !$end_id) {
             throw new NotFoundException(__('Please provide start_id and end_id'));
         }
 
-        if ($start_id > $end_id){
+        if ($start_id > $end_id) {
             throw new NotFoundException(__('end_id should be larger than start_id'));
         }
 
-        if (($end_id - $start_id) > self::SUBSCRIBER_BATCH_SIZE){
+        if (($end_id - $start_id) > self::SUBSCRIBER_BATCH_SIZE) {
             throw new NotFoundException(__('Max batch size is 500'));
         }
 
@@ -357,10 +351,10 @@ class Reclaim implements ReclaimInterface
         return $response;
     }
 
-    public function getSubscribersByDateRange($start, $until, $storeId=null)
+    public function getSubscribersByDateRange($start, $until, $storeId = null)
     {
 
-        if (!$start || !$until ){
+        if (!$start || !$until) {
             throw new NotFoundException(__('Please provide start and until param'));
         }
         // start and until date formats
@@ -369,14 +363,14 @@ class Reclaim implements ReclaimInterface
 
         $until_date = strtotime($until);
         $start_date = strtotime($start);
-        if (!$until_date || !$start_date){
+        if (!$until_date || !$start_date) {
             throw new NotFoundException(__('Please use a valid date format YYYY-MM-DD HH:MM:SS'));
         }
 
         // don't want any big queries, we limit to 10 days
         $datediff = $until_date - $start_date;
 
-        if (abs(round($datediff / (60 * 60 * 24))) > self::MAX_QUERY_DAYS){
+        if (abs(round($datediff / (60 * 60 * 24))) > self::MAX_QUERY_DAYS) {
             throw new NotFoundException(__('Cannot query more than 10 days'));
         }
 
@@ -390,16 +384,15 @@ class Reclaim implements ReclaimInterface
         $response = $this->_packageSubscribers($subscriberCollection);
 
         return $response;
-
     }
     public function _packageSubscribers($subscriberCollection)
     {
-        $response = array();
-        foreach ($subscriberCollection as $subscriber){
-            $response[]= array(
+        $response = [];
+        foreach ($subscriberCollection as $subscriber) {
+            $response[]= [
                 'email' => $subscriber->getEmail(),
                 'subscribe_status' => $subscriber->getSubscriberStatus()
-            );
+            ];
         }
         return $response;
     }
@@ -407,7 +400,7 @@ class Reclaim implements ReclaimInterface
     public function _storeFilter($storeId)
     {
         $storeIdFilter = 'eq';
-        if (!$storeId){
+        if (!$storeId) {
             $storeIdFilter = 'nlike';
         }
         return $storeIdFilter;
@@ -416,9 +409,9 @@ class Reclaim implements ReclaimInterface
     public function _getImages($product)
     {
         $images = $product->getMediaGalleryImages();
-        $image_array = array();
+        $image_array = [];
 
-        foreach($images as $image) {
+        foreach ($images as $image) {
             $image_array[] = $this->handleMediaURL($image);
         }
         return $image_array;
@@ -426,7 +419,7 @@ class Reclaim implements ReclaimInterface
     public function handleMediaURL($image)
     {
         $custom_media_url = $this->_klaviyoScopeSetting->getCustomMediaURL();
-        if ($custom_media_url){
+        if ($custom_media_url) {
             return rtrim($custom_media_url, '/') . '/media/catalog/product' . $image->getFile();
         }
         return $image->getUrl();

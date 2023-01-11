@@ -71,7 +71,7 @@ interface ReclaimInterface
      * @param int $store_id
      * @return mixed[]
      */
-    public function productVariantInventory($product_id, $store_id=0);
+    public function productVariantInventory($product_id, $store_id = 0);
 
     /**
      * Returns product by id range
@@ -101,7 +101,7 @@ interface ReclaimInterface
      * @param int $store_id
      * @return mixed[]
      */
-    public function getSubscribersByDateRange($start, $until, $store_id=null);
+    public function getSubscribersByDateRange($start, $until, $store_id = null);
 
     /**
      * Returns subscirbers by id
@@ -112,6 +112,5 @@ interface ReclaimInterface
      * @param int $store_id
      * @return mixed[]
      */
-    public function getSubscribersById($start_id, $end_id, $store_id=null);
-
+    public function getSubscribersById($start_id, $end_id, $store_id = null);
 }

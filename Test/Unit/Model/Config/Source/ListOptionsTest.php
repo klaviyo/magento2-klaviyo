@@ -10,7 +10,6 @@ use Klaviyo\Reclaim\Helper\Data;
 use Klaviyo\Reclaim\Model\Config\Source\ListOptions;
 use Magento\Framework\Message\ManagerInterface;
 
-
 class ListOptionsTest extends TestCase
 {
     /**

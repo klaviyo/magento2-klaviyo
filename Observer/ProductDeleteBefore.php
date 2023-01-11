@@ -10,7 +10,6 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\ObjectManagerInterface;
 
-
 class ProductDeleteBefore implements ObserverInterface
 {
     /**
@@ -22,7 +21,7 @@ class ProductDeleteBefore implements ObserverInterface
     /**
      * @var Webhook $webhookHelper
      */
-    protected  $_webhookHelper;
+    protected $_webhookHelper;
 
     /**
      * @var ObjectManagerInterface $objectManagerInterface
@@ -63,10 +62,10 @@ class ProductDeleteBefore implements ObserverInterface
             }
 
             if ($this->_klaviyoScopeSetting->getWebhookSecret() && $this->_klaviyoScopeSetting->getProductDeleteBeforeSetting($storeIds[0])) {
-                $data = array (
+                $data =  [
                     'store_ids' => $storeIds,
                     'product_id' => $product->getId(),
-                );
+                ];
                 $this->_webhookHelper->makeWebhookRequest('product/delete', $data, $klaviyoId);
             }
         }

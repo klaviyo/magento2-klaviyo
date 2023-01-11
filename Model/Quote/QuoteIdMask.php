@@ -4,7 +4,9 @@
  * See COPYING.txt for license details.
  */
 namespace Klaviyo\Reclaim\Model\Quote;
+
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+
 /**
  * QuoteIdMask Resource model
  * @codeCoverageIgnore

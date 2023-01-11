@@ -5,6 +5,7 @@ namespace Klaviyo\Reclaim\Model\ResourceModel;
 use Klaviyo\Reclaim\Setup\SchemaInterface;
 
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+
 /**
  * Klaviyo Products Table ResourceModel.
  *

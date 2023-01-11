@@ -63,8 +63,7 @@ class EventsTopic
         SyncsFactory $klSyncFactory,
         QuoteIdMask $quoteIdMaskResource,
         CategoryFactory $categoryFactory
-    )
-    {
+    ) {
         $this->_klaviyoLogger = $klaviyoLogger;
         $this->_eventsCollectionFactory = $eventsCollectionFactory;
         $this->_klSyncFactory = $klSyncFactory;
@@ -83,7 +82,7 @@ class EventsTopic
             ->addFieldToSelect(['id','event','payload','user_properties'])
             ->getData();
 
-        if (empty($eventsData)){
+        if (empty($eventsData)) {
             return;
         }
 
@@ -92,12 +91,11 @@ class EventsTopic
 
         // Capture all events that have been moved and add data to Sync table
         // Additionally capture all events that have failed to move and continue processing remaining events
-        foreach ($eventsData as $event){
+        foreach ($eventsData as $event) {
             if ($event['event'] == 'Added To Cart') {
                 try {
                     $event['payload'] = json_encode($this->replaceQuoteIdAndCategoryIds($event['payload']));
-                }
-                catch (\Exception $e) {
+                } catch (\Exception $e) {
                     // the payload was likely truncated, this will catch any indexing errors that occur during processing
                     // defaults to a failed response and allows the other rows to continue syncing
                     $this->_klaviyoLogger->log(sprintf("[moveRowsToSync] Unable to process Added to Cart data: %s", $e->getMessage()));
@@ -109,7 +107,7 @@ class EventsTopic
             if (strlen($event['payload']) > self::PAYLOAD_CHARACTER_LIMIT) {
                 // Above processing resulted in a payload size that exceeds the limit
                 // defaults to a failed response and allows the other rows to continue syncing
-                $this->_klaviyoLogger->log(sprintf("[moveRowsToSync] Dropping event - payload too long, character count: %d",strlen($event['payload'])));
+                $this->_klaviyoLogger->log(sprintf("[moveRowsToSync] Dropping event - payload too long, character count: %d", strlen($event['payload'])));
                 array_push($idsFailed, $event['id']);
                 continue;
             }
@@ -183,7 +181,7 @@ class EventsTopic
     {
         $this->updateCategoryMap($payload['Categories']);
 
-        foreach ($payload['Items'] as &$item){
+        foreach ($payload['Items'] as &$item) {
             $item['Categories'] = $this->searchCategoryMapAndReturnNames($item['Categories']);
         }
 
@@ -201,8 +199,8 @@ class EventsTopic
     {
         $categoryFactory = $this->_categoryFactory->create();
 
-        foreach($categoryIds as $categoryId){
-            if (!in_array($categoryId, $this->categoryMap)){
+        foreach ($categoryIds as $categoryId) {
+            if (!in_array($categoryId, $this->categoryMap)) {
                 $this->categoryMap[$categoryId] = $categoryFactory->load($categoryId)->getName();
             }
         }

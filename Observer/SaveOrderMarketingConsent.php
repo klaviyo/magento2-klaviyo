@@ -10,7 +10,6 @@ use Klaviyo\Reclaim\Helper\Webhook;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 
-
 class SaveOrderMarketingConsent implements ObserverInterface
 {
     /**
@@ -22,7 +21,7 @@ class SaveOrderMarketingConsent implements ObserverInterface
     /**
      * @var Webhook $webhookHelper
      */
-    protected  $_webhookHelper;
+    protected $_webhookHelper;
 
     /**
      * @param Webhook $webhookHelper
@@ -55,40 +54,38 @@ class SaveOrderMarketingConsent implements ObserverInterface
         $webhookSecret = $this->_klaviyoScopeSetting->getWebhookSecret();
         $updatedAt = $quote->getUpdatedAt();
 
-        $data = array("data" => array());
+        $data = ["data" => []];
 
-        if (
-            $webhookSecret
+        if ($webhookSecret
             && $quote->getKlSmsConsent()
             && $this->_klaviyoScopeSetting->getConsentAtCheckoutSMSIsActive()
         ) {
-            $data["data"][] = array(
-                "customer" => array(
+            $data["data"][] = [
+                "customer" => [
                     "email" => $quote->getCustomerEmail(),
                     "country" => $shippingInfo->getCountry(),
                     "phone" => $shippingInfo->getTelephone(),
-                ),
+                ],
                 "consent" => true,
                 "consent_type" => "sms",
                 "group_id" => $this->_klaviyoScopeSetting->getConsentAtCheckoutSMSListId(),
                 "updated_at" => $quote->getUpdatedAt(),
-            );
+            ];
         }
-        if (
-            $webhookSecret
+        if ($webhookSecret
             && $quote->getKlEmailConsent()
             && $this->_klaviyoScopeSetting->getConsentAtCheckoutEmailIsActive()
         ) {
-            $data["data"][] = array(
-                "customer" => array(
+            $data["data"][] = [
+                "customer" => [
                     "email" => $quote->getCustomerEmail(),
                     "phone" => $shippingInfo->getTelephone(),
-                ),
+                ],
                 "consent" => true,
                 "consent_type" => "email",
                 "group_id" => $this->_klaviyoScopeSetting->getConsentAtCheckoutEmailListId(),
                 "updated_at" => $updatedAt,
-            );
+            ];
         }
 
         if (count($data["data"]) > 0) {

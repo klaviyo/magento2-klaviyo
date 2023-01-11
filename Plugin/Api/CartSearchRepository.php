@@ -36,7 +36,7 @@ class CartSearchRepository
     public function __construct(
         CartExtensionFactory $extensionFactory,
         QuoteIdMaskResource $quoteIdMaskResource
-    ){
+    ) {
         $this->extensionFactory = $extensionFactory;
         $this->quoteIdMaskResource = $quoteIdMaskResource;
     }
@@ -62,5 +62,4 @@ class CartSearchRepository
 
         return $searchResult;
     }
-
 }

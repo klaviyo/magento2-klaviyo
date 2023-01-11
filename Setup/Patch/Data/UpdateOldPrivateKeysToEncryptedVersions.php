@@ -45,8 +45,7 @@ class UpdateOldPrivateKeysToEncryptedVersions implements DataPatchInterface, Pat
         ScopeSetting $klaviyoScopeSettings,
         ModuleDataSetupInterface $moduleDataSetup,
         EncryptorInterface $encryptor
-    )
-    {
+    ) {
         $this->_klaviyoScopeSetting = $klaviyoScopeSettings;
         $this->moduleDataSetup = $moduleDataSetup;
         $this->_encryptor = $encryptor;

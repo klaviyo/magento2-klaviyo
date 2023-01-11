@@ -60,8 +60,7 @@ class SalesQuoteSaveAfter implements ObserverInterface
         Data $dataHelper,
         Events $eventsModel,
         Session $customerSession
-    )
-    {
+    ) {
         $this->_klaviyoLogger = $klaviyoLogger;
         $this->_scopeSetting = $scopeSetting;
         $this->_dataHelper = $dataHelper;
@@ -72,21 +71,27 @@ class SalesQuoteSaveAfter implements ObserverInterface
     public function execute(Observer $observer)
     {
         // Checking if the cookie is set here, if not it will return undefined and break the code
-        if ( !isset($_COOKIE['__kla_id'] )) { return; }
+        if (!isset($_COOKIE['__kla_id'])) {
+            return;
+        }
         $kl_decoded_cookie = json_decode(base64_decode($_COOKIE['__kla_id']), true);
 
         // Get the custom variable set in the DataHelper object via the SalesQuoteProductAddAfter observer.
         // Check if the public key and Added to Cart payload are set
         $public_key = $this->_scopeSetting->getPublicApiKey();
         $klAddedToCartPayload = $this->_dataHelper->getObserverAtcPayload();
-        if ( !isset($klAddedToCartPayload) or !isset($public_key)) { return; }
+        if (!isset($klAddedToCartPayload) or !isset($public_key)) {
+            return;
+        }
 
         // Make sure we have an identifier for the customer set in the cookie
-        if ( isset($kl_decoded_cookie['$exchange_id'])) {
+        if (isset($kl_decoded_cookie['$exchange_id'])) {
             $kl_user_properties = ['$exchange_id' => $kl_decoded_cookie['$exchange_id']];
         } elseif (isset($kl_decoded_cookie['$email'])) {
             $kl_user_properties = ['$email' => $kl_decoded_cookie['$email']];
-        } else { return; }
+        } else {
+            return;
+        }
 
         // MaskedQuoteId is set into the payload while the EventsTopic cron job moves rows into the Sync table
         $quote = $observer->getData('quote');
@@ -102,9 +107,8 @@ class SalesQuoteSaveAfter implements ObserverInterface
         // Check payload length to avoid truncated data being saved to payload column
         if (strlen($stringifiedPayload) > self::PAYLOAD_CHARACTER_LIMIT) {
             // TODO: add alerting here - don't want to drop events without letting customer know
-            $this->_klaviyoLogger->log(sprintf("[SalesQuoteSaveAfter] Dropping event - payload too long, character count: %d",strlen($stringifiedPayload)));
-        }
-        else {
+            $this->_klaviyoLogger->log(sprintf("[SalesQuoteSaveAfter] Dropping event - payload too long, character count: %d", strlen($stringifiedPayload)));
+        } else {
             $newEvent = [
                 'status' => 'NEW',
                 'user_properties' => json_encode($kl_user_properties),
@@ -130,7 +134,8 @@ class SalesQuoteSaveAfter implements ObserverInterface
      * @param $quote
      * @return string|null
      */
-    private function checkCustomerAndReturnEncodedId($quote) {
+    private function checkCustomerAndReturnEncodedId($quote)
+    {
         if ($this->_customerSession->isLoggedIn()) {
             $customerId = $quote->getCustomer()->getId();
             return base64_encode($customerId);

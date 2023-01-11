@@ -37,8 +37,7 @@ class Logger
         KlaviyoLogger $klaviyoLogger,
         ScopeSetting $klaviyoScopeSetting,
         $logPath = null
-    )
-    {
+    ) {
         $this->_dir = $dir;
         $this->_klaviyoLogger = $klaviyoLogger;
         $this->_loggerEnabled = $klaviyoScopeSetting->isLoggerEnabled();

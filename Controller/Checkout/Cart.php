@@ -2,7 +2,6 @@
 
 namespace Klaviyo\Reclaim\Controller\Checkout;
 
-
 use Magento\Framework\Exception\NoSuchEntityException;
 
 class Cart extends \Magento\Framework\App\Action\Action
@@ -47,13 +46,13 @@ class Cart extends \Magento\Framework\App\Action\Action
         unset($params['quote_id']);
 
         // Check if the quote_id has kx_identifier, if yes, retrieve active quote for customer, if not get QuoteId from masked QuoteId
-        if (strpos($quoteId, "kx_identifier_") !== false){
-            $customerId = base64_decode( str_replace("kx_identifier_", "", $quoteId) );
+        if (strpos($quoteId, "kx_identifier_") !== false) {
+            $customerId = base64_decode(str_replace("kx_identifier_", "", $quoteId));
             try {
                 $quote = $this->quoteRepository->getActiveForCustomer($customerId);
                 $this->cart->setQuote($quote);
                 $this->cart->save();
-            } catch (NoSuchEntityException $ex){
+            } catch (NoSuchEntityException $ex) {
 
             }
         } else {

@@ -46,8 +46,7 @@ class KlSyncs
         CollectionFactory $syncCollectionFactory,
         Data $datahelper,
         Webhook $webhookHelper
-    )
-    {
+    ) {
         $this->_klaviyoLogger = $klaviyoLogger;
         $this->_syncCollectionFactory = $syncCollectionFactory;
         $this->_dataHelper = $datahelper;
@@ -79,7 +78,7 @@ class KlSyncs
         $syncCollection->deleteRows($idsToDelete);
 
         $klSyncTableSize = $syncCollection->count();
-        if ($klSyncTableSize > 10000 ){
+        if ($klSyncTableSize > 10000) {
             $this->_klaviyoLogger->log("WARNING: kl_sync table size greater than 10000, currently sitting at $klSyncTableSize");
         }
     }
@@ -110,28 +109,30 @@ class KlSyncs
 
         $responseManifest = ['1' => [], '0' => []];
 
-        foreach($groupedRows as $topic => $rows){
+        foreach ($groupedRows as $topic => $rows) {
             if (in_array($topic, $webhookTopics) && !empty($rows)) {
-                foreach($rows as $row) {
+                foreach ($rows as $row) {
                     $response = $this->_webhookHelper->makeWebhookRequest(
                         $row['topic'],
                         $row['payload'],
                         $row['klaviyo_id']
                     );
-                    if (!$response) {$response = '0';}
+                    if (!$response) {
+                        $response = '0';
+                    }
 
-                    array_push( $responseManifest["$response"], $row['id']);
+                    array_push($responseManifest["$response"], $row['id']);
                 }
             }
 
             if (in_array($topic, $trackApiTopics) && !empty($rows)) {
-                foreach($rows as $row) {
+                foreach ($rows as $row) {
                     try {
                         $decodedPayload = json_decode($row['payload'], true);
 
                         if (is_null($decodedPayload)) {
                             // payload was likely truncated, default to failed response value for the row
-                            $this->_klaviyoLogger->log(sprintf("[sendUpdatesToApp] Truncated Payload - Unable to process and sync row %d",$row['id']));
+                            $this->_klaviyoLogger->log(sprintf("[sendUpdatesToApp] Truncated Payload - Unable to process and sync row %d", $row['id']));
                             array_push($responseManifest["0"], $row['id']);
                             continue;
                         }
@@ -141,8 +142,7 @@ class KlSyncs
 
                         //TODO: if conditional for backward compatibility, needs to be removed in future versions
                         $storeId = '';
-                        if (isset($decodedPayload['StoreId']))
-                        {
+                        if (isset($decodedPayload['StoreId'])) {
                             $storeId = $decodedPayload['StoreId'];
                             unset($decodedPayload['StoreId']);
                         }
@@ -150,19 +150,21 @@ class KlSyncs
                         // Call the Track API, which returns 0/1 for failed/successful requests
                         $response = $this->_dataHelper->klaviyoTrackEvent(
                             $row['topic'],
-                            json_decode($row['user_properties'], true ),
+                            json_decode($row['user_properties'], true),
                             $decodedPayload,
                             $eventTime,
                             $storeId
                         );
-                        if (!$response) {$response = '0';}
+                        if (!$response) {
+                            $response = '0';
+                        }
 
                         // Add the response value to the manifest, all statuses will be updated after all rows have been processed.
                         array_push($responseManifest["$response"], $row['id']);
-                    } catch ( \Exception $e) {
+                    } catch (\Exception $e) {
                         // Catch an exception raised while processing or sending the event
                         // defaults to a failed response and allows the other rows to continue syncing
-                        $this->_klaviyoLogger->log(sprintf("[sendUpdatesToApp] Unable to process and sync row %d: %s",$row['id'],$e));
+                        $this->_klaviyoLogger->log(sprintf("[sendUpdatesToApp] Unable to process and sync row %d: %s", $row['id'], $e));
                         array_push($responseManifest["0"], $row['id']);
                         continue;
                     }
@@ -193,8 +195,7 @@ class KlSyncs
     private function getGroupedRows(array $allRows)
     {
         $groupedRows = [];
-        foreach ($allRows as $row)
-        {
+        foreach ($allRows as $row) {
             if (array_key_exists($row['topic'], $groupedRows)) {
                 array_push($groupedRows[$row['topic']], $row);
             } else {

@@ -38,7 +38,7 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
      * @return string
      * @throws Exception
      */
-    public function makeWebhookRequest($webhookType, $data, $klaviyoId=null)
+    public function makeWebhookRequest($webhookType, $data, $klaviyoId = null)
     {
 
         if (!$klaviyoId) {
@@ -53,12 +53,12 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => json_encode($data),
             CURLOPT_USERAGENT => self::USER_AGENT,
-            CURLOPT_HTTPHEADER => array(
+            CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
                 'Magento-two-signature: ' . $this->createWebhookSecurity($data),
                 'Content-Length: '. strlen(json_encode($data)),
                 'Topic: ' . $webhookType
-            ),
+            ],
         ]);
 
         // Submit the request
@@ -83,7 +83,5 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $webhookSecret = $this->_klaviyoScopeSetting->getWebhookSecret();
         return hash_hmac('sha256', json_encode($data), $webhookSecret);
-
     }
 }
-

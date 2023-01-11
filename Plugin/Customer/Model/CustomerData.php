@@ -33,12 +33,12 @@ class CustomerData
      */
     public function afterGetSectionData(Customer $subject, $result)
     {
-      $result['lastname'] = '';
-      $result['email'] = '';
-      if ($this->currentCustomer->getCustomerId()) {
-          $result['lastname'] = $this->currentCustomer->getCustomer()->getLastname();
-          $result['email'] = $this->currentCustomer->getCustomer()->getEmail();
-      }
-      return $result;
+        $result['lastname'] = '';
+        $result['email'] = '';
+        if ($this->currentCustomer->getCustomerId()) {
+            $result['lastname'] = $this->currentCustomer->getCustomer()->getLastname();
+            $result['email'] = $this->currentCustomer->getCustomer()->getEmail();
+        }
+        return $result;
     }
 }

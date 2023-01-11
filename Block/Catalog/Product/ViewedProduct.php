@@ -123,7 +123,7 @@ class ViewedProduct extends Template
             if ($_product->getTypeId() == 'grouped') {
                 # if on a grouped product page, use the price of the lowest priced item in the group
                 $associatedProducts = $_product->getTypeInstance()->getAssociatedProducts($_product);
-                foreach ($associatedProducts as $associatedProduct){
+                foreach ($associatedProducts as $associatedProduct) {
                     $associatedItemPrice = $associatedProduct->getPrice();
                     if ($this->price == 0) {
                         $this->price = $associatedItemPrice;
@@ -138,7 +138,7 @@ class ViewedProduct extends Template
 
             if ($_product->getTypeId() == 'configurable') {
                 $_children = $_product->getTypeInstance()->getUsedProducts($_product);
-                foreach ($_children as $child){
+                foreach ($_children as $child) {
                     $this->price = $child->getPrice();
                     if ($this->price) {
                         break;
@@ -208,7 +208,7 @@ class ViewedProduct extends Template
             'Categories' => $this->getProductCategories()
         ];
 
-        if($this->getProductImage()) {
+        if ($this->getProductImage()) {
             $result['ImageURL'] = $this->getProductImage();
         }
 
@@ -227,9 +227,9 @@ class ViewedProduct extends Template
             'ItemId' => $_product->getId(),
             'Url' => $_product->getProductUrl(),
             'Categories' => $this->getProductCategories(),
-            'Metadata' => array(
+            'Metadata' => [
                 'Price' => $this->getPrice()
-            )
+            ]
         ];
 
         if ($this->getProductImage()) {

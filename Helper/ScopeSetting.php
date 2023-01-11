@@ -65,10 +65,9 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
          * (since there is no actual session running persay)
          * this try-catch block is needed to allow this helper to be used in setup files
          */
-        try{
+        try {
             $this->_state->getAreaCode();
-        }
-        catch (\Magento\Framework\Exception\LocalizedException $ex) {
+        } catch (\Magento\Framework\Exception\LocalizedException $ex) {
             $this->_state->setAreaCode(\Magento\Framework\App\Area::AREA_ADMINHTML);
         }
     }
@@ -246,13 +245,13 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     public function getStoreIdKlaviyoAccountSetMap($storeIds)
     {
 
-        $storeMap = array();
+        $storeMap = [];
         foreach ($storeIds as $storeId) {
             $klaviyoAccount = $this->getPublicApiKey($storeId);
             if (!array_key_exists($klaviyoAccount, $storeMap)) {
-                $storeMap[$klaviyoAccount] = array($storeId);
+                $storeMap[$klaviyoAccount] = [$storeId];
             } else {
-                array_push( $storeMap[$klaviyoAccount], $storeId);
+                array_push($storeMap[$klaviyoAccount], $storeId);
             }
         }
 
@@ -263,6 +262,4 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return $this->getScopeSetting(self::PRODUCT_DELETE_BEFORE, $storeId);
     }
-
 }
-

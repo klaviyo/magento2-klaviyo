@@ -1,5 +1,6 @@
 <?php
 namespace Klaviyo\Reclaim\Block\System\Config\Form\Field;
+
 use Magento\Framework\Data\Form\Element\AbstractElement;
  
 class Newsletter extends \Magento\Config\Block\System\Config\Form\Field
@@ -8,7 +9,9 @@ class Newsletter extends \Magento\Config\Block\System\Config\Form\Field
     {
         $values = $element->getValues();
 
-        if (sizeof($values) > 1) return parent::_getElementHtml($element);
+        if (sizeof($values) > 1) {
+            return parent::_getElementHtml($element);
+        }
         
         $message =  '<p>' . $values[0]['label'] . '</p>';
 

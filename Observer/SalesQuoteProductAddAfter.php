@@ -29,8 +29,7 @@ class SalesQuoteProductAddAfter implements ObserverInterface
     public function __construct(
         Data $dataHelper,
         CategoryFactory $categoryFactory
-    )
-    {
+    ) {
         $this->_dataHelper = $dataHelper;
         $this->_categoryFactory = $categoryFactory;
     }
@@ -44,10 +43,10 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         // We collect the Item name and Qty added to cart, to be sent as AddedItemBundleOptions with the payload.
         $childrenIds = [];
 
-        foreach ($addedItems as $item){
+        foreach ($addedItems as $item) {
             if ($item->getProductType() == 'bundle') {
                 $children = $item->getChildren();
-                foreach ($children as $child){
+                foreach ($children as $child) {
                     if (!in_array($child->getId(), $childrenIds)) {
                         array_push($childrenIds, $child->getId());
                     }
@@ -56,7 +55,7 @@ class SalesQuoteProductAddAfter implements ObserverInterface
                 array_push($childrenIds, $item->getId());
             }
 
-            if (!in_array($item->getId(), $childrenIds)){
+            if (!in_array($item->getId(), $childrenIds)) {
                 $this->klAddedToCartItemData($quote, $item);
             }
         }
@@ -86,7 +85,7 @@ class SalesQuoteProductAddAfter implements ObserverInterface
             $addedItemData
         );
 
-        if ($addedItem->getProductType() == 'bundle'){
+        if ($addedItem->getProductType() == 'bundle') {
             $klAddedToCartPayload = array_merge(
                 $klAddedToCartPayload,
                 ['AddedItemBundleOptions' => $this->getBundleProductOptions($addedItem)]
@@ -111,7 +110,7 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         $cartItemNames = [];
         $cartItemCategories = [];
 
-        foreach($cartItems as $item) {
+        foreach ($cartItems as $item) {
             $product = $item->getProduct();
             $cartItemId = $product->getId();
             $itemCategories = $product->getCategoryIds();
@@ -165,14 +164,16 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         $productOptions = $addedItem->getChildren();
         $bundleOptionsData = [];
 
-        foreach ($productOptions as $option){
+        foreach ($productOptions as $option) {
             $productName = $option->getName();
             $productQty = $option->getQty();
-            array_push($bundleOptionsData,
+            array_push(
+                $bundleOptionsData,
                 [
                     'Option Name' => $productName,
                     'Option Qty' => $productQty
-                ]);
+                ]
+            );
         }
 
         return $bundleOptionsData;
