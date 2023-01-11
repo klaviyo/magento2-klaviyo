@@ -1,0 +1,30 @@
+name: Feature request
+description: Request a feature to enhance the Klaviyo extension
+body:
+  - type: textarea
+    attributes:
+      label: Description
+      description: |
+        Describe the feature you would like to add.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected behavior
+      description: |
+        What is the expected behavior of this feature?
+        How is it going to work?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Benefits
+      description: |
+        How do you think this feature would improve the Klaviyo extension?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Additional information
+      description: |
+        What other information can you provide about the desired feature?
