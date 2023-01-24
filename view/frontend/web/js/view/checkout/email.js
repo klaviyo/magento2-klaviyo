@@ -30,7 +30,7 @@ define([
       }
     },
     isKlaviyoActive: function() {
-      return !!(window._learnq && window._learnq.identify);
+      return !!(window.klaviyo && window.klaviyo.identify);
     },
     bindEmailListener: function () {
       // jquery overrides this, so let's create an instance of the parent
@@ -42,8 +42,8 @@ define([
         }
 
         self._email = jQuery(this).val();
-        if (!window._learnq.isIdentified()) {
-          window._learnq.push(['identify', {
+        if (!window.klaviyo.isIdentified()) {
+          window.klaviyo.push(['identify', {
             '$email': self._email
           }]);
         }
