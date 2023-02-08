@@ -93,11 +93,12 @@ class ScopeSettingTest extends TestCase
         $storeManagerMock->method('getStore')->willReturn($storeMock);
 
         $moduleListMock = $this->createMock(ModuleListInterface::class);
-        $moduleListMock->method('getOne')->willReturn(['setup_version'=>SampleExtension::RECLAIM_VERSION]);
+        $moduleListMock->method('getOne')->willReturn(['setup_version' => SampleExtension::RECLAIM_VERSION]);
 
         $configWriterMock = $this->createMock(WriterInterface::class);
         $configWriterMock->method('save')
-            ->with($this->logicalOr(
+            ->with(
+                $this->logicalOr(
                     ScopeSetting::PRIVATE_API_KEY,
                     ScopeSetting::KLAVIYO_USERNAME,
                     ScopeSetting::KLAVIYO_PASSWORD,
@@ -113,16 +114,16 @@ class ScopeSettingTest extends TestCase
                 function ($path, $value, $scope, $code) {
                     switch ($path) {
                         case ScopeSetting::PRIVATE_API_KEY:
-                            return ($value == self::NEW_API_KEY) ? $value : FALSE;
+                            return ($value == self::NEW_API_KEY) ? $value : false;
                             break;
                         case ScopeSetting::KLAVIYO_USERNAME:
-                            return ($value == ScopeSetting::KLAVIYO_NAME_DEFAULT) ? $value : FALSE;
+                            return ($value == ScopeSetting::KLAVIYO_NAME_DEFAULT) ? $value : false;
                             break;
                         case ScopeSetting::KLAVIYO_PASSWORD:
-                            return ($value == '') ? $value : FALSE;
+                            return ($value == '') ? $value : false;
                             break;
                         case ScopeSetting::KLAVIYO_EMAIL:
-                            return ($value == '') ? $value : FALSE;
+                            return ($value == '') ? $value : false;
                             break;
                     }
                 }
@@ -214,9 +215,9 @@ class ScopeSettingTest extends TestCase
 
     public function testGetOptInSetting()
     {
-        $this->optinToggle = FALSE;
+        $this->optinToggle = false;
         $this->assertSame(ScopeSetting::API_MEMBERS, $this->scopeSetting->getOptInSetting());
-        $this->optinToggle = TRUE;
+        $this->optinToggle = true;
         $this->assertSame(ScopeSetting::API_SUBSCRIBE, $this->scopeSetting->getOptInSetting());
     }
 }

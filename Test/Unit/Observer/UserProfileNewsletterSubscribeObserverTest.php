@@ -30,7 +30,7 @@ class UserProfileNewsletterSubscribeObserverTest extends TestCase
                 $this->equalTo(SampleCustomer::CUSTOMER_FIRST_NAME),
                 $this->equalTo(SampleCustomer::CUSTOMER_LAST_NAME)
             )
-            ->willReturn(TRUE);
+            ->willReturn(true);
 
         $scopeSettingMock = $this->createMock(ScopeSetting::class);
         $scopeSettingMock->method('isEnabled')->willReturn(SampleExtension::IS_ENABLED);
@@ -60,19 +60,19 @@ class UserProfileNewsletterSubscribeObserverTest extends TestCase
 
     public function testExecute()
     {
-        $didNotFail = TRUE;
+        $didNotFail = true;
 
         $subscriberMock = $this->createMock(Subscriber::class);
-        $subscriberMock->method('isStatusChanged')->willReturn(TRUE);
+        $subscriberMock->method('isStatusChanged')->willReturn(true);
         $subscriberMock->method('getCustomerId')->willReturn(SampleCustomer::CUSTOMER_ID);
-        $subscriberMock->method('isSubscribed')->willReturn(TRUE);
+        $subscriberMock->method('isSubscribed')->willReturn(true);
         $observerMock = $this->createMock(Observer::class);
         $observerMock->method('getDataObject')->willReturn($subscriberMock);
 
         try {
             $this->userProfileNewsletterSubscribeObserver->execute($observerMock);
         } catch (\Exception $ex) {
-            $didNotFail = FALSE;
+            $didNotFail = false;
         }
 
         $this->assertTrue($didNotFail);

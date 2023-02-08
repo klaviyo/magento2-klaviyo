@@ -1,4 +1,5 @@
 <?php
+
 namespace Klaviyo\Reclaim\Setup;
 
 use Magento\Framework\Setup\UninstallInterface;
@@ -16,16 +17,14 @@ class Uninstall implements UninstallInterface
 
     public function __construct(
         Logger $klaviyoLogger
-    )
-    {
+    ) {
         $this->_klaviyoLogger = $klaviyoLogger;
     }
 
     public function uninstall(
         SchemaSetupInterface $setup,
         ModuleContextInterface $context
-    )
-    {
+    ) {
         //remove the Klaviyo log file
         $path = $this->_klaviyoLogger->getPath();
         if (file_exists($path)) {

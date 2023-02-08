@@ -23,7 +23,7 @@ class NewsletterSubscribeObserverTest extends TestCase
         $dataMock = $this->createMock(Data::class);
         $dataMock->method('subscribeEmailToKlaviyoList')
             ->with($this->equalTo(SampleCustomer::CUSTOMER_EMAIL))
-            ->willReturn(TRUE);
+            ->willReturn(true);
 
         $scopeSettingMock = $this->createMock(ScopeSetting::class);
         $scopeSettingMock->method('isEnabled')->willReturn(SampleExtension::IS_ENABLED);
@@ -46,13 +46,13 @@ class NewsletterSubscribeObserverTest extends TestCase
 
     public function testExecute()
     {
-        $didNotFail = TRUE;
+        $didNotFail = true;
         $observerMock = $this->createMock(Observer::class);
 
         try {
             $this->object->execute($observerMock);
         } catch (\Exception $ex) {
-            $didNotFail = FALSE;
+            $didNotFail = false;
         }
 
         $this->assertTrue($didNotFail);

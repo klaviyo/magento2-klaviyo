@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Klaviyo\Reclaim\Model\Checkout;
 
 use Magento\Quote\Model\QuoteRepository;
@@ -9,7 +8,8 @@ class ShippingInformationManagement
 {
     protected $quoteRepository;
 
-    public function __construct(QuoteRepository $quoteRepository) {
+    public function __construct(QuoteRepository $quoteRepository)
+    {
         $this->quoteRepository = $quoteRepository;
     }
 
@@ -19,8 +19,7 @@ class ShippingInformationManagement
         \Magento\Checkout\Api\Data\ShippingInformationInterface $addressInformation
     ) {
 
-        if(!$extAttributes = $addressInformation->getExtensionAttributes())
-        {
+        if (!$extAttributes = $addressInformation->getExtensionAttributes()) {
             return;
         }
 

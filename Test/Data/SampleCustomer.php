@@ -11,5 +11,5 @@ class SampleCustomer
     const CUSTOMER_EMAIL = 'test@example.com';
     const CUSTOMER_FIRST_NAME = 'Joe';
     const CUSTOMER_LAST_NAME = 'Smith';
-    const IS_LOGGED_IN = TRUE;
+    const IS_LOGGED_IN = true;
 }

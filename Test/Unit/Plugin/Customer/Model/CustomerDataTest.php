@@ -44,7 +44,7 @@ class CustomerDataTest extends TestCase
         $result = [];
         $expectedResult = [
             self::LASTNAME => SampleCustomer::CUSTOMER_LAST_NAME,
-            self::EMAIL=> SampleCustomer::CUSTOMER_EMAIL
+            self::EMAIL => SampleCustomer::CUSTOMER_EMAIL
         ];
         $customerMock = $this->createMock(Customer::class);
         $actualResult = $this->customerData->afterGetSectionData($customerMock, $result);

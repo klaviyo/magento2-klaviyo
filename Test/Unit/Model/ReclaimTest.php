@@ -64,7 +64,7 @@ class ReclaimTest extends TestCase
 
         $scopeSettingMock = $this->createMock(ScopeSetting::class);
         $scopeSettingMock->method('getVersion')->willReturn(SampleExtension::RECLAIM_VERSION);
-        $scopeSettingMock->method('isLoggerEnabled')->willReturn(TRUE);
+        $scopeSettingMock->method('isLoggerEnabled')->willReturn(true);
 
         /**
          * the logger and handler are linked and invoked using settings
@@ -108,8 +108,7 @@ class ReclaimTest extends TestCase
          * create test log file with dummy entries
          */
         $testLogFile = fopen(self::TEST_LOG_PATH, 'wb');
-        foreach (self::TEST_ENTRIES as $entry)
-        {
+        foreach (self::TEST_ENTRIES as $entry) {
             fwrite($testLogFile, $entry . "\r\n");
         }
         fclose($testLogFile);

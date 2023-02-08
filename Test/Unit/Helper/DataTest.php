@@ -10,5 +10,4 @@ use Magento\Framework\Filesystem\DirectoryList;
 
 class DataTest extends TestCase
 {
-
 }
