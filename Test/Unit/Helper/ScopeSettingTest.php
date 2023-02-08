@@ -86,7 +86,7 @@ class ScopeSettingTest extends TestCase
 
         $stateMock = $this->createMock(State::class);
         $stateMock->method('getAreaCode')->willReturn(\Magento\Framework\App\Area::AREA_ADMINHTML);
-        
+
         $storeMock = $this->createMock(StoreInterface::class);
         $storeMock->method('getId')->willReturn(1);
         $storeManagerMock = $this->createMock(StoreManagerInterface::class);

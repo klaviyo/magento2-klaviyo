@@ -1,0 +1,18 @@
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.4.0  # Use the ref you want to point at
+  hooks:
+  - id: trailing-whitespace
+  - id: check-json
+  - id: check-xml
+  - id: detect-private-key
+- repo: https://github.com/digitalpulp/pre-commit-php.git
+  rev: 1.4.0
+  hooks:
+  - id: php-cbf
+    files: \.(php)$
+    args: [--standard=PSR12 -p]
+  - id: php-cs
+    files: \.(php)$
+    args: [--standard=PHPCompatibility -p --runtime-set testVersion 7.1-]
+  - id: php-lint-all

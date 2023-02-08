@@ -8,9 +8,9 @@ body:
         Describe your environment.
         Provide all the details that will help us to reproduce the bug.
       value: |
-        PHP version: 
-        Magento version: 
-        Klaviyo extension version: 
+        PHP version:
+        Magento version:
+        Klaviyo extension version:
         Anything else that would help a developer reproduce the bug?
     validations:
       required: true

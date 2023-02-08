@@ -5,5 +5,5 @@ use PHPUnit\Framework\TestCase;
 
 class ReloadTest extends TestCase
 {
-    
+
 }

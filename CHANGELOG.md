@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [4.0.8] - 2022-11-10
 ### Fixed
-- Fixed bug where cleanup cron wasn't referencing correct method name. 
+- Fixed bug where cleanup cron wasn't referencing correct method name.
 
 ### [4.0.7] - 2022-11-01
 ### Added
@@ -33,7 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated PHPDoc parameters for productinspector method in Api/ReclaimInterface.php to match signature.
 
 ### [4.0.5] - 2022-07-28
-#### Fixed 
+#### Fixed
 - Fix 404 AJAX Request on /cart/reclaim/checkout/reload
 - Fixed newsletter signup on account creation. Users will now be subscribed if they check the checkbox on account registration.
 

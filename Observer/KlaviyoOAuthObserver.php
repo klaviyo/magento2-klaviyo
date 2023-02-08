@@ -77,7 +77,7 @@ class KlaviyoOAuthObserver implements ObserverInterface
 
             // Code to grant permission
             $this->_authorizationService->grantAllPermissions($integrationId);
-            
+
         } catch(Exception $e) {
             throw new \Magento\Framework\Exception\StateException(__('Error creating OAuth Integration: '.$e->getMessage()));
         }

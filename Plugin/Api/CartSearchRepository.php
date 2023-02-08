@@ -19,7 +19,7 @@ class CartSearchRepository
      * @var QuoteIdMaskResource
      */
     private $quoteIdMaskResource;
-    
+
     /**
      * Cart Extension Attributes Factory
      *
