@@ -1,0 +1,17 @@
+{
+    "name": "klaviyo/magento2-extension-dev",
+    "description": "The local development composer file. This is used for local and continuous integration setup/testing.",
+    "type": "magento2-module",
+    "version": "4.0.9",
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Klaviyo\\Reclaim\\": ""
+        }
+    },
+    "config": {
+        "optimize-autoloader": true
+    }
+}
