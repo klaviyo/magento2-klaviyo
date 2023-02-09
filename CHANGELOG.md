@@ -4,10 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+<!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
 #### Changed
 - Updated the legacy `_learnq` js object to the new `klaviyo` js object.
+- Added pre-commit to the repository and formatted all PHP files to PSR-12 style.
 
 ### [4.0.9] - 2023-01-03
 ### Changed
@@ -17,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [4.0.8] - 2022-11-10
 ### Fixed
-- Fixed bug where cleanup cron wasn't referencing correct method name. 
+- Fixed bug where cleanup cron wasn't referencing correct method name.
 
 ### [4.0.7] - 2022-11-01
 ### Added
@@ -33,12 +35,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated PHPDoc parameters for productinspector method in Api/ReclaimInterface.php to match signature.
 
 ### [4.0.5] - 2022-07-28
-#### Fixed 
+#### Fixed
 - Fix 404 AJAX Request on /cart/reclaim/checkout/reload
 - Fixed newsletter signup on account creation. Users will now be subscribed if they check the checkbox on account registration.
 
 ### [4.0.4] - 2022-05-24
+
+### Deprecated
 - Skipped 4.0.3 due to cancelled extension in magento marketplace
+
 #### Fixed
 - Moved webhooks url to async tier
 - Removed product descriptions from Added to Cart payloads
@@ -153,7 +158,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [2.2.0] - 2021-05-17
 
-#### Fixes
+#### Fixed
 - Update checkout to not use quote for rebuilding
 
 ### [2.1.1] - 2021-05-17
@@ -204,7 +209,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removes unused variable and DI from Reclaim.php
 - CSP now uses report-only mode
 
-
+<!-- END RELEASE NOTES -->
+<!-- BEGIN LINKS -->
 [Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.9...HEAD
 [4.0.9]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.8...4.0.9
 [4.0.8]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.7...4.0.8
@@ -234,7 +240,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [2.0.0]: https://github.com/klaviyo/magento2-klaviyo/compare/1.2.4...2.0.0
 [1.2.4]: https://github.com/klaviyo/magento2-klaviyo/compare/1.2.3...1.2.4
 [1.2.3]: https://github.com/klaviyo/magento2-klaviyo/compare/1.2.2...1.2.3
-
+<!-- END LINKS -->
 
 #### NOTE
 - The CHANGELOG was created on 2020-11-20 and does not contain information about earlier releases

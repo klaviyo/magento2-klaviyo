@@ -30,7 +30,7 @@ class ViewedProductTest extends TestCase
      */
     protected $categoryMocks;
 
-    protected function setUp()
+    protected function setUp(): void
     {
 
         $contextMock = $this->createMock(Context::class);
@@ -123,7 +123,7 @@ class ViewedProductTest extends TestCase
         );
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->categoryMocks = [];
     }

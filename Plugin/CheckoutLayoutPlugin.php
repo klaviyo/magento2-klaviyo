@@ -1,12 +1,10 @@
 <?php
 
-
 namespace Klaviyo\Reclaim\Plugin;
 
 use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Magento\Customer\Model\CustomerFactory;
 use Magento\Customer\Model\Session;
-
 
 class CheckoutLayoutPlugin
 {
@@ -39,8 +37,7 @@ class CheckoutLayoutPlugin
 
     public function afterProcess(\Magento\Checkout\Block\Checkout\LayoutProcessor $processor, $jsLayout)
     {
-        if ($this->_klaviyoScopeSetting->getConsentAtCheckoutSMSIsActive())
-        {
+        if ($this->_klaviyoScopeSetting->getConsentAtCheckoutSMSIsActive()) {
             $smsConsentCheckbox = [
                 'component' => 'Magento_Ui/js/form/element/abstract',
                 'config' => [
@@ -63,10 +60,9 @@ class CheckoutLayoutPlugin
 
             $address = $this->_getDefaultAddressIfSetForCustomer();
 
-            if (!$address)
+            if (!$address) {
                 $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['shipping-address-fieldset']['children']['kl_sms_consent'] = $smsConsentCheckbox;
-            else {
-
+            } else {
                 // extra un-editable field with saved phone number to display to logged in users with default address set
                 $smsConsentTelephone = [
                     'component' => 'Magento_Ui/js/form/element/abstract',
@@ -89,8 +85,7 @@ class CheckoutLayoutPlugin
             }
         }
 
-        if (!$this->_customerSession->isLoggedIn() && $this->_klaviyoScopeSetting->getConsentAtCheckoutEmailIsActive())
-        {
+        if (!$this->_customerSession->isLoggedIn() && $this->_klaviyoScopeSetting->getConsentAtCheckoutEmailIsActive()) {
             $emailConsentCheckbox = [
                 'component' => 'Magento_Ui/js/form/element/abstract',
                 'config' => [

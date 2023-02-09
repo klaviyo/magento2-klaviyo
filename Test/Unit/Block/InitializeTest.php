@@ -11,7 +11,6 @@ use Magento\Framework\View\Element\Template\Context;
 use Magento\Customer\Model\Session;
 use Magento\Customer\Api\Data\CustomerInterface;
 
-
 class InitializeTest extends TestCase
 {
     /**
@@ -19,7 +18,7 @@ class InitializeTest extends TestCase
      */
     protected $initialize;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $contextMock = $this->createMock(Context::class);
 

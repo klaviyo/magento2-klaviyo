@@ -1,15 +1,12 @@
 <?php
 
-
 namespace Klaviyo\Reclaim\Observer;
 
 use Exception;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Klaviyo\Reclaim\Helper\Webhook;
-
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-
 
 class SaveOrderMarketingConsent implements ObserverInterface
 {
@@ -22,7 +19,7 @@ class SaveOrderMarketingConsent implements ObserverInterface
     /**
      * @var Webhook $webhookHelper
      */
-    protected  $_webhookHelper;
+    protected $_webhookHelper;
 
     /**
      * @param Webhook $webhookHelper

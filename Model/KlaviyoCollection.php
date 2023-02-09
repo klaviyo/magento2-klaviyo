@@ -38,15 +38,14 @@ abstract class KlaviyoCollection extends AbstractCollection
             ->format('Y-m-d H:i:s');
 
         $tableName = $this->getMainTable();
-        $statusList = '("'.implode('","', $statusesToDelete).'")';
+        $statusList = '("' . implode('","', $statusesToDelete) . '")';
 
-        $idsToDelete = $this->getConnection()->fetchAll( "select id from (
+        $idsToDelete = $this->getConnection()->fetchAll("select id from (
                                                             select id, timestampdiff(day, created_at, \"$date\") as row_age_in_days
                                                             from $tableName
                                                             where status in $statusList
                                                             having row_age_in_days > 2
-                                                          ) as age_of_rows;"
-        );
+                                                          ) as age_of_rows;");
 
         return $idsToDelete;
     }
@@ -59,7 +58,9 @@ abstract class KlaviyoCollection extends AbstractCollection
      */
     public function updateRowStatus($ids, $status)
     {
-        if (empty($ids)) {return;}
+        if (empty($ids)) {
+            return;
+        }
 
         $this->getConnection()->update(
             $this->getMainTable(),
@@ -74,7 +75,9 @@ abstract class KlaviyoCollection extends AbstractCollection
      */
     public function deleteRows($ids)
     {
-        if (empty($ids)) {return;}
+        if (empty($ids)) {
+            return;
+        }
 
         $this->getConnection()->delete(
             $this->getMainTable(),

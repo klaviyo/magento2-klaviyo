@@ -37,7 +37,7 @@ class ReclaimTest extends TestCase
         '[2020-04-06 17:24:43] Klaviyo.INFO: test message 3 [] []'
     ];
 
-    protected function setUp()
+    protected function setUp(): void
     {
         /**
          * Mock Reclaim constructor arguments
@@ -64,7 +64,7 @@ class ReclaimTest extends TestCase
 
         $scopeSettingMock = $this->createMock(ScopeSetting::class);
         $scopeSettingMock->method('getVersion')->willReturn(SampleExtension::RECLAIM_VERSION);
-        $scopeSettingMock->method('isLoggerEnabled')->willReturn(TRUE);
+        $scopeSettingMock->method('isLoggerEnabled')->willReturn(true);
 
         /**
          * the logger and handler are linked and invoked using settings
@@ -108,14 +108,13 @@ class ReclaimTest extends TestCase
          * create test log file with dummy entries
          */
         $testLogFile = fopen(self::TEST_LOG_PATH, 'wb');
-        foreach (self::TEST_ENTRIES as $entry)
-        {
+        foreach (self::TEST_ENTRIES as $entry) {
             fwrite($testLogFile, $entry . "\r\n");
         }
         fclose($testLogFile);
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unlink(self::TEST_LOG_PATH);
     }

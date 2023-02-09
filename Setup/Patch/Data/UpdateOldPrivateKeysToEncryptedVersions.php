@@ -1,14 +1,15 @@
 <?php
+
 /**
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
+
 declare(strict_types=1);
 
 namespace Klaviyo\Reclaim\Setup\Patch\Data;
 
 use Klaviyo\Reclaim\Helper\ScopeSetting;
-
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Framework\Encryption\EncryptorInterface;
@@ -45,8 +46,7 @@ class UpdateOldPrivateKeysToEncryptedVersions implements DataPatchInterface, Pat
         ScopeSetting $klaviyoScopeSettings,
         ModuleDataSetupInterface $moduleDataSetup,
         EncryptorInterface $encryptor
-    )
-    {
+    ) {
         $this->_klaviyoScopeSetting = $klaviyoScopeSettings;
         $this->moduleDataSetup = $moduleDataSetup;
         $this->_encryptor = $encryptor;

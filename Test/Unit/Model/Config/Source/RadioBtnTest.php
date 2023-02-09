@@ -12,7 +12,7 @@ class RadioBtnTest extends TestCase
      */
     protected $radioBtn;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->radioBtn = new RadioBtn();
     }
@@ -21,11 +21,11 @@ class RadioBtnTest extends TestCase
     {
         $expectedResponse = [
             [
-                'value' => true, 
+                'value' => true,
                 'label' => 'Yes, use the Klaviyo settings for this list'
-            ], 
+            ],
             [
-                'value' => false, 
+                'value' => false,
                 'label' => 'No, do not send opt-in emails from Klaviyo'
             ],
         ];

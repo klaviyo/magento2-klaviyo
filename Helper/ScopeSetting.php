@@ -1,4 +1,5 @@
 <?php
+
 namespace Klaviyo\Reclaim\Helper;
 
 class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
@@ -30,7 +31,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
 
     const WEBHOOK_SECRET = 'klaviyo_reclaim_webhook/klaviyo_webhooks/webhook_secret';
     const PRODUCT_DELETE_BEFORE = 'klaviyo_reclaim_webhook/klaviyo_webhooks/using_product_delete_before_webhook';
-    
+
     const KLAVIYO_OAUTH_NAME = 'klaviyo_reclaim_oauth/klaviyo_oauth/integration_name';
 
     protected $_scopeConfig;
@@ -65,10 +66,9 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
          * (since there is no actual session running persay)
          * this try-catch block is needed to allow this helper to be used in setup files
          */
-        try{
+        try {
             $this->_state->getAreaCode();
-        }
-        catch (\Magento\Framework\Exception\LocalizedException $ex) {
+        } catch (\Magento\Framework\Exception\LocalizedException $ex) {
             $this->_state->setAreaCode(\Magento\Framework\App\Area::AREA_ADMINHTML);
         }
     }
@@ -221,7 +221,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_LIST_ID, $storeId);
     }
-    
+
     public function getConsentAtCheckoutSMSConsentText($storeId = null)
     {
         return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_CONSENT_TEXT, $storeId);
@@ -252,7 +252,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
             if (!array_key_exists($klaviyoAccount, $storeMap)) {
                 $storeMap[$klaviyoAccount] = array($storeId);
             } else {
-                array_push( $storeMap[$klaviyoAccount], $storeId);
+                array_push($storeMap[$klaviyoAccount], $storeId);
             }
         }
 
@@ -263,6 +263,4 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return $this->getScopeSetting(self::PRODUCT_DELETE_BEFORE, $storeId);
     }
-
 }
-

@@ -20,17 +20,17 @@ class PrivateApiKeyObserverTest extends TestCase
     const SUCCESS_MESSAGE = 'Your Private Klaviyo API Key was successfully validated.';
     const FIELD_NAME = 'private_api_key';
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $messageManagerMock = $this->createMock(MessageManager::class);
         $messageManagerMock->method('addSuccessMessage')
             ->with(self::SUCCESS_MESSAGE)
-            ->willReturn(TRUE);
+            ->willReturn(true);
 
         $dataMock = $this->createMock(Data::class);
         $dataMock->method('getKlaviyoLists')
             ->with($this->equalTo(SampleExtension::PRIVATE_API_KEY))
-            ->willReturn(['success'=>TRUE]);
+            ->willReturn(['success' => true]);
 
         $this->privateApiKeyObserver = new PrivateApiKeyObserver(
             $messageManagerMock,
@@ -56,15 +56,14 @@ class PrivateApiKeyObserverTest extends TestCase
         $observerMock = $this->createMock(Observer::class);
         $observerMock->method('getEvent')->willReturn($eventMock);
 
-        $didNotFail = TRUE;
+        $didNotFail = true;
 
         try {
             $this->privateApiKeyObserver->execute($observerMock);
         } catch (\Exception $ex) {
-            $didNotFail = FALSE;
+            $didNotFail = false;
         }
 
         $this->assertTrue($didNotFail);
-
     }
 }

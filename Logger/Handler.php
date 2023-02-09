@@ -1,4 +1,5 @@
 <?php
+
 namespace Klaviyo\Reclaim\Logger;
 
 use Magento\Framework\Filesystem\DriverInterface;

@@ -1,4 +1,5 @@
 <?php
+
 namespace Klaviyo\Reclaim\Test\Unit\Block\System\Config\Form\Field;
 
 use PHPUnit\Framework\TestCase;
@@ -12,7 +13,7 @@ class NewsletterTest extends TestCase
      */
     protected $newsletter;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $contextMock = $this->createMock(Context::class);
 

@@ -5,11 +5,9 @@ namespace Klaviyo\Reclaim\Observer;
 use Exception;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Klaviyo\Reclaim\Helper\Webhook;
-
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\ObjectManagerInterface;
-
 
 class ProductDeleteBefore implements ObserverInterface
 {
@@ -22,7 +20,7 @@ class ProductDeleteBefore implements ObserverInterface
     /**
      * @var Webhook $webhookHelper
      */
-    protected  $_webhookHelper;
+    protected $_webhookHelper;
 
     /**
      * @var ObjectManagerInterface $objectManagerInterface

@@ -9,7 +9,6 @@ use Magento\Integration\Model\AuthorizationService;
 use Magento\Integration\Model\IntegrationFactory;
 use Magento\Integration\Model\OauthService;
 
-
 class KlaviyoOAuthObserver implements ObserverInterface
 {
     /**
@@ -51,7 +50,7 @@ class KlaviyoOAuthObserver implements ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         if (empty($this->_klaviyoScopeSetting->getPublicApiKey())) {
-         throw new \Magento\Framework\Exception\StateException(__('To set up Oauth for Klaviyo, first obtain a <strong>Public Klaviyo API Key</strong> using instructions from <a href="https://help.klaviyo.com/hc/en-us/articles/115005062267-Manage-Your-Account-s-API-Keys#your-public-api-key-site-id2">here</a> and save it on the "General" tab.'));
+            throw new \Magento\Framework\Exception\StateException(__('To set up Oauth for Klaviyo, first obtain a <strong>Public Klaviyo API Key</strong> using instructions from <a href="https://help.klaviyo.com/hc/en-us/articles/115005062267-Manage-Your-Account-s-API-Keys#your-public-api-key-site-id2">here</a> and save it on the "General" tab.'));
         }
         try {
             $integrationData = array(
@@ -77,10 +76,8 @@ class KlaviyoOAuthObserver implements ObserverInterface
 
             // Code to grant permission
             $this->_authorizationService->grantAllPermissions($integrationId);
-            
-        } catch(Exception $e) {
-            throw new \Magento\Framework\Exception\StateException(__('Error creating OAuth Integration: '.$e->getMessage()));
+        } catch (Exception $e) {
+            throw new \Magento\Framework\Exception\StateException(__('Error creating OAuth Integration: ' . $e->getMessage()));
         }
-
     }
 }

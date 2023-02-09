@@ -19,7 +19,7 @@ class CustomerDataTest extends TestCase
     const LASTNAME = 'lastname';
     const EMAIL = 'email';
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $customerInterfaceMock = $this->createMock(CustomerInterface::class);
         $customerInterfaceMock->method('getLastname')->willReturn(SampleCustomer::CUSTOMER_LAST_NAME);
@@ -44,7 +44,7 @@ class CustomerDataTest extends TestCase
         $result = [];
         $expectedResult = [
             self::LASTNAME => SampleCustomer::CUSTOMER_LAST_NAME,
-            self::EMAIL=> SampleCustomer::CUSTOMER_EMAIL
+            self::EMAIL => SampleCustomer::CUSTOMER_EMAIL
         ];
         $customerMock = $this->createMock(Customer::class);
         $actualResult = $this->customerData->afterGetSectionData($customerMock, $result);

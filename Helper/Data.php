@@ -1,9 +1,10 @@
 <?php
+
 namespace Klaviyo\Reclaim\Helper;
 
-use \Klaviyo\Reclaim\Helper\ScopeSetting;
-use \Magento\Framework\App\Helper\Context;
-use \Klaviyo\Reclaim\Helper\Logger;
+use Klaviyo\Reclaim\Helper\ScopeSetting;
+use Magento\Framework\App\Helper\Context;
+use Klaviyo\Reclaim\Helper\Logger;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -40,20 +41,26 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->observerAtcPayload = null;
     }
 
-    public function getObserverAtcPayload(){
-       return $this->observerAtcPayload;
+    public function getObserverAtcPayload()
+    {
+        return $this->observerAtcPayload;
     }
 
-    public function setObserverAtcPayload($data){
+    public function setObserverAtcPayload($data)
+    {
         $this->observerAtcPayload = $data;
     }
 
-    public function unsetObserverAtcPayload(){
+    public function unsetObserverAtcPayload()
+    {
         $this->observerAtcPayload = null;
     }
 
-    public function getKlaviyoLists($api_key=null){
-        if (!$api_key) $api_key = $this->_klaviyoScopeSetting->getPrivateApiKey();
+    public function getKlaviyoLists($api_key = null)
+    {
+        if (!$api_key) {
+            $api_key = $this->_klaviyoScopeSetting->getPrivateApiKey();
+        }
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'https://a.klaviyo.com/api/v2/lists?api_key=' . $api_key);
@@ -78,7 +85,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 'reason' => $reason
             ];
         } else {
-            usort($output, function($a, $b) {
+            usort($output, function ($a, $b) {
                 return strtolower($a->list_name) > strtolower($b->list_name) ? 1 : -1;
             });
 
@@ -105,10 +112,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         $properties = [];
         $properties['email'] = $email;
-        if ($firstName) $properties['$first_name'] = $firstName;
-        if ($lastName) $properties['$last_name'] = $lastName;
-        if ($source) $properties['$source'] = $source;
-        if ($optInSetting == ScopeSetting::API_SUBSCRIBE) $properties['$consent'] = ['email'];
+        if ($firstName) {
+            $properties['$first_name'] = $firstName;
+        }
+        if ($lastName) {
+            $properties['$last_name'] = $lastName;
+        }
+        if ($source) {
+            $properties['$source'] = $source;
+        }
+        if ($optInSetting == ScopeSetting::API_SUBSCRIBE) {
+            $properties['$consent'] = ['email'];
+        }
 
         $propertiesVal = ['profiles' => $properties];
 
@@ -149,11 +164,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function klaviyoTrackEvent($event, $customer_properties = [], $properties = [], $timestamp = null, $storeId = null)
     {
-        if ((!array_key_exists('$email', $customer_properties) || empty($customer_properties['$email']))
+        if (
+            (!array_key_exists('$email', $customer_properties) || empty($customer_properties['$email']))
             && (!array_key_exists('$id', $customer_properties) || empty($customer_properties['$id']))
-            && (!array_key_exists('$exchange_id', $customer_properties) || empty($customer_properties['$exchange_id'])))
-        {
-
+            && (!array_key_exists('$exchange_id', $customer_properties) || empty($customer_properties['$exchange_id']))
+        ) {
             return 'You must identify a user by email or ID.';
         }
         $params = array(
@@ -167,10 +182,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $params['time'] = $timestamp;
         }
         return $this->make_request('api/track', $params);
-
     }
 
-    protected function make_request($path, $params) {
+    protected function make_request($path, $params)
+    {
         $url = self::KLAVIYO_HOST . $path;
 
         $dataString = json_encode($params);
@@ -183,9 +198,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         );
 
         $context  = stream_context_create($options);
-        $response = file_get_contents($url, false,$context);
+        $response = file_get_contents($url, false, $context);
 
-        if ($response == '0'){
+        if ($response == '0') {
             $this->_klaviyoLogger->log("Unable to send event to Track API with data: $dataString");
         }
 

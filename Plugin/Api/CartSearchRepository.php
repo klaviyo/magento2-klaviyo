@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Klaviyo\Reclaim\Plugin\Api;
 
 use Klaviyo\Reclaim\Model\Quote\QuoteIdMask as QuoteIdMaskResource;
@@ -10,7 +9,6 @@ use Magento\Quote\Model\CartSearchResults;
 
 class CartSearchRepository
 {
-
     const KL_MASKED_ID = 'kl_masked_id';
 
     /**
@@ -19,7 +17,7 @@ class CartSearchRepository
      * @var QuoteIdMaskResource
      */
     private $quoteIdMaskResource;
-    
+
     /**
      * Cart Extension Attributes Factory
      *
@@ -36,7 +34,7 @@ class CartSearchRepository
     public function __construct(
         CartExtensionFactory $extensionFactory,
         QuoteIdMaskResource $quoteIdMaskResource
-    ){
+    ) {
         $this->extensionFactory = $extensionFactory;
         $this->quoteIdMaskResource = $quoteIdMaskResource;
     }
@@ -62,5 +60,4 @@ class CartSearchRepository
 
         return $searchResult;
     }
-
 }

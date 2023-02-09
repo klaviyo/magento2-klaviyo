@@ -1,9 +1,9 @@
 <?php
+
 namespace Klaviyo\Reclaim\Model\Config\Source;
 
 class ListOptions implements \Magento\Framework\Option\ArrayInterface
 {
-
     const LABEL = 'label';
     const VALUE = 'value';
 
@@ -48,7 +48,7 @@ class ListOptions implements \Magento\Framework\Option\ArrayInterface
             ]];
         }
 
-        $options = array_map(function($list) {
+        $options = array_map(function ($list) {
             return [self::LABEL => $list->list_name, self::VALUE => $list->list_id];
         }, $result['lists']);
 

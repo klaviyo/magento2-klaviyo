@@ -3,8 +3,8 @@
 namespace Klaviyo\Reclaim\Helper;
 
 use Exception;
-use \Klaviyo\Reclaim\Helper\Logger;
-use \Klaviyo\Reclaim\Helper\ScopeSetting;
+use Klaviyo\Reclaim\Helper\Logger;
+use Klaviyo\Reclaim\Helper\ScopeSetting;
 
 class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -38,7 +38,7 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
      * @return string
      * @throws Exception
      */
-    public function makeWebhookRequest($webhookType, $data, $klaviyoId=null)
+    public function makeWebhookRequest($webhookType, $data, $klaviyoId = null)
     {
 
         if (!$klaviyoId) {
@@ -56,7 +56,7 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json',
                 'Magento-two-signature: ' . $this->createWebhookSecurity($data),
-                'Content-Length: '. strlen(json_encode($data)),
+                'Content-Length: ' . strlen(json_encode($data)),
                 'Topic: ' . $webhookType
             ),
         ]);
@@ -83,7 +83,5 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $webhookSecret = $this->_klaviyoScopeSetting->getWebhookSecret();
         return hash_hmac('sha256', json_encode($data), $webhookSecret);
-
     }
 }
-
