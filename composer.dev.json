@@ -4,9 +4,6 @@
     "type": "magento2-module",
     "version": "4.0.9",
     "autoload": {
-        "files": [
-            "registration.php"
-        ],
         "psr-4": {
             "Klaviyo\\Reclaim\\": ""
         }
