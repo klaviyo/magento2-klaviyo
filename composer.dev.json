@@ -1,6 +1,6 @@
 {
-    "name": "klaviyo/magento2-extension",
-    "description": "Klaviyo extension for Magento 2. Allows pushing newsletters to Klaviyo's platform and more.",
+    "name": "klaviyo/magento2-extension-dev",
+    "description": "The local development composer file. This is used for local and continuous integration setup/testing.",
     "type": "magento2-module",
     "version": "4.0.9",
     "autoload": {
