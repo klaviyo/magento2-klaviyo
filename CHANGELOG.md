@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Changed
 - Updated the legacy `_learnq` js object to the new `klaviyo` js object.
+- Added pre-commit to the repository and formatted all PHP files to PSR-12 style.
 
 ### [4.0.9] - 2023-01-03
 ### Changed
