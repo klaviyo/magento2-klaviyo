@@ -18,7 +18,7 @@ class InitializeTest extends TestCase
      */
     protected $initialize;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $contextMock = $this->createMock(Context::class);
 

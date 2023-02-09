@@ -20,7 +20,7 @@ class PrivateApiKeyObserverTest extends TestCase
     const SUCCESS_MESSAGE = 'Your Private Klaviyo API Key was successfully validated.';
     const FIELD_NAME = 'private_api_key';
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $messageManagerMock = $this->createMock(MessageManager::class);
         $messageManagerMock->method('addSuccessMessage')

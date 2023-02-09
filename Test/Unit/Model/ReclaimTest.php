@@ -37,7 +37,7 @@ class ReclaimTest extends TestCase
         '[2020-04-06 17:24:43] Klaviyo.INFO: test message 3 [] []'
     ];
 
-    protected function setUp()
+    protected function setUp(): void
     {
         /**
          * Mock Reclaim constructor arguments
@@ -114,7 +114,7 @@ class ReclaimTest extends TestCase
         fclose($testLogFile);
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unlink(self::TEST_LOG_PATH);
     }

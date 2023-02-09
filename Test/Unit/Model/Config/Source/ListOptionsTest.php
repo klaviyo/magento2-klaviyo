@@ -24,7 +24,7 @@ class ListOptionsTest extends TestCase
     const LIST3_ID = 'ddDDdd';
     const LIST3_NAME = 'list3';
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $messageManagerMock = $this->createMock(ManagerInterface::class);
 

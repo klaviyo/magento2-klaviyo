@@ -19,7 +19,7 @@ class CustomerDataTest extends TestCase
     const LASTNAME = 'lastname';
     const EMAIL = 'email';
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $customerInterfaceMock = $this->createMock(CustomerInterface::class);
         $customerInterfaceMock->method('getLastname')->willReturn(SampleCustomer::CUSTOMER_LAST_NAME);

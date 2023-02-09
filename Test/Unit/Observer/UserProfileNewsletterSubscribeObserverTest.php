@@ -21,7 +21,7 @@ class UserProfileNewsletterSubscribeObserverTest extends TestCase
     */
     protected $userProfileNewsletterSubscribeObserver;
 
-    public function setUp()
+    public function setUp(): void
     {
         $dataMock = $this->createMock(Data::class);
         $dataMock->method('subscribeEmailToKlaviyoList')

@@ -12,7 +12,7 @@ class RadioBtnTest extends TestCase
      */
     protected $radioBtn;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->radioBtn = new RadioBtn();
     }

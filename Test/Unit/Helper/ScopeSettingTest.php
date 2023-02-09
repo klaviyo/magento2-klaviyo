@@ -29,7 +29,7 @@ class ScopeSettingTest extends TestCase
 
     const NEW_API_KEY = 'pk_ffffddddssssaaaa';
 
-    protected function setUp()
+    protected function setUp(): void
     {
         /**
          * mock scopesetting constructor arguments

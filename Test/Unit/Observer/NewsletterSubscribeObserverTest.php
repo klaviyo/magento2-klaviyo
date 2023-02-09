@@ -18,7 +18,7 @@ class NewsletterSubscribeObserverTest extends TestCase
      */
     protected $object;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $dataMock = $this->createMock(Data::class);
         $dataMock->method('subscribeEmailToKlaviyoList')
