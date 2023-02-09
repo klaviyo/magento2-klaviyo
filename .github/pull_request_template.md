@@ -17,6 +17,8 @@ Describe how you tested your change. If you are fixing a bug, please provide the
   - [ ] The links in the changelog have been updated to point towards the new versions
   - [ ] The version has been incremented in the following places: module.xml and composer.json
 
+**NOTE:** Please use the [Changelogger](https://pypi.org/project/changelogged/) cli tool to manage versioned file upgrades.
+
 <!--
 Always Write Something™️... even in PR descriptions. It's rubber-duck-debugging for you and
 it's a courtesy for your fellow engineers.

@@ -89,7 +89,7 @@ Magento 2
 
 ## Making updates
 1) Follow Klaviyo's standard process of making a pull request and getting it reviewed before merging.
-2) Update CHANGELOG.md. Details on formatting the changelog (including categorizing changes) can be found here: [keepachangelog.com](https://keepachangelog.com/en/1.0.0/)
+2) Update CHANGELOG.md. **NOTE:** Please use the [Changelogger](https://pypi.org/project/changelogged/) cli tool to manage versioned file upgrades. Details on formatting the changelog (including categorizing changes) can be found here: [keepachangelog.com](https://keepachangelog.com/en/1.0.0/)
     1) If this is a change that will not immediately get sent along to Magento i.e. not a version update:
         1) Add any changes under the [`[Unreleased]`](https://github.com/klaviyo/magento2-klaviyo/compare/1.0.1...HEAD) section. This will be a comparision of the most recent commits to the latest tagged version.
     2) If this is a version update:
