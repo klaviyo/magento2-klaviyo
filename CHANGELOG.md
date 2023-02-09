@@ -7,9 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+#### Added
+- Continuous integration to validate pre commit, validate our versioned files, and prepare for testing
+- Continuous deployment to generate a new release when PRs are merged into the 'stable/**' release branches.
+
 #### Changed
 - Updated the legacy `_learnq` js object to the new `klaviyo` js object.
-- Added pre-commit to the repository and formatted all PHP files to PSR-12 style.
+- Added precommit to the repository and formatted all PHP files to PSR12 style.
 
 ### [4.0.9] - 2023-01-03
 ### Changed
