@@ -47,17 +47,20 @@ class NewsletterSubscribeObserver implements ObserverInterface
 
         /** @var Subscriber $subscriber */
         $subscriber = $observer->getDataObject();
-        if ($subscriber && ($subscriber->hasDataChanges() || $subscriber->isObjectNew())) {
+        if ($subscriber && $subscriber->isStatusChanged()) {
+            $subscriptionStatus = $subscriber->getStatus();
             $customer = $this->getCustomer($subscriber);
 
-            if ($subscriber->isSubscribed()) {
+            if ($subscriber->getId() && $subscriptionStatus === Subscriber::STATUS_SUBSCRIBED) {
                 $this->helper->subscribeEmailToKlaviyoList(
                     $customer ? $customer->getEmail() : $subscriber->getEmail(),
                     $customer ? $customer->getFirstname() : $subscriber->getFirstname(),
                     $customer ? $customer->getLastname() : $subscriber->getLastname(),
                     self::SOURCE_ID_MAGENTO2
                 );
-            } else {
+            }
+
+            if ($subscriber->getId() && $subscriptionStatus === Subscriber::STATUS_UNSUBSCRIBED) {
                 $this->helper->unsubscribeEmailFromKlaviyoList(
                     $customer ? $customer->getEmail() : $subscriber->getEmail()
                 );

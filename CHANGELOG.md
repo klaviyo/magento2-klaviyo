@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added precommit to the repository and formatted all PHP files to PSR12 style.
 - Set the newsletter subscription source to Magento 2
 
+#### Fixed
+- Fixed bug in NewsletterSubscribeObserver where customers with an unconfirmed site account were being unsubscribed
+
 ### [4.0.9] - 2023-01-03
 ### Changed
 - Updated default SMS consent language
