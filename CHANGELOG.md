@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Changed
 - Updated the legacy `_learnq` js object to the new `klaviyo` js object.
 - Added precommit to the repository and formatted all PHP files to PSR12 style.
+- Set the newsletter subscription source to Magento 2
 
 ### [4.0.9] - 2023-01-03
 ### Changed

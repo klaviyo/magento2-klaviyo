@@ -14,6 +14,8 @@ use Magento\Newsletter\Model\Subscriber;
 
 class NewsletterSubscribeObserver implements ObserverInterface
 {
+    private const SOURCE_ID_MAGENTO2 = '-56';
+
     /**
      * @var Data
      */
@@ -52,7 +54,8 @@ class NewsletterSubscribeObserver implements ObserverInterface
                 $this->helper->subscribeEmailToKlaviyoList(
                     $customer ? $customer->getEmail() : $subscriber->getEmail(),
                     $customer ? $customer->getFirstname() : $subscriber->getFirstname(),
-                    $customer ? $customer->getLastname() : $subscriber->getLastname()
+                    $customer ? $customer->getLastname() : $subscriber->getLastname(),
+                    self::SOURCE_ID_MAGENTO2
                 );
             } else {
                 $this->helper->unsubscribeEmailFromKlaviyoList(
