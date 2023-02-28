@@ -52,8 +52,8 @@ jobs:
       with:
         python-version: '3.11'
 
-    - name: Install Script Dependencies
-      run: pip install -r scripts/requirements.txt
+    - name: Install Changelogger
+      run: pip install changelogged==0.6.0
 
     - name: Get Changelog Contents
       id: changelog
@@ -63,7 +63,7 @@ jobs:
         # Need to capture multiline output in env to preserve newlines
         echo "content<<${DELIMITER}" >> $GITHUB_ENV
         # Add changelog content to the env for release notes
-        python scripts/changelog_content.py $VERSION >> $GITHUB_ENV
+        changelogger manage content $VERSION --no-pretty >> $GITHUB_ENV
         echo ${DELIMITER} >> $GITHUB_ENV
 
     - name: Create GitHub Tag & Release
