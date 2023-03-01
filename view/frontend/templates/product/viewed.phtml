@@ -4,9 +4,9 @@
 
 <script text="text/javascript">
   require(['domReady!'], function () {
-    var klaviyo = window.klaviyo || [];
-    klaviyo.push(['track', 'Viewed Product', <?= $block->getViewedProductJson() ?>]);
-    klaviyo.push(['trackViewedItem', <?= $block->getViewedItemJson() ?>]);
+    var _learnq = window._learnq || [];
+      _learnq.push(['track', 'Viewed Product', <?= $block->getViewedProductJson() ?>]);
+      _learnq.push(['trackViewedItem', <?= $block->getViewedItemJson() ?>]);
   });
 </script>
 
