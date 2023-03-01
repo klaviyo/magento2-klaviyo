@@ -12,7 +12,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Continuous deployment to generate a new release when PRs are merged into the 'stable/**' release branches.
 
 #### Changed
-- Updated the legacy `_learnq` js object to the new `klaviyo` js object.
 - Added precommit to the repository and formatted all PHP files to PSR12 style.
 - Set the newsletter subscription source to Magento 2
 
