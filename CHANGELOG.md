@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+### [4.0.10] - 2023-03-01
+
 #### Added
 - Continuous integration to validate pre commit, validate our versioned files, and prepare for testing
 - Continuous deployment to generate a new release when PRs are merged into the 'stable/**' release branches.
@@ -218,7 +220,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- END RELEASE NOTES -->
 <!-- BEGIN LINKS -->
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.9...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.10...HEAD
+[4.0.10]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.9...4.0.10
 [4.0.9]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.8...4.0.9
 [4.0.8]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.7...4.0.8
 [4.0.7]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.6...4.0.7
