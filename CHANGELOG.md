@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Continuous integration to validate pre commit, validate our versioned files, and prepare for testing
 - Continuous deployment to generate a new release when PRs are merged into the 'stable/**' release branches.
 
+### Removed
+- Empty test files
+
 #### Changed
 - Added precommit to the repository and formatted all PHP files to PSR12 style.
 - Set the newsletter subscription source to Magento 2
