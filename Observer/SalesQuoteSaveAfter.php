@@ -86,7 +86,7 @@ class SalesQuoteSaveAfter implements ObserverInterface
         // Make sure we have an identifier for the customer set in the cookie
         if (isset($kl_decoded_cookie['$exchange_id'])) {
             $kl_user_properties = ['$exchange_id' => $kl_decoded_cookie['$exchange_id']];
-        } elseif (isset($kl_decoded_cookie['$email'])) {
+        } elseif (isset($kl_decoded_cookie['$email']) && !empty($kl_decoded_cookie['$email'])) {
             $kl_user_properties = ['$email' => $kl_decoded_cookie['$email']];
         } else {
             return;
