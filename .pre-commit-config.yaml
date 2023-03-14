@@ -5,6 +5,7 @@ repos:
   - id: trailing-whitespace
   - id: check-json
   - id: check-xml
+  - id: check-yaml
   - id: detect-private-key
 - repo: https://github.com/digitalpulp/pre-commit-php.git
   rev: 1.4.0
@@ -16,3 +17,10 @@ repos:
     files: \.(php)$
     args: [--standard=PHPCompatibility -p --runtime-set testVersion 7.1-]
   - id: php-lint-all
+- repo: local
+  hooks:
+  - id: action-validator
+    name: action validator
+    entry: ./.github/pre-commit/action-validator.sh
+    language: system
+    files: ^.github\/workflows\/.*\.ya?ml$
