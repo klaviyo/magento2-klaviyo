@@ -35,6 +35,6 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install script dependencies
-        run: pip install changelogged==0.6.0
+        run: pip install changelogged==0.11.3
       - name: Validate Changelog
-        run: changelogger manage check --sys-exit
+        run: changelogger check --fail
