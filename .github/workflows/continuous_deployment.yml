@@ -60,6 +60,7 @@ jobs:
         commit: ${{ github.sha }}
         name: Release ${{ needs.determine-if-deploy.outputs.version }}
         body: ${{ env.content }}
+        prerelease: true
 
     - name: Send PagerDuty alert on failure
       if: ${{ failure() }}
