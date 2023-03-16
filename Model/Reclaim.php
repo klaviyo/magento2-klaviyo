@@ -327,7 +327,7 @@ class Reclaim implements ReclaimInterface
 
     public function getSubscribersById($start_id, $end_id, $storeId = null)
     {
-        if (!$start_id || !$end_id) {
+        if (!isset($start_id) || !isset($end_id)) {
             throw new NotFoundException(__('Please provide start_id and end_id'));
         }
 
