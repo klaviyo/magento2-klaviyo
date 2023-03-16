@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+#### Changed
+- Fixed bug where historical sync wouldn't run for index of 0
+
 ### [4.0.10] - 2023-03-01
 
 #### Added
@@ -19,7 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Changed
 - Added precommit to the repository and formatted all PHP files to PSR12 style.
 - Set the newsletter subscription source to Magento 2
-- Fixed bug where historical sync wouldn't run for index of 0
 
 #### Fixed
 - Fixed bug in NewsletterSubscribeObserver where customers with an unconfirmed site account were being unsubscribed
