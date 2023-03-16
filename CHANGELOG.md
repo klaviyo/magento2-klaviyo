@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+#### Changed
+- Fixed bug where historical sync wouldn't run for index of 0
+
 ### [4.0.10] - 2023-03-01
 
 #### Added
