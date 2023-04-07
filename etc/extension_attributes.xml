@@ -4,6 +4,10 @@
         <attribute code="kl_sms_consent" type="string"/>
         <attribute code="kl_email_consent" type="string"/>
     </extension_attributes>
+    <extension_attributes for="Magento\Quote\Api\Data\AddressInterface">
+        <attribute code="kl_sms_consent" type="string"/>
+        <attribute code="kl_email_consent" type="string"/>
+    </extension_attributes>
     <extension_attributes for="Magento\Quote\Api\Data\CartInterface">
         <attribute code="kl_masked_id" type="string" />
     </extension_attributes>
