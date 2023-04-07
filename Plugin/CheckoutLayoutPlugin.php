@@ -8,6 +8,21 @@ use Magento\Customer\Model\Session;
 
 class CheckoutLayoutPlugin
 {
+    /**
+     * @var ScopeSetting
+     */
+    private $_klaviyoScopeSetting;
+
+    /**
+     * @var Session
+     */
+    private $_customerSession;
+
+    /**
+     * @var CustomerFactory
+     */
+    private $_customerFactory;
+
     public function __construct(
         ScopeSetting $klaviyoScopeSetting,
         Session $customerSession,

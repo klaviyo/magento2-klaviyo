@@ -7,6 +7,21 @@ class ListOptions implements \Magento\Framework\Option\ArrayInterface
     const LABEL = 'label';
     const VALUE = 'value';
 
+    /**
+     * @var \Magento\Framework\Message\ManagerInterface
+     */
+    protected $messageManager;
+
+    /**
+     * @var \Klaviyo\Reclaim\Helper\ScopeSetting
+     */
+    protected $_klaviyoScopeSetting;
+
+    /**
+     * @var \Klaviyo\Reclaim\Helper\Data
+     */
+    protected $_dataHelper;
+
     public function __construct(
         \Magento\Framework\Message\ManagerInterface $messageManager,
         \Klaviyo\Reclaim\Helper\ScopeSetting $_klaviyoScopeSetting,

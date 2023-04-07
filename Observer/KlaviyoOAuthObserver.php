@@ -23,6 +23,15 @@ class KlaviyoOAuthObserver implements ObserverInterface
      */
     protected $_integrationFactory;
 
+    /**
+     * @var Magento\Integration\Model\AuthorizationService $authorizationService
+     */
+    protected $_authorizationService;
+
+    /**
+     * @var Magento\Integration\Model\OauthService $oauthService
+     */
+    protected $_oauthService;
 
     /**
      * @param Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting
