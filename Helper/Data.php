@@ -100,9 +100,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * @param string $email
-     * @param string $firstName
-     * @param string $lastName
-     * @param string $source
+     * @param string|null $firstName
+     * @param string|null $lastName
+     * @param string|null $source
      * @return bool|string
      */
     public function subscribeEmailToKlaviyoList($email, $firstName = null, $lastName = null, $source = null)

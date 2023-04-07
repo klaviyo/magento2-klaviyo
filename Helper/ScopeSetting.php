@@ -34,10 +34,34 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
 
     const KLAVIYO_OAUTH_NAME = 'klaviyo_reclaim_oauth/klaviyo_oauth/integration_name';
 
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
     protected $_scopeConfig;
+
+    /**
+     * @var \Magento\Framework\App\RequestInterface
+     */
     protected $_request;
+
+    /**
+     * @var \Magento\Framework\App\State
+     */
     protected $_state;
+
+    /**
+     * @var int
+     */
+    protected $_storeId;
+
+    /**
+     * @var \Magento\Framework\Module\ModuleListInterface
+     */
     protected $_moduleList;
+
+    /**
+     * @var \Magento\Framework\App\Config\Storage\WriterInterface
+     */
     protected $_configWriter;
 
     public function __construct(

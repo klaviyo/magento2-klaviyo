@@ -4,39 +4,54 @@ namespace Klaviyo\Reclaim\Model;
 
 use Klaviyo\Reclaim\Api\ReclaimInterface;
 use Magento\Framework\Exception\NotFoundException;
+use Magento\Framework\ObjectManagerInterface;
 
 class Reclaim implements ReclaimInterface
 {
     /**
-     * Object Manager instance
-     *
-     * @var \Magento\Framework\ObjectManagerInterface
+     * @var ObjectManagerInterface
      */
     protected $_objectManager = null;
 
     /**
-     *
+     * @var \Magento\CatalogInventory\Api\StockStateInterface
+     */
+    protected $_stockItem;
+
+    /**
+     * @var \Magento\CatalogInventory\Model\Stock\StockItemRepository
      */
     protected $_stockItemRepository;
 
     /**
-     *
+     * @var \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory
      */
-    protected $subscriberCollection;
+    protected $_subscriberCollection;
 
     /**
-     *
+     * @var \Klaviyo\Reclaim\Helper\Logger
      */
-    public $response;
-
     protected $_klaviyoLogger;
+
+    /**
+     * @var \Klaviyo\Reclaim\Helper\ScopeSetting
+     */
     protected $_klaviyoScopeSetting;
+
+    /**
+     * @var \Magento\Quote\Model\QuoteFactory
+     */
+    protected $quoteFactory;
+
+    /**
+     * @var \Magento\Catalog\Model\ProductFactory
+     */
+    protected $_productFactory;
 
     const MAX_QUERY_DAYS = 10;
     const SUBSCRIBER_BATCH_SIZE = 500;
-
     public function __construct(
-        \Magento\Framework\ObjectManagerInterface $objectManager,
+        ObjectManagerInterface $objectManager,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Magento\CatalogInventory\Api\StockStateInterface $stockItem,
@@ -162,7 +177,7 @@ class Reclaim implements ReclaimInterface
      *
      * @api
      * @param string $message
-     * @return mixed[]
+     * @return array
      */
     public function appendLog($message)
     {
