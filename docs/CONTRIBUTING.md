@@ -57,8 +57,8 @@ install Changelogger with `pip`: `pip install changelogged`.
 ## Running a Local Magento 2 Instance with the Klaviyo Module
 
 ### Setup
-1. Please follow 
-[this help center guide](https://help.klaviyo.com/hc/en-us/articles/115005254348-Getting-started-with-Magento-2-x-CE-and-EE/#install-the-klaviyo-extension-in-magento-22) 
+1. Please follow
+[this help center guide](https://help.klaviyo.com/hc/en-us/articles/115005254348-Getting-started-with-Magento-2-x-CE-and-EE/#install-the-klaviyo-extension-in-magento-22)
 to setup Magento 2 instance with the Klaviyo Module
 
 ## Testing
@@ -67,3 +67,4 @@ to setup Magento 2 instance with the Klaviyo Module
 > patience while we improve this process.
 >
 > For internal use: See [TP168874](https://klaviyo.tpondemand.com/entity/168874-spike-magento-2-src-directory-migration).
+>
