@@ -37,6 +37,13 @@ Klaviyo extension for Magento 2. Allows pushing newsletters to Klaviyo's platfor
     - Identity Link URL
     - Resource Access permissions
 
+## Contributing
+
+We appreciate any and all contributions to this project! Before creating an issue
+or raising a PR, review our [Contributing guide](./docs/CONTRIBUTING.md). This guide
+reviews issue creation, prerequisites for pull requests, and more.
+
+
 ## Prerequisites
 
 Magento 2
@@ -85,6 +92,17 @@ Magento 2
     - Open Setup OAuth from the sidebar
     - Enter integration name
     - Save config
+
+## Code of Conduct
+
+Read our [Code of Conduct](./docs/CODE_OF_CONDUCT.md) to keep our community approachable
+and respectable. Klaviyo has a _"no brilliant jerks"_ policy, and this extends to
+our open source projects.
+
+## Internal
+
+For internal documentation links, please review the [Internal](./docs/INTERNAL.md)
+documentation.
 
 ## Support
 
