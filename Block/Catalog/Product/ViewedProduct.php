@@ -4,7 +4,6 @@ namespace Klaviyo\Reclaim\Block\Catalog\Product;
 
 use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Magento\Catalog\Helper\Image;
-use Magento\Catalog\Model\CategoryFactory;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
@@ -13,7 +12,6 @@ class ViewedProduct extends Template
 {
     protected $_klaviyoScopeSetting;
     protected $_registry;
-    protected $_categoryFactory;
     protected $imageUrl = null;
     protected $categories = [];
     protected $price = 0;
@@ -28,7 +26,6 @@ class ViewedProduct extends Template
      * @param Context $context
      * @param ScopeSetting $klaviyoScopeSetting
      * @param Registry $registry
-     * @param CategoryFactory $categoryFactory
      * @param Image $imageHelper
      * @param array $data
      */
@@ -36,14 +33,12 @@ class ViewedProduct extends Template
         Context $context,
         ScopeSetting $klaviyoScopeSetting,
         Registry $registry,
-        CategoryFactory $categoryFactory,
         Image $imageHelper,
         array $data = []
     ) {
         parent::__construct($context, $data);
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
         $this->_registry = $registry;
-        $this->_categoryFactory = $categoryFactory;
         $this->imageHelper = $imageHelper;
     }
 
@@ -90,10 +85,10 @@ class ViewedProduct extends Template
     public function getProductCategories()
     {
         if (empty($this->categories)) {
-            foreach ($this->getProduct()->getCategoryIds() as $category_id) {
-                $category = $category = $this->_categoryFactory->create()->load($category_id);
-                $this->categories[] = $category->getName();
-            }
+            $this->categories = $this->getProduct()
+                ->getCategoryCollection()
+                ->addAttributeToSelect('name')
+                ->getColumnValues('name');
         }
 
         return $this->categories;
