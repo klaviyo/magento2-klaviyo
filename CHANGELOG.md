@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+#### Fixed
+- Fixed issue when viewed product block on product page caused slower response time
+
 ### [4.0.11] - 2023-04-07
 
 #### Changed
