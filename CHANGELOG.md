@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Fixed
 - Fixed issue when viewed product block on product page caused slower response time
+- Fixed issue for newletter module where new subscriptions weren't being sent to klaviyo via magento forms for stores using Magento version < 2.4.3
 
 ### [4.0.11] - 2023-04-07
 

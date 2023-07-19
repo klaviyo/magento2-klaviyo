@@ -2,6 +2,9 @@ versioned_files:
   - rel_path: composer.json
     pattern: '"version": "{{ old_version }}",'
     jinja: '"version": "{{ new_version }}",'
+  - rel_path: composer.dev.json
+    pattern: '"version": "{{ old_version }}",'
+    jinja: '"version": "{{ new_version }}",'
   - rel_path: etc/module.xml
     pattern: 'name="Klaviyo_Reclaim" setup_version="{{ old_version }}" schema_version="{{ old_version }}"'
     jinja: 'name="Klaviyo_Reclaim" setup_version="{{ new_version }}" schema_version="{{ new_version }}"'
