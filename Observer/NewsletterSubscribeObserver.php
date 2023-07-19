@@ -66,6 +66,8 @@ class NewsletterSubscribeObserver implements ObserverInterface
                 );
             }
         }
+        $a = [];
+        $a[15.5];
     }
 
     /**
