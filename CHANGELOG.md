@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+### [4.0.12] - 2023-07-20
+
 #### Fixed
 - Fixed issue when viewed product block on product page caused slower response time
 - Fixed issue for newletter module where new subscriptions weren't being sent to klaviyo via magento forms for stores using Magento version < 2.4.3
@@ -236,7 +238,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- END RELEASE NOTES -->
 <!-- BEGIN LINKS -->
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.11...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.12...HEAD
+[4.0.12]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.11...4.0.12
 [4.0.11]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.10...4.0.11
 [4.0.10]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.9...4.0.10
 [4.0.9]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.8...4.0.9
