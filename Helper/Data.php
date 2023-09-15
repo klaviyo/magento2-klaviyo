@@ -5,6 +5,7 @@ namespace Klaviyo\Reclaim\Helper;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Magento\Framework\App\Helper\Context;
 use Klaviyo\Reclaim\Helper\Logger;
+use KlaviyoV3Sdk\KlaviyoV3Api;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -182,29 +183,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $params['time'] = $timestamp;
         }
         return $this->make_request('api/track', $params);
-    }
-
-    protected function make_request($path, $params)
-    {
-        $url = self::KLAVIYO_HOST . $path;
-
-        $dataString = json_encode($params);
-        $options = array(
-            'http' => array(
-                'header'  => "Content-type: application/json\r\n",
-                'method'  => 'POST',
-                'content' => $dataString,
-            ),
-        );
-
-        $context  = stream_context_create($options);
-        $response = file_get_contents($url, false, $context);
-
-        if ($response == '0') {
-            $this->_klaviyoLogger->log("Unable to send event to Track API with data: $dataString");
-        }
-
-        return $response == '1';
     }
 
     /**
