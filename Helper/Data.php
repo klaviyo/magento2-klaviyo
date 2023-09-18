@@ -7,11 +7,11 @@ use Magento\Framework\App\Helper\Context;
 use Klaviyo\Reclaim\Helper\Logger;
 use KlaviyoV3Sdk\KlaviyoV3Api;
 
-class Data extends \Magento\Framework\App\Helper\AbstractHelper
+class Data extends KlaviyoV3Api
 {
     const USER_AGENT = 'Klaviyo/1.0';
     const KLAVIYO_HOST = 'https://a.klaviyo.com/';
-    const LIST_V2_API = 'api/v2/list/';
+    const LIST_V3_API = 'api/list';
 
     /**
      * Klaviyo logger helper
@@ -62,9 +62,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         if (!$api_key) {
             $api_key = $this->_klaviyoScopeSetting->getPrivateApiKey();
         }
-
+        $v3_list_api = self::KLAVIYO_HOST . self::LIST_V3_API . '?api_key=' . $api_key;
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://a.klaviyo.com/api/v2/lists?api_key=' . $api_key);
+        curl_setopt($ch, CURLOPT_URL, $v3_list_api);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
 
@@ -74,11 +74,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         if ($statusCode !== 200) {
             if ($statusCode === 403) {
-                $reason = 'The Private Klaviyo API Key you have set is invalid.';
+                $reason = self::ERROR_INVALID_API_KEY;
             } elseif ($statusCode === 401) {
-                $reason = 'The Private Klaviyo API key you have set is no longer valid.';
+                $reason = self::ERROR_INVALID_API_KEY;
             } else {
-                $reason = 'Unable to verify Klaviyo Private API Key.';
+                $reason = self::ERROR_NON_200_STATUS;
             }
 
             $result = [
@@ -104,7 +104,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param string|null $firstName
      * @param string|null $lastName
      * @param string|null $source
-     * @return bool|string
+     * @return array|false|null|string
      */
     public function subscribeEmailToKlaviyoList($email, $firstName = null, $lastName = null, $source = null)
     {
@@ -128,10 +128,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         $propertiesVal = ['profiles' => $properties];
 
-        $path = self::LIST_V2_API . $listId . $optInSetting;
-
+        if ($optInSetting == ScopeSetting::API_SUBSCRIBE) {
+            $path = self::LIST_V3_API . $listId . $optInSetting;
+        } else {
+            $path = self::LIST_V3_API . $optInSetting;
+        }
         try {
-            $response = $this->sendApiRequest($path, $propertiesVal, 'POST');
+            $response = $this->subscribeMembersToList($path, $listId, $propertiesVal);
         } catch (\Exception $e) {
             $this->_klaviyoLogger->log(sprintf('Unable to subscribe %s to list %s: %s', $email, $listId, $e));
             $response = false;
@@ -142,19 +145,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * @param string $email
-     * @return bool|string
+     * @return array|string|null
      */
-    public function unsubscribeEmailFromKlaviyoList($email)
+    public function unsubscribeEmailFromKlaviyoList($email): array|string|null
     {
         $listId = $this->_klaviyoScopeSetting->getNewsletter();
-
-        $path = self::LIST_V2_API . $listId . ScopeSetting::API_SUBSCRIBE;
-        $fields = [
-            'emails' => [(string)$email],
-        ];
-
         try {
-            $response = $this->sendApiRequest($path, $fields, 'DELETE');
+            $response = $this->unsubscribeEmailFromKlaviyoList($email);
         } catch (\Exception $e) {
             $this->_klaviyoLogger->log(sprintf('Unable to unsubscribe %s from list %s: %s', $email, $listId, $e));
             $response = false;
@@ -173,8 +170,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             return 'You must identify a user by email or ID.';
         }
         $params = array(
-            'token' => $this->_klaviyoScopeSetting->getPublicApiKey($storeId),
-            'event' => $event,
+            'metric' => $event,
             'properties' => $properties,
             'customer_properties' => $customer_properties
         );
@@ -182,49 +178,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         if (!is_null($timestamp)) {
             $params['time'] = $timestamp;
         }
-        return $this->make_request('api/track', $params);
-    }
-
-    /**
-     * @param string $path
-     * @param array $params
-     * @param string $method
-     * @return mixed[]
-     * @throws \Exception
-     */
-    private function sendApiRequest(string $path, array $params, string $method = null)
-    {
-        $url = self::KLAVIYO_HOST . $path;
-
-        //Add API Key to params
-        $params['api_key'] = $this->_klaviyoScopeSetting->getPrivateApiKey();
-
-        $curl = curl_init();
-        $encodedParams = json_encode($params);
-
-        curl_setopt_array($curl, [
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => (!empty($method)) ? $method : 'POST',
-            CURLOPT_POSTFIELDS => $encodedParams,
-            CURLOPT_USERAGENT => self::USER_AGENT,
-            CURLOPT_HTTPHEADER => [
-                'Content-Type: application/json',
-                'Content-Length: ' . strlen($encodedParams)
-            ],
-        ]);
-
-        // Submit the request
-        $response = curl_exec($curl);
-        $err = curl_errno($curl);
-
-        if ($err) {
-            throw new \Exception(curl_error($curl));
-        }
-
-        // Close cURL session handle
-        curl_close($curl);
-
-        return $response;
+        return $this->track($params);
     }
 }
