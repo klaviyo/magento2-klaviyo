@@ -3,10 +3,12 @@
 namespace KlaviyoV3Sdk;
 
 use Klaviyo\Reclaim\Helper\ScopeSetting;
-use KlaviyoV3Sdk\Exception\KlaviyoAuthenticationException;
-use KlaviyoV3Sdk\Exception\KlaviyoRateLimitException;
-use KlaviyoV3Sdk\Exception\KlaviyoApiException;
+use Klaviyo\Reclaim\KlaviyoV3Sdk\Exception\KlaviyoAuthenticationException;
+use Klaviyo\Reclaim\KlaviyoV3Sdk\Exception\KlaviyoException;
+use Klaviyo\Reclaim\KlaviyoV3Sdk\Exception\KlaviyoRateLimitException;
+use Klaviyo\Reclaim\KlaviyoV3Sdk\Exception\KlaviyoApiException;
 use DateTime;
+use Klaviyo\Reclaim\Model\Reclaim;
 use KlaviyoPs;
 
 class KlaviyoV3Api
@@ -18,6 +20,7 @@ class KlaviyoV3Api
     const KLAVIYO_V3_REVISION = '2023-08-15';
     const USER_AGENT = 'Klaviyo/1.0';
     const LIST_V3_API = 'api/list/';
+    const EVENT_V3_API = 'client/event/';
     /**
      * Request methods
      */
@@ -30,7 +33,7 @@ class KlaviyoV3Api
     const ERROR_EXPIRED_API_KEY = 'The Private Klaviyo API key you have set is no longer valid.';
     const ERROR_UNVERIFIABLE_API_KEY = 'Unable to verify Klaviyo Private API Key.';
     const ERROR_NON_200_STATUS = 'Request Failed with HTTP Status Code: %s';
-
+    const ERROR_RATE_LIMIT_EXCEEDED = 'Rate limit exceeded';
     /**
      * Request options
      */
@@ -93,13 +96,17 @@ class KlaviyoV3Api
      */
     public function getHeaders($clientEvent)
     {
-        $klaviyops = new KlaviyoPs();
+        $klVersion = $this->_klaviyoScopeSetting->getVersion();
+
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $productMetadata = $objectManager->get('Magento\Framework\App\ProductMetadataInterface');
+        $m2Version = $productMetadata->getVersion();
 
         $headers = array(
             CURLOPT_HTTPHEADER => [
                 self::REVISION_KEY_HEADER . ': ' . self::KLAVIYO_V3_REVISION,
                 self::ACCEPT_KEY_HEADER . ': ' . self::APPLICATION_JSON_HEADER_VALUE,
-                self::KLAVIYO_USER_AGENT_KEY . ': ' . 'prestashop-klaviyo/' . $klaviyops->version . 'Prestashop/' . _PS_VERSION_ . 'PHP/' . phpversion()
+                self::KLAVIYO_USER_AGENT_KEY . ': ' . 'prestashop-klaviyo/' . $klVersion() . 'Magento2/' . $m2Version . 'PHP/' . phpversion()
             ]
         );
 
@@ -114,9 +121,9 @@ class KlaviyoV3Api
      *
      * @return array
      */
-    public function getLists($api_key)
+    public function getKlaviyoLists()
     {
-
+        $this->sendApiRequest(self::LIST_V3_API, false, 'GET');
     }
 
     /**
@@ -137,7 +144,7 @@ class KlaviyoV3Api
             )
         );
 
-        return $this->make_request('/client/events/?company_id=' . $this->public_key, true, $body);
+        return $this->sendApiRequest(self::EVENT_V3_API . '?company_id=' . $this->public_key, true, $body);
     }
 
     /**
@@ -183,7 +190,7 @@ class KlaviyoV3Api
             'emails' => [(string)$email],
         ];
 
-        return $this->sendApiRequest($path, $fields, 'POST');
+        return $this->sendApiRequest($path, false, 'POST', $fields);
     }
 
     /**
@@ -206,7 +213,7 @@ class KlaviyoV3Api
         $curl = curl_init();
         $options = array(
                 CURLOPT_URL => self::KLAVIYO_HOST . $path,
-            ) + $this->getHeaders($clientEvent) + $this->getDefaultCurlOptions();
+            ) + $this->getHeaders($clientEvent) + $this->getDefaultCurlOptions($method);
 
         if ($body !== null) {
             $options[CURLOPT_POSTFIELDS][] = $body;
@@ -289,7 +296,7 @@ class KlaviyoV3Api
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
             CURLOPT_TIMEOUT => 30,
-            CURLOPT_CUSTOMREQUEST => (!empty($method)) ? $method : 'POST',,
+            CURLOPT_CUSTOMREQUEST => (!empty($method)) ? $method : 'POST',
             CURLOPT_USERAGENT => self::USER_AGENT,
         );
     }
@@ -306,29 +313,21 @@ class KlaviyoV3Api
      * @throws KlaviyoRateLimitException
      */
     protected
-    function handleAPIResponse($response, $statusCode, $clientEvent = false)
+    function handleAPIResponse($response, $statusCode, $clientEvent = false): array|string|null
     {
-        $decoded_response = $this->decodeJsonResponse($response);
-        if ($statusCode == 403) {
-            throw new KlaviyoAuthenticationException(self::ERROR_INVALID_API_KEY, $statusCode);
-        }
-
-        if ($statusCode == 401) {
-            throw new KlaviyoAuthenticationException(self::ERROR_EXPIRED_API_KEY, $statusCode);
-        }
-
-        if ($statusCode === 429) {
-            throw new KlaviyoAuthenticationException(self::ERROR_UNVERIFIABLE_API_KEY, $statusCode);
-        }
-
-        if ($statusCode == 429) {
-            throw new KlaviyoRateLimitException(
-                $this->returnRateLimit($decoded_response)
-            );
-        }
-
-        if ($statusCode < 200 || $statusCode >= 300) {
-            throw new KlaviyoApiException(isset($decoded_response['detail']) ? $decoded_response['detail'] : sprintf(self::ERROR_NON_200_STATUS, $statusCode), $statusCode);
+        try {
+            $decoded_response = $this->decodeJsonResponse($response);
+        } catch (\Exception $error) {
+            switch ($statusCode) {
+                case 403:
+                case 401:
+                    throw new KlaviyoAuthenticationException($error['detail'], $statusCode);
+                case 429:
+                    throw new KlaviyoRateLimitException($error['detail'], $statusCode);
+                default:
+                    $errorMessage = isset($decoded_response['detail']) ? $decoded_response['detail'] : sprintf(self::ERROR_NON_200_STATUS, $statusCode);
+                    throw new KlaviyoApiException($errorMessage, $statusCode);
+            }
         }
 
         if ($clientEvent) {

@@ -1,6 +1,6 @@
 <?php
 
-namespace KlaviyoV3Sdk\KlaviyoApiException;
+namespace Klaviyo\Reclaim\KlaviyoV3Sdk\Exception;
 
 class KlaviyoAuthenticationException extends KlaviyoApiException
 {

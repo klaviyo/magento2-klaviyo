@@ -59,44 +59,16 @@ class Data extends KlaviyoV3Api
 
     public function getKlaviyoLists($api_key = null)
     {
-        if (!$api_key) {
-            $api_key = $this->_klaviyoScopeSetting->getPrivateApiKey();
-        }
-        $v3_list_api = self::KLAVIYO_HOST . self::LIST_V3_API . '?api_key=' . $api_key;
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $v3_list_api);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $response = $this->getLists();
 
+        usort($response, function ($a, $b) {
+            return strtolower($a->list_name) > strtolower($b->list_name) ? 1 : -1;
+        });
 
-        $output = json_decode(curl_exec($ch));
-        $statusCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-        curl_close($ch);
-
-        if ($statusCode !== 200) {
-            if ($statusCode === 403) {
-                $reason = self::ERROR_INVALID_API_KEY;
-            } elseif ($statusCode === 401) {
-                $reason = self::ERROR_INVALID_API_KEY;
-            } else {
-                $reason = self::ERROR_NON_200_STATUS;
-            }
-
-            $result = [
-                'success' => false,
-                'reason' => $reason
-            ];
-        } else {
-            usort($output, function ($a, $b) {
-                return strtolower($a->list_name) > strtolower($b->list_name) ? 1 : -1;
-            });
-
-            $result = [
-                'success' => true,
-                'lists' => $output
-            ];
-        }
-
-        return $result;
+        return [
+            'success' => true,
+            'lists' => $response
+        ];
     }
 
     /**

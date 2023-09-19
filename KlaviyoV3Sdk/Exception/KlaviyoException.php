@@ -1,7 +1,7 @@
 <?php
 
-namespace KlaviyoV3Sdk\Exception;
+namespace Klaviyo\Reclaim\KlaviyoV3Sdk\Exception;
 
-class KlaviyoResourceNotFoundException extends KlaviyoApiException
+class KlaviyoException extends \Exception
 {
 }
