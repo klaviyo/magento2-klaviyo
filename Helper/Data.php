@@ -117,7 +117,7 @@ class Data extends KlaviyoV3Api
      * @param string $email
      * @return array|string|null
      */
-    public function unsubscribeEmailFromKlaviyoList($email): array|string|null
+    public function unsubscribeEmailFromKlaviyoList($email)
     {
         $listId = $this->_klaviyoScopeSetting->getNewsletter();
         try {
