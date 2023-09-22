@@ -3,7 +3,6 @@
 namespace Klaviyo\Reclaim\Helper;
 
 use Klaviyo\Reclaim\KlaviyoV3Sdk\KlaviyoV3Api;
-use Magento\Framework\App\Helper\Context;
 
 class Data extends KlaviyoV3Api
 {
@@ -29,16 +28,6 @@ class Data extends KlaviyoV3Api
      */
     private $observerAtcPayload;
 
-    public function __construct(
-        Context $context,
-        Logger $klaviyoLogger,
-        ScopeSetting $klaviyoScopeSetting
-    ) {
-        parent::__construct($context);
-        $this->_klaviyoLogger = $klaviyoLogger;
-        $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
-        $this->observerAtcPayload = null;
-    }
 
     public function getObserverAtcPayload()
     {
