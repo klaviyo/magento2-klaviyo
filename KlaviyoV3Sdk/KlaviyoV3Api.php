@@ -1,15 +1,12 @@
 <?php
 
-namespace KlaviyoV3Sdk;
+namespace Klaviyo\Reclaim\KlaviyoV3Sdk;
 
-use Klaviyo\Reclaim\Helper\ScopeSetting;
-use Klaviyo\Reclaim\KlaviyoV3Sdk\Exception\KlaviyoAuthenticationException;
-use Klaviyo\Reclaim\KlaviyoV3Sdk\Exception\KlaviyoException;
-use Klaviyo\Reclaim\KlaviyoV3Sdk\Exception\KlaviyoRateLimitException;
-use Klaviyo\Reclaim\KlaviyoV3Sdk\Exception\KlaviyoApiException;
 use DateTime;
-use Klaviyo\Reclaim\Model\Reclaim;
-use KlaviyoPs;
+use Klaviyo\Reclaim\Helper\ScopeSetting;
+use Klaviyo\Reclaim\KlaviyoV3Sdk\Exception\KlaviyoApiException;
+use Klaviyo\Reclaim\KlaviyoV3Sdk\Exception\KlaviyoAuthenticationException;
+use Klaviyo\Reclaim\KlaviyoV3Sdk\Exception\KlaviyoRateLimitException;
 
 class KlaviyoV3Api
 {
@@ -121,7 +118,7 @@ class KlaviyoV3Api
      *
      * @return array
      */
-    public function getKlaviyoLists()
+    public function getLists()
     {
         $this->sendApiRequest(self::LIST_V3_API, false, 'GET');
     }

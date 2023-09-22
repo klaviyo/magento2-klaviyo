@@ -2,10 +2,8 @@
 
 namespace Klaviyo\Reclaim\Helper;
 
-use Klaviyo\Reclaim\Helper\ScopeSetting;
+use Klaviyo\Reclaim\KlaviyoV3Sdk\KlaviyoV3Api;
 use Magento\Framework\App\Helper\Context;
-use Klaviyo\Reclaim\Helper\Logger;
-use KlaviyoV3Sdk\KlaviyoV3Api;
 
 class Data extends KlaviyoV3Api
 {
