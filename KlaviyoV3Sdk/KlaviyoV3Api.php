@@ -183,7 +183,7 @@ class KlaviyoV3Api
      * @param string $email
      * @return array|null|string
      */
-    public function unsubscribeEmailFromKlaviyoList($email): array|string|null
+    public function unsubscribeEmailFromKlaviyoList($email)
     {
         $path = self::LIST_V3_API . ScopeSetting::API_SUBSCRIBE;
         $fields = [
@@ -312,8 +312,8 @@ class KlaviyoV3Api
      * @throws KlaviyoAuthenticationException
      * @throws KlaviyoRateLimitException
      */
-    protected
-    function handleAPIResponse($response, $statusCode, $clientEvent = false): array|string|null
+
+    protected function handleAPIResponse($response, $statusCode, $clientEvent = false)
     {
         try {
             $decoded_response = $this->decodeJsonResponse($response);
