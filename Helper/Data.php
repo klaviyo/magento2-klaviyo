@@ -124,9 +124,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     $this->api->createProfile($properties);
                 }
             }
-
-
-
         } catch (\Exception $e) {
             $this->_klaviyoLogger->log(sprintf('Unable to subscribe %s to list %s: %s', $email, $listId, $e));
             $response = false;
