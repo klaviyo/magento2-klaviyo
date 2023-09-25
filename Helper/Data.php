@@ -114,14 +114,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 $response = $this->api->subscribeMembersToList($listId, array($consent_profile_object));
             } else {
                 // Search for profile by email using the api/profiles endpoint
-                $profile_id = $this->api->searchProfileByEmail($email);
-
+                $response = $this->api->searchProfileByEmail($email);
+                $profile_id = $response["profile_id"];
                 // If the profile exists, use the ID to add to a list
                 // If the profile does not exist, create
                 if ($profile_id) {
                     $this->api->addProfileToList($listId, $profile_id);
                 } else {
-                    $this->api->createProfile($properties);
+                    $new_profile = $this->api->createProfile($properties);
+                    $this->api->addProfileToList($listId, $new_profile["profile_id"]);
                 }
             }
         } catch (\Exception $e) {

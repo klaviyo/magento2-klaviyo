@@ -148,7 +148,11 @@ class KlaviyoV3Api
         if (empty($response_body[self::DATA_KEY_PAYLOAD])) {
             return false;
         } else {
-            return $response_body[self::DATA_KEY_PAYLOAD][0][self::ID_KEY_PAYLOAD];
+            $id = $response_body[self::DATA_KEY_PAYLOAD][0][self::ID_KEY_PAYLOAD];
+            return [
+                'response' => $response_body,
+                'profile_id' => $id
+            ];
         }
     }
 
@@ -190,7 +194,12 @@ class KlaviyoV3Api
             )
         );
 
-        return $this->requestV3('api/profiles/', self::HTTP_POST, $body);
+        $response_body = $this->requestV3('api/profiles/', self::HTTP_POST, $body);
+        $id = $response_body[self::DATA_KEY_PAYLOAD][0][self::ID_KEY_PAYLOAD];
+        return [
+            'data' => $response_body,
+            'profile_id' => $id
+        ];
     }
 
     /**
