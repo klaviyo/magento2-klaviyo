@@ -13,8 +13,8 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
 
     const NEWSLETTER = 'klaviyo_reclaim_newsletter/newsletter/newsletter';
     const USING_KLAVIYO_LIST_OPT_IN = 'klaviyo_reclaim_newsletter/newsletter/using_klaviyo_list_opt_in';
-    const API_MEMBERS = '/relationships/profiles/';
-    const API_SUBSCRIBE = '/profile-subscription-bulk-create-jobs';
+    const API_MEMBERS = '/members';
+    const API_SUBSCRIBE = '/subscribe';
 
     const CONSENT_AT_CHECKOUT_EMAIL_IS_ACTIVE = 'klaviyo_reclaim_consent_at_checkout/email_consent/is_active';
     const CONSENT_AT_CHECKOUT_EMAIL_LIST_ID = 'klaviyo_reclaim_consent_at_checkout/email_consent/list_id';
