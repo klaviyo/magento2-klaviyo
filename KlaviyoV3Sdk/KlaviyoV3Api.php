@@ -145,7 +145,7 @@ class KlaviyoV3Api
     {
         $response_body = $this->requestV3("api/profiles/?filter=equals(email,'$email')", self::HTTP_GET);
 
-        if (empty($response_body[self::DATA_KEY_PAYLOAD])){
+        if (empty($response_body[self::DATA_KEY_PAYLOAD])) {
             return false;
         } else {
             return $response_body[self::DATA_KEY_PAYLOAD][0][self::ID_KEY_PAYLOAD];
@@ -170,7 +170,7 @@ class KlaviyoV3Api
             )
         );
 
-        return $this->requestV3("api/lists/$list_id/relationships/profiles/",self::HTTP_POST, $body);
+        return $this->requestV3("api/lists/$list_id/relationships/profiles/", self::HTTP_POST, $body);
     }
 
     /**
@@ -329,9 +329,9 @@ class KlaviyoV3Api
         // In the event that the curl_exec fails for whatever reason, it responds with `false`,
         // Implementing a timeout and retry mechanism which will attempt the API call 3 times at 5 second intervals
         if (!$response){
-            if($attempt < 3) {
-                sleep(5);
-                $this->requestV3($path, $method, $body, $attempt+1);
+            if ($attempt < 3) {
+                sleep(1);
+                $this->requestV3($path, $method, $body, $attempt + 1);
             } else {
                 throw new KlaviyoApiException(self::ERROR_API_CALL_FAILED);
             }
@@ -380,7 +380,7 @@ class KlaviyoV3Api
     {
         $kl_properties = [];
 
-        foreach(array_keys(self::CUSTOMER_PROPERTIES_MAP) as $property_name){
+        foreach (array_keys(self::CUSTOMER_PROPERTIES_MAP) as $property_name) {
             if (isset($customerProperties[$property_name])) {
                 $kl_properties[self::CUSTOMER_PROPERTIES_MAP[$property_name]] = $customerProperties[$property_name];
                 unset($customerProperties[$property_name]);
