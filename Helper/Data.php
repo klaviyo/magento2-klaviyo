@@ -4,7 +4,7 @@ namespace Klaviyo\Reclaim\Helper;
 
 use Klaviyo\Reclaim\KlaviyoV3Sdk\KlaviyoV3Api;
 
-class Data extends KlaviyoV3Api
+class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const USER_AGENT = 'Klaviyo/1.0';
     const KLAVIYO_HOST = 'https://a.klaviyo.com/';
@@ -28,6 +28,23 @@ class Data extends KlaviyoV3Api
      */
     private $observerAtcPayload;
 
+    /**
+     * V3 API Wrapper
+     * @var KlaviyoV3Api $api
+     */
+    protected $api;
+
+    public function __construct(
+        Context $context,
+        Logger $klaviyoLogger,
+        ScopeSetting $klaviyoScopeSetting
+    ) {
+        parent::__construct($context);
+        $this->_klaviyoLogger = $klaviyoLogger;
+        $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
+        $this->observerAtcPayload = null;
+        $this->api = new KlaviyoV3Api($this->_klaviyoScopeSetting->getPublicApiKey(), $this->_klaviyoScopeSetting->getPrivateApiKey());
+    }
 
     public function getObserverAtcPayload()
     {
@@ -65,7 +82,7 @@ class Data extends KlaviyoV3Api
      * @param string|null $source
      * @return array|false|null|string
      */
-    public function subscribeEmailToKlaviyoList($email, $firstName = null, $lastName = null, $source = null)
+    public function subscribeEmailToKlaviyoList($email, $firstName = null, $lastName = null)
     {
         $listId = $this->_klaviyoScopeSetting->getNewsletter();
         $optInSetting = $this->_klaviyoScopeSetting->getOptInSetting();
@@ -73,27 +90,43 @@ class Data extends KlaviyoV3Api
         $properties = [];
         $properties['email'] = $email;
         if ($firstName) {
-            $properties['$first_name'] = $firstName;
+            $properties['first_name'] = $firstName;
         }
         if ($lastName) {
-            $properties['$last_name'] = $lastName;
-        }
-        if ($source) {
-            $properties['$source'] = $source;
-        }
-        if ($optInSetting == ScopeSetting::API_SUBSCRIBE) {
-            $properties['$consent'] = ['email'];
+            $properties['last_name'] = $lastName;
         }
 
-        $propertiesVal = ['profiles' => $properties];
-
-        if ($optInSetting == ScopeSetting::API_SUBSCRIBE) {
-            $path = self::LIST_V3_API . $listId . $optInSetting;
-        } else {
-            $path = self::LIST_V3_API . $optInSetting;
-        }
         try {
-            $response = $this->subscribeMembersToList($path, $listId, $propertiesVal);
+            if ($optInSetting == ScopeSetting::API_SUBSCRIBE) {
+                // Subscribe profile using the profile creation endpoint for lists
+                $consent_profile_object = array(
+                    'type' => 'profile',
+                    'attributes' => array(
+                        'email' => $email,
+                        'subscriptions' => array(
+                            'email' => [
+                                'MARKETING'
+                            ]
+                        )
+                    )
+                );
+
+                $response = $this->api->subscribeMembersToList($listId, array($consent_profile_object));
+            } else {
+                // Search for profile by email using the api/profiles endpoint
+                $profile_id = $this->api->searchProfileByEmail($email);
+
+                // If the profile exists, use the ID to add to a list
+                // If the profile does not exist, create
+                if ($profile_id) {
+                    $this->api->addProfileToList($listId, $profile_id);
+                } else {
+                    $this->api->createProfile($properties);
+                }
+            }
+
+
+
         } catch (\Exception $e) {
             $this->_klaviyoLogger->log(sprintf('Unable to subscribe %s to list %s: %s', $email, $listId, $e));
             $response = false;
@@ -110,7 +143,7 @@ class Data extends KlaviyoV3Api
     {
         $listId = $this->_klaviyoScopeSetting->getNewsletter();
         try {
-            $response = $this->unsubscribeEmailFromKlaviyoList($email);
+            $response = $this->api->unsubscribeEmailFromKlaviyoList($email, $listId);
         } catch (\Exception $e) {
             $this->_klaviyoLogger->log(sprintf('Unable to unsubscribe %s from list %s: %s', $email, $listId, $e));
             $response = false;
@@ -129,7 +162,7 @@ class Data extends KlaviyoV3Api
             return 'You must identify a user by email or ID.';
         }
         $params = array(
-            'metric' => $event,
+            'event' => $event,
             'properties' => $properties,
             'customer_properties' => $customer_properties
         );
@@ -137,6 +170,6 @@ class Data extends KlaviyoV3Api
         if (!is_null($timestamp)) {
             $params['time'] = $timestamp;
         }
-        return $this->track($params);
+        return $this->api->track($params);
     }
 }

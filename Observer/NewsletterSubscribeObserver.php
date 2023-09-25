@@ -55,8 +55,7 @@ class NewsletterSubscribeObserver implements ObserverInterface
                 $this->helper->subscribeEmailToKlaviyoList(
                     $customer ? $customer->getEmail() : $subscriber->getEmail(),
                     $customer ? $customer->getFirstname() : $subscriber->getFirstname(),
-                    $customer ? $customer->getLastname() : $subscriber->getLastname(),
-                    self::SOURCE_ID_MAGENTO2
+                    $customer ? $customer->getLastname() : $subscriber->getLastname()
                 );
             }
 

@@ -15,27 +15,26 @@ class KlaviyoV3Api
      */
     const KLAVIYO_HOST = 'https://a.klaviyo.com/';
     const KLAVIYO_V3_REVISION = '2023-08-15';
-    const USER_AGENT = 'Klaviyo/1.0';
-    const LIST_V3_API = 'api/list/';
-    const EVENT_V3_API = 'client/event/';
+
     /**
      * Request methods
      */
+    const HTTP_GET = 'GET';
     const HTTP_POST = 'POST';
 
     /**
      * Error messages
      */
     const ERROR_INVALID_API_KEY = 'The Private Klaviyo API Key you have set is invalid.';
-    const ERROR_EXPIRED_API_KEY = 'The Private Klaviyo API key you have set is no longer valid.';
-    const ERROR_UNVERIFIABLE_API_KEY = 'Unable to verify Klaviyo Private API Key.';
     const ERROR_NON_200_STATUS = 'Request Failed with HTTP Status Code: %s';
+    const ERROR_API_CALL_FAILED = 'Request could be completed at this time, API call failed';
+    const ERROR_MALFORMED_RESPONSE_BODY = 'Response from API could not be decoded from JSON, check response body';
     const ERROR_RATE_LIMIT_EXCEEDED = 'Rate limit exceeded';
     /**
      * Request options
      */
     const ACCEPT_KEY_HEADER = 'accept';
-    const CONTENT_TYPE_KEY_HEADER = 'content-type';
+    const CONTENT_TYPE_KEY_HEADER = 'Content-type';
     const REVISION_KEY_HEADER = 'revision';
     const AUTHORIZATION_KEY_HEADER = 'Authorization';
     const KLAVIYO_API_KEY = 'Klaviyo-API-Key';
@@ -46,22 +45,28 @@ class KlaviyoV3Api
     /**
      * Payload options
      */
+    const CUSTOMER_PROPERTIES_MAP = ['$email' => 'email', 'firstname' => 'first_name', 'lastname' => 'last_name'];
     const DATA_KEY_PAYLOAD = 'data';
     const TYPE_KEY_PAYLOAD = 'type';
     const ATTRIBUTE_KEY_PAYLOAD = 'attributes';
     const PROPERTIES_KEY_PAYLOAD = 'properties';
     const TIME_KEY_PAYLOAD = 'time';
     const VALUE_KEY_PAYLOAD = 'value';
+    const VALUE_KEY_PAYLOAD_OLD = '$value';
     const METRIC_KEY_PAYLOAD = 'metric';
     const PROFILE_KEY_PAYLOAD = 'profile';
     const NAME_KEY_PAYLOAD = 'name';
     const EVENT_VALUE_PAYLOAD = 'event';
     const ID_KEY_PAYLOAD = 'id';
-    const PROFILE_SUBSCRIPTION_BULK_CREATE_JOB_PAYLOAD_KEY = 'profile-subscription-bulk-create-job';
+    const PROFILE_SUBSCRIPTION_BULK_CREATE_JOB_PAYLOAD_KEY = 'profile-subscription-bulk-create-jobs';
+    const PROFILE_SUBSCRIPTION_BULK_DELETE_JOB_PAYLOAD_KEY = 'profile-subscription-bulk-delete-jobs';
     const LIST_PAYLOAD_KEY = 'list';
     const RELATIONSHIPS_PAYLOAD_KEY = 'relationships';
     const PROFILES_PAYLOAD_KEY = 'profiles';
     const CUSTOM_SOURCE_PAYLOAD_KEY = 'custom_source';
+    const MAGENTO_TWO_PAYLOAD_VALUE = 'Magento Two';
+    const MAGENTO_TWO_INTEGRATION_SERVICE_KEY = 'magentotwo';
+    const SERVICE_PAYLOAD_KEY = 'service';
 
     /**
      * @var string
@@ -91,7 +96,7 @@ class KlaviyoV3Api
      * @param $clientEvent
      * @return array|array[]
      */
-    public function getHeaders($clientEvent)
+    public function getHeaders()
     {
         $klVersion = $this->_klaviyoScopeSetting->getVersion();
 
@@ -102,12 +107,12 @@ class KlaviyoV3Api
         $headers = array(
             CURLOPT_HTTPHEADER => [
                 self::REVISION_KEY_HEADER . ': ' . self::KLAVIYO_V3_REVISION,
+                self::CONTENT_TYPE_KEY_HEADER . ': ' . self::APPLICATION_JSON_HEADER_VALUE,
                 self::ACCEPT_KEY_HEADER . ': ' . self::APPLICATION_JSON_HEADER_VALUE,
-                self::KLAVIYO_USER_AGENT_KEY . ': ' . 'prestashop-klaviyo/' . $klVersion() . 'Magento2/' . $m2Version . 'PHP/' . phpversion()
+                self::KLAVIYO_USER_AGENT_KEY . ': ' . 'magento2-klaviyo/' . $klVersion() . 'Magento2/' . $m2Version . 'PHP/' . phpversion(),
+                self::AUTHORIZATION_KEY_HEADER . ': ' . self::KLAVIYO_API_KEY . ' ' . $this->private_key
             ]
         );
-
-        $headers[CURLOPT_HTTPHEADER][] = $clientEvent ? self::CONTENT_TYPE_KEY_HEADER . ' ' . self::APPLICATION_JSON_HEADER_VALUE : self::AUTHORIZATION_KEY_HEADER . ': ' . self::KLAVIYO_API_KEY . ' ' . $this->private_key;
 
         return $headers;
     }
@@ -115,12 +120,77 @@ class KlaviyoV3Api
 
     /**
      * Query for all available lists in Klaviyo
+     * https://developers.klaviyo.com/en/v2023-08-15/reference/get_lists
      *
      * @return array
+     * @throws KlaviyoApiException
+     * @throws KlaviyoAuthenticationException
+     * @throws KlaviyoRateLimitException
      */
     public function getLists()
     {
-        $this->sendApiRequest(self::LIST_V3_API, false, 'GET');
+        $response_body = $this->requestV3('api/lists/', self::HTTP_GET);
+
+        return $response_body[self::DATA_KEY_PAYLOAD];
+    }
+
+    /**
+     * Search for profile by Email
+     * https://developers.klaviyo.com/en/v2023-08-15/reference/get_profiles
+     *
+     * @param $email
+     * @return false|mixed
+     */
+    public function searchProfileByEmail($email)
+    {
+        $response_body = $this->requestV3("api/profiles/?filter=equals(email,'$email')", self::HTTP_GET);
+
+        if (empty($response_body[self::DATA_KEY_PAYLOAD])){
+            return false;
+        } else {
+            return $response_body[self::DATA_KEY_PAYLOAD][0][self::ID_KEY_PAYLOAD];
+        }
+    }
+
+    /**
+     * Add a Profile to a list using profile id
+     * https://developers.klaviyo.com/en/v2023-08-15/reference/create_list_relationships
+     *
+     * @param $list_id
+     * @param $profile_id
+     * @return array|string|null
+     * @throws KlaviyoApiException
+     */
+    public function addProfileToList($list_id, $profile_id)
+    {
+        $body = array(
+            self::DATA_KEY_PAYLOAD => array(
+                self::TYPE_KEY_PAYLOAD => self::PROFILE_KEY_PAYLOAD,
+                self::ID_KEY_PAYLOAD => $profile_id
+            )
+        );
+
+        return $this->requestV3("api/lists/$list_id/relationships/profiles/",self::HTTP_POST, $body);
+    }
+
+    /**
+     * Create a new Profile in Klaviyo
+     * https://developers.klaviyo.com/en/v2023-08-15/reference/create_profile
+     *
+     * @param $profile_properties
+     * @return array|string|null
+     * @throws KlaviyoApiException
+     */
+    public function createProfile($profile_properties)
+    {
+        $body = array(
+            self::DATA_KEY_PAYLOAD => array(
+                self::TYPE_KEY_PAYLOAD => self::PROFILE_KEY_PAYLOAD,
+                self::ATTRIBUTE_KEY_PAYLOAD => $profile_properties
+            )
+        );
+
+        return $this->requestV3('api/profiles/', self::HTTP_POST, $body);
     }
 
     /**
@@ -130,49 +200,67 @@ class KlaviyoV3Api
      * @param $config
      * @return array
      */
-    public function track($config): array
+    /**
+     * Record an event for a customer on their Klaviyo profile
+     * https://developers.klaviyo.com/en/v2023-08-15/reference/create_event
+     *
+     * @param $config
+     * @return array
+     * @throws KlaviyoApiException
+     * @throws KlaviyoAuthenticationException
+     * @throws KlaviyoRateLimitException
+     */
+    public function track($config)
     {
+        $event_time = new DateTime();
+        $event_time->setTimestamp($config['time'] ?? time());
+
         $body = array(
             self::DATA_KEY_PAYLOAD => array(
                 self::TYPE_KEY_PAYLOAD => self::EVENT_VALUE_PAYLOAD,
                 self::ATTRIBUTE_KEY_PAYLOAD =>
-                    $this->buildEventProperties($config['properties'], $config['time'], $config['metric']) +
+                    $this->buildEventProperties($config['properties'], $event_time->format('Y-m-d\TH:i:s'), $config['event']) +
                     $this->buildCustomerProperties($config['customer_properties'])
             )
         );
 
-        return $this->sendApiRequest(self::EVENT_V3_API . '?company_id=' . $this->public_key, true, $body);
+        return $this->requestV3('/api/events/', self::HTTP_POST, $body);
     }
 
     /**
      * Subscribe members to a Klaviyo list
-     * https://developers.klaviyo.com/en/reference/create_list_relationships
+     * https://developers.klaviyo.com/en/reference/subscribe_profiles
      *
      * @param $listId
      * @param $profiles
      * @return array
+     * @throws KlaviyoApiException
+     * @throws KlaviyoAuthenticationException
+     * @throws KlaviyoRateLimitException
      */
-    public function subscribeMembersToList($path, $listId, $profiles)
+    public function subscribeMembersToList($listId, $profiles)
     {
         $body = array(
             self::DATA_KEY_PAYLOAD => array(
                 self::TYPE_KEY_PAYLOAD => self::PROFILE_SUBSCRIPTION_BULK_CREATE_JOB_PAYLOAD_KEY,
                 self::ATTRIBUTE_KEY_PAYLOAD => array(
-                    self::CUSTOM_SOURCE_PAYLOAD_KEY => 'Magento 2',
-                    self::PROFILES_PAYLOAD_KEY => $profiles,
-                    self::RELATIONSHIPS_PAYLOAD_KEY => array(
-                        self::LIST_PAYLOAD_KEY => array(
-                            self::DATA_KEY_PAYLOAD => array(
-                                self::TYPE_KEY_PAYLOAD => self::LIST_PAYLOAD_KEY,
-                                self::ID_KEY_PAYLOAD => $listId
-                            )
+                    self::CUSTOM_SOURCE_PAYLOAD_KEY => self::MAGENTO_TWO_PAYLOAD_VALUE,
+                    self::PROFILES_PAYLOAD_KEY => array(
+                        self::DATA_KEY_PAYLOAD => $profiles
+                    )
+                ),
+                self::RELATIONSHIPS_PAYLOAD_KEY => array(
+                    self::LIST_PAYLOAD_KEY => array(
+                        self::DATA_KEY_PAYLOAD => array(
+                            self::TYPE_KEY_PAYLOAD => self::LIST_PAYLOAD_KEY,
+                            self::ID_KEY_PAYLOAD => $listId
                         )
                     )
                 )
             )
         );
 
-        return $this->sendApiRequest($path, false, $body);
+        return $this->requestV3('/api/profile-subscription-bulk-create-jobs/', self::HTTP_POST, $body);
     }
 
 
@@ -180,94 +268,124 @@ class KlaviyoV3Api
      * @param string $email
      * @return array|null|string
      */
-    public function unsubscribeEmailFromKlaviyoList($email)
+    public function unsubscribeEmailFromKlaviyoList($email, $listId)
     {
-        $path = self::LIST_V3_API . ScopeSetting::API_SUBSCRIBE;
-        $fields = [
-            'emails' => [(string)$email],
-        ];
+        $body = array(
+            self::TYPE_KEY_PAYLOAD => self::PROFILE_SUBSCRIPTION_BULK_DELETE_JOB_PAYLOAD_KEY,
+            self::ATTRIBUTE_KEY_PAYLOAD => array(
+                self::PROFILES_PAYLOAD_KEY => array(
+                    self::DATA_KEY_PAYLOAD => array(
+                        array(
+                            self::TYPE_KEY_PAYLOAD => self::PROFILE_KEY_PAYLOAD,
+                            self::ATTRIBUTE_KEY_PAYLOAD => array(
+                                'email' => $email
+                            )
+                        )
+                    )
+                )
+            ),
+            self::RELATIONSHIPS_PAYLOAD_KEY => array(
+                self::LIST_PAYLOAD_KEY => array(
+                    self::DATA_KEY_PAYLOAD => array(
+                        self::TYPE_KEY_PAYLOAD => self::LIST_PAYLOAD_KEY,
+                        self::ID_KEY_PAYLOAD => $listId
+                    )
+                )
+            )
+        );
 
-        return $this->sendApiRequest($path, false, 'POST', $fields);
+        return $this->requestV3('/api/profile-subscription-bulk-delete-jobs/', self::HTTP_POST, $body);
     }
 
     /**
      * Request method used by all API methods to make calls
      *
      * @param $path
-     * @param $clientEvent
      * @param $method
      * @param $body
-     * @return array
+     * @param $attempt
+     * @return array|string|null
+     * @throws KlaviyoApiException
+     * @throws KlaviyoAuthenticationException
+     * @throws KlaviyoRateLimitException
      */
-
-    protected function sendApiRequest($path, $clientEvent, $method = null, $body = null)
+    protected function requestV3($path, $method = null, $body = null, $attempt = 0)
     {
         $url = self::KLAVIYO_HOST . $path;
-
-        //Add API Key to params
-        $params['api_key'] = $this->_klaviyoScopeSetting->getPrivateApiKey();
 
         $curl = curl_init();
         $options = array(
                 CURLOPT_URL => self::KLAVIYO_HOST . $path,
-            ) + $this->getHeaders($clientEvent) + $this->getDefaultCurlOptions($method);
-
-        if ($body !== null) {
-            $options[CURLOPT_POSTFIELDS][] = $body;
-        }
+            ) + $this->getHeaders() + $this->getDefaultCurlOptions($method);
 
         curl_setopt_array($curl, $options);
 
+        if ($body !== null) {
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
+        }
+
         $response = curl_exec($curl);
+
+        // In the event that the curl_exec fails for whatever reason, it responds with `false`,
+        // Implementing a timeout and retry mechanism which will attempt the API call 3 times at 5 second intervals
+        if (!$response){
+            if($attempt < 3) {
+                sleep(5);
+                $this->requestV3($path, $method, $body, $attempt+1);
+            } else {
+                throw new KlaviyoApiException(self::ERROR_API_CALL_FAILED);
+            }
+        }
+
         $phpVersionHttpCode = version_compare(phpversion(), '5.5.0', '>') ? CURLINFO_RESPONSE_CODE : CURLINFO_HTTP_CODE;
         $statusCode = curl_getinfo($curl, $phpVersionHttpCode);
         curl_close($curl);
 
-        return $this->handleAPIResponse($response, $statusCode, $clientEvent);
+        return $this->handleAPIResponse($response, $statusCode);
     }
 
     /**
-     * Build Event Properties for the Client/Events endpoint
+     * Build Event Properties for the api/events endpoint
      *
      * @param $eventProperties
      * @param $time
      * @param $metric
      * @return array
      */
-    public function buildEventProperties($eventProperties, $time, $metric): array
+    public function buildEventProperties($eventProperties, $time, $metric)
     {
-        $event_time = new DateTime();
-        $event_time->setTimestamp($time ?: time());
-
         return array(
             self::PROPERTIES_KEY_PAYLOAD => $eventProperties,
-            self::TIME_KEY_PAYLOAD => $event_time,
-            self::VALUE_KEY_PAYLOAD => $eventProperties[self::VALUE_KEY_PAYLOAD],
+            self::TIME_KEY_PAYLOAD => $time,
+            self::VALUE_KEY_PAYLOAD => $eventProperties[self::VALUE_KEY_PAYLOAD_OLD],
             self::METRIC_KEY_PAYLOAD => array(
-                self::TYPE_KEY_PAYLOAD => self::METRIC_KEY_PAYLOAD,
-                self::ATTRIBUTE_KEY_PAYLOAD => array(
-                    self::NAME_KEY_PAYLOAD => $metric
+                self::DATA_KEY_PAYLOAD => array(
+                    self::TYPE_KEY_PAYLOAD => self::METRIC_KEY_PAYLOAD,
+                    self::ATTRIBUTE_KEY_PAYLOAD => array(
+                        self::NAME_KEY_PAYLOAD => $metric,
+                        self::SERVICE_PAYLOAD_KEY => self::MAGENTO_TWO_INTEGRATION_SERVICE_KEY
+                    )
                 )
-            ));
+            )
+        );
     }
 
     /**
-     * Build customer properties for the Client/Events endpoint
+     * Build customer properties for the api/events endpoint
      *
      * @param $customerProperties
-     * @return \array[][]
+     * @return array[][]
      */
-    public function buildCustomerProperties($customerProperties): array
+    public function buildCustomerProperties($customerProperties)
     {
-        $kl_properties = array(
-            'email' => $customerProperties['$email'],
-            'first_name' => $customerProperties['firstname'],
-            'last_name' => $customerProperties['lastname']
-        );
+        $kl_properties = [];
 
-        unset($customerProperties['email']);
-        unset($customerProperties['firstname']);
-        unset($customerProperties['lastname']);
+        foreach(array_keys(self::CUSTOMER_PROPERTIES_MAP) as $property_name){
+            if (isset($customerProperties[$property_name])) {
+                $kl_properties[self::CUSTOMER_PROPERTIES_MAP[$property_name]] = $customerProperties[$property_name];
+                unset($customerProperties[$property_name]);
+            }
+        }
 
         return array(
             self::PROFILE_KEY_PAYLOAD => array(
@@ -286,15 +404,14 @@ class KlaviyoV3Api
      * @return array
      */
     #[\ReturnTypeWillChange]
-    protected function getDefaultCurlOptions($method = null)
+    protected function getDefaultCurlOptions($method)
     {
         return array(
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
             CURLOPT_TIMEOUT => 30,
-            CURLOPT_CUSTOMREQUEST => (!empty($method)) ? $method : 'POST',
-            CURLOPT_USERAGENT => self::USER_AGENT,
+            CURLOPT_CUSTOMREQUEST => $method,
         );
     }
 
@@ -303,32 +420,22 @@ class KlaviyoV3Api
      *
      * @param string $response The raw API response.
      * @param int $statusCode The HTTP status code of the response.
-     * @param bool $clientEvent
      * @return array| string |null An array containing the parsed data or null on error.
      * @throws KlaviyoApiException
      * @throws KlaviyoAuthenticationException
      * @throws KlaviyoRateLimitException
      */
-
-    protected function handleAPIResponse($response, $statusCode, $clientEvent = false)
+    protected function handleAPIResponse($response, $statusCode)
     {
-        try {
-            $decoded_response = $this->decodeJsonResponse($response);
-        } catch (\Exception $error) {
-            switch ($statusCode) {
-                case 403:
-                case 401:
-                    throw new KlaviyoAuthenticationException($error['detail'], $statusCode);
-                case 429:
-                    throw new KlaviyoRateLimitException($error['detail'], $statusCode);
-                default:
-                    $errorMessage = isset($decoded_response['detail']) ? $decoded_response['detail'] : sprintf(self::ERROR_NON_200_STATUS, $statusCode);
-                    throw new KlaviyoApiException($errorMessage, $statusCode);
-            }
-        }
-
-        if ($clientEvent) {
-            return $response;
+        $decoded_response = $this->decodeJsonResponse($response);
+        if ($statusCode == 403) {
+            throw new KlaviyoAuthenticationException(self::ERROR_INVALID_API_KEY, $statusCode);
+        } elseif ($statusCode == 429) {
+            throw new KlaviyoRateLimitException(
+                self::ERROR_RATE_LIMIT_EXCEEDED
+            );
+        } elseif ($statusCode < 200 || $statusCode >= 300) {
+            throw new KlaviyoApiException(isset($decoded_response['detail']) ? $decoded_response['detail'] : sprintf(self::ERROR_NON_200_STATUS, $statusCode), $statusCode);
         }
 
         return $decoded_response;
@@ -341,12 +448,18 @@ class KlaviyoV3Api
      *
      * @param string $response
      * @return mixed
+     * @throws KlaviyoException
      */
     private function decodeJsonResponse($response)
     {
         if (!empty($response)) {
-            return json_decode($response, true);
+            try {
+                return json_decode($response, true);
+            } catch (Exception $e) {
+                throw new KlaviyoException(self::ERROR_MALFORMED_RESPONSE_BODY);
+            }
         }
+
         return json_decode('{}', true);
     }
 }
