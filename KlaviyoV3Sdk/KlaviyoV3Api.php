@@ -329,8 +329,6 @@ class KlaviyoV3Api
      */
     protected function requestV3($path, $method = null, $body = null, $attempt = 0)
     {
-        $url = self::KLAVIYO_HOST . $path;
-
         $curl = curl_init();
         $options = array(
                 CURLOPT_URL => self::KLAVIYO_HOST . $path,

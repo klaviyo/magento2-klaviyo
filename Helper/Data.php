@@ -62,23 +62,30 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->observerAtcPayload = null;
     }
 
-    public function getKlaviyoLists($api_key = null)
+    public function getKlaviyoLists()
     {
-        $lists_response = $this->api->getLists();
+        try {
+            $lists_response = $this->api->getLists();
+            $lists = array();
 
-        $lists = array();
+            foreach ($lists_response as $list) {
+                $lists[] = array(
+                    'id' => $list['id'],
+                    'name' => $list['attributes']['name']
+                );
+            }
 
-        foreach ($lists_response as $list) {
-            $lists[] = array(
-                'id' => $list['id'],
-                'name' => $list['attributes']['name']
-            );
+            return [
+                'success' => true,
+                'lists' => $lists
+            ];
+        } catch(\Exception $e) {
+            $this->_klaviyoLogger->log(sprintf('Unable to get list: %s', $e["detail"]));
+            return [
+                'success' => false,
+                'reason' => $e["detail"]
+            ];
         }
-
-        return [
-            'success' => true,
-            'lists' => $lists
-        ];
     }
 
     /**
