@@ -1,11 +1,26 @@
 <?php
+
 namespace Klaviyo\Reclaim\Model\Config\Source;
 
 class ListOptions implements \Magento\Framework\Option\ArrayInterface
 {
-
     const LABEL = 'label';
     const VALUE = 'value';
+
+    /**
+     * @var \Magento\Framework\Message\ManagerInterface
+     */
+    protected $messageManager;
+
+    /**
+     * @var \Klaviyo\Reclaim\Helper\ScopeSetting
+     */
+    protected $_klaviyoScopeSetting;
+
+    /**
+     * @var \Klaviyo\Reclaim\Helper\Data
+     */
+    protected $_dataHelper;
 
     public function __construct(
         \Magento\Framework\Message\ManagerInterface $messageManager,
@@ -48,8 +63,8 @@ class ListOptions implements \Magento\Framework\Option\ArrayInterface
             ]];
         }
 
-        $options = array_map(function($list) {
-            return [self::LABEL => $list->list_name, self::VALUE => $list->list_id];
+        $options = array_map(function ($list) {
+            return [self::LABEL => $list['name'], self::VALUE => $list['id']];
         }, $result['lists']);
 
         $default_value = [
