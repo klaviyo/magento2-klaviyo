@@ -3,6 +3,7 @@
 namespace Klaviyo\Reclaim\Helper;
 
 use Klaviyo\Reclaim\KlaviyoV3Sdk\KlaviyoV3Api;
+use Magento\Framework\App\Helper\Context;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -63,15 +64,20 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getKlaviyoLists($api_key = null)
     {
-        $response = $this->getLists();
+        $lists_response = $this->api->getLists();
 
-        usort($response, function ($a, $b) {
-            return strtolower($a->list_name) > strtolower($b->list_name) ? 1 : -1;
-        });
+        $lists = array();
+
+        foreach ($lists_response as $list) {
+            $lists[] = array(
+                'id' => $list['id'],
+                'name' => $list['attributes']['name']
+            );
+        }
 
         return [
             'success' => true,
-            'lists' => $response
+            'lists' => $lists
         ];
     }
 
