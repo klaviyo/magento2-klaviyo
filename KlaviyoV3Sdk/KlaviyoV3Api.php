@@ -93,8 +93,7 @@ class KlaviyoV3Api
         $public_key,
         $private_key,
         ScopeSetting $klaviyoScopeSetting
-    )
-    {
+    ) {
         $this->public_key = $public_key;
         $this->private_key = $private_key;
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
