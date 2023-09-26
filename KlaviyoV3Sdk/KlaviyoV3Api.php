@@ -45,7 +45,7 @@ class KlaviyoV3Api
     /**
      * Payload options
      */
-    const CUSTOMER_PROPERTIES_MAP = ['$email' => 'email', 'firstname' => 'first_name', 'lastname' => 'last_name'];
+    const CUSTOMER_PROPERTIES_MAP = ['$email' => 'email', 'firstname' => 'first_name', 'lastname' => 'last_name', '$exchange_id' => '_kx'];
     const DATA_KEY_PAYLOAD = 'data';
     const TYPE_KEY_PAYLOAD = 'type';
     const ATTRIBUTE_KEY_PAYLOAD = 'attributes';
@@ -77,17 +77,27 @@ class KlaviyoV3Api
      * @var string
      */
     protected $public_key;
+    /**
+     * @var ScopeSetting
+     */
+    private $_klaviyoScopeSetting;
 
     /**
-     * Constructor method for Base class.
+     * Constructor method for base class
      *
-     * @param string $public_key Public key (account ID) for Klaviyo account
-     * @param string $private_key Private API key for Klaviyo account
+     * @param $public_key
+     * @param $private_key
+     * @param ScopeSetting $klaviyoScopeSetting
      */
-    public function __construct($public_key, $private_key)
+    public function __construct(
+        $public_key,
+        $private_key,
+        ScopeSetting $klaviyoScopeSetting
+    )
     {
         $this->public_key = $public_key;
         $this->private_key = $private_key;
+        $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
     }
 
     /**
@@ -109,7 +119,7 @@ class KlaviyoV3Api
                 self::REVISION_KEY_HEADER . ': ' . self::KLAVIYO_V3_REVISION,
                 self::CONTENT_TYPE_KEY_HEADER . ': ' . self::APPLICATION_JSON_HEADER_VALUE,
                 self::ACCEPT_KEY_HEADER . ': ' . self::APPLICATION_JSON_HEADER_VALUE,
-                self::KLAVIYO_USER_AGENT_KEY . ': ' . 'magento2-klaviyo/' . $klVersion() . 'Magento2/' . $m2Version . 'PHP/' . phpversion(),
+                self::KLAVIYO_USER_AGENT_KEY . ': ' . 'magento2-klaviyo/' . $klVersion . ' Magento2/' . $m2Version . ' PHP/' . phpversion(),
                 self::AUTHORIZATION_KEY_HEADER . ': ' . self::KLAVIYO_API_KEY . ' ' . $this->private_key
             ]
         );
@@ -330,7 +340,7 @@ class KlaviyoV3Api
         curl_setopt_array($curl, $options);
 
         if ($body !== null) {
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($body));
         }
 
         $response = curl_exec($curl);
@@ -396,13 +406,20 @@ class KlaviyoV3Api
             }
         }
 
+        $data = array(
+            self::TYPE_KEY_PAYLOAD => self::PROFILE_KEY_PAYLOAD,
+            self::ATTRIBUTE_KEY_PAYLOAD => $kl_properties,
+            self::PROPERTIES => $customerProperties,
+        );
+
+        if (isset($customerProperties['$id'])) {
+            $data[self::ID_KEY_PAYLOAD] = $customerProperties['$id'];
+            unset($customerProperties['$id']);
+        }
+
         return array(
             self::PROFILE_KEY_PAYLOAD => array(
-                self::DATA_KEY_PAYLOAD => array(
-                    self::TYPE_KEY_PAYLOAD => self::PROFILE_KEY_PAYLOAD,
-                    self::ATTRIBUTE_KEY_PAYLOAD => $kl_properties,
-                    self::PROPERTIES => $customerProperties,
-                )
+                self::DATA_KEY_PAYLOAD => $data
             )
         );
     }

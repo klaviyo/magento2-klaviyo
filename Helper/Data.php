@@ -44,7 +44,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_klaviyoLogger = $klaviyoLogger;
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
         $this->observerAtcPayload = null;
-        $this->api = new KlaviyoV3Api($this->_klaviyoScopeSetting->getPublicApiKey(), $this->_klaviyoScopeSetting->getPrivateApiKey());
+        $this->api = new KlaviyoV3Api($this->_klaviyoScopeSetting->getPublicApiKey(), $this->_klaviyoScopeSetting->getPrivateApiKey(), $klaviyoScopeSetting);
     }
 
     public function getObserverAtcPayload()
