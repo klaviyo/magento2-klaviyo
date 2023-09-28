@@ -79,7 +79,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 'success' => true,
                 'lists' => $lists
             ];
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->_klaviyoLogger->log(sprintf('Unable to get list: %s', $e["detail"]));
             return [
                 'success' => false,
