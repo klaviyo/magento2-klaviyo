@@ -64,7 +64,7 @@ class ListOptions implements \Magento\Framework\Option\ArrayInterface
         }
 
         $options = array_map(function ($list) {
-            return [self::LABEL => $list->list_name, self::VALUE => $list->list_id];
+            return [self::LABEL => $list['name'], self::VALUE => $list['id']];
         }, $result['lists']);
 
         $default_value = [
