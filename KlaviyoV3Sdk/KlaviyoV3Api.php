@@ -345,7 +345,7 @@ class KlaviyoV3Api
         $statusCode = curl_getinfo($curl, $phpVersionHttpCode);
         // In the event that the curl_exec fails for whatever reason, it responds with `false`,
         // Implementing a timeout and retry mechanism which will attempt the API call 3 times at 5 second intervals
-        if ($statusCode != 202) {
+        if ($statusCode < 200 || $statusCode >= 300 && !$response) {
             if ($attempt < 3) {
                 sleep(1);
                 $this->requestV3($path, $method, $body, $attempt + 1);
