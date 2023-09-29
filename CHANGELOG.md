@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+### [4.1.0] - 2023-09-29
+
+#### Added
+- New Klaviyo onsite object
+- New X-Klaviyo-User-Agent to headers to collect plugin usage meta data
+- Added support for Klaviyo V3 API
+
+#### Removed
+- Support for V2 APIs: /track and /identify
+- Removed _learnq onsite object in favor of klaviyo object
+
 ### [4.0.12] - 2023-07-20
 
 #### Fixed
@@ -238,7 +249,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- END RELEASE NOTES -->
 <!-- BEGIN LINKS -->
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.12...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.1.0...HEAD
+[4.1.0]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.12...4.1.0
 [4.0.12]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.11...4.0.12
 [4.0.11]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.10...4.0.11
 [4.0.10]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.9...4.0.10
