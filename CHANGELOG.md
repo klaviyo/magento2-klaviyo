@@ -4,7 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+<!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
+
+### [2.3.0] - 2023-09-29
+
+#### Added
+- New Klaviyo onsite object
+- New X-Klaviyo-User-Agent to headers to collect plugin usage meta data
+- Added support for Klaviyo V3 APIs
+
+#### Removed
+- Support for V2 APIs: /track and /identify
+- Removed _learnq onsite object in favor of klaviyo object
 
 ### [2.2.0] - 2021-05-17
 
@@ -58,15 +70,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ##### Changed
 - Removes unused variable and DI from Reclaim.php
 - CSP now uses report-only mode
-
-
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/2.1.1...HEAD
+<!-- END RELEASE NOTES -->
+<!-- BEGIN LINKS -->
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/2.3.0...HEAD
+[2.3.0]: https://github.com/klaviyo/magento2-klaviyo/compare/2.2.0...2.3.0
 [2.1.1]: https://github.com/klaviyo/magento2-klaviyo/compare/2.1.0...2.1.1
 [2.1.0]: https://github.com/klaviyo/magento2-klaviyo/compare/2.0.0...2.1.0
 [2.0.0]: https://github.com/klaviyo/magento2-klaviyo/compare/1.2.4...2.0.0
 [1.2.4]: https://github.com/klaviyo/magento2-klaviyo/compare/1.2.3...1.2.4
 [1.2.3]: https://github.com/klaviyo/magento2-klaviyo/compare/1.2.2...1.2.3
-
+<!-- END LINKS -->
 
 #### NOTE
 - The CHANGELOG was created on 2020-11-20 and does not contain information about earlier releases
