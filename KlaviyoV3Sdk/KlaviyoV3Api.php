@@ -183,7 +183,7 @@ class KlaviyoV3Api
             )
         );
 
-        return $this->requestV3("api/lists/$list_id/relationships/profiles/", self::HTTP_POST, $body);
+        $this->requestV3("api/lists/$list_id/relationships/profiles/", self::HTTP_POST, $body);
     }
 
     /**
