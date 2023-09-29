@@ -58,8 +58,8 @@ class KlaviyoV3Api
     const NAME_KEY_PAYLOAD = 'name';
     const EVENT_VALUE_PAYLOAD = 'event';
     const ID_KEY_PAYLOAD = 'id';
-    const PROFILE_SUBSCRIPTION_BULK_CREATE_JOB_PAYLOAD_KEY = 'profile-subscription-bulk-create-jobs';
-    const PROFILE_SUBSCRIPTION_BULK_DELETE_JOB_PAYLOAD_KEY = 'profile-subscription-bulk-delete-jobs';
+    const PROFILE_SUBSCRIPTION_BULK_CREATE_JOB_PAYLOAD_KEY = 'profile-subscription-bulk-create-job';
+    const PROFILE_SUBSCRIPTION_BULK_DELETE_JOB_PAYLOAD_KEY = 'profile-subscription-bulk-delete-job';
     const LIST_PAYLOAD_KEY = 'list';
     const RELATIONSHIPS_PAYLOAD_KEY = 'relationships';
     const PROFILES_PAYLOAD_KEY = 'profiles';
@@ -183,7 +183,7 @@ class KlaviyoV3Api
             )
         );
 
-        return $this->requestV3("api/lists/$list_id/relationships/profiles/", self::HTTP_POST, $body);
+        $this->requestV3("api/lists/$list_id/relationships/profiles/", self::HTTP_POST, $body);
     }
 
     /**
@@ -289,24 +289,26 @@ class KlaviyoV3Api
     public function unsubscribeEmailFromKlaviyoList($email, $listId)
     {
         $body = array(
-            self::TYPE_KEY_PAYLOAD => self::PROFILE_SUBSCRIPTION_BULK_DELETE_JOB_PAYLOAD_KEY,
-            self::ATTRIBUTE_KEY_PAYLOAD => array(
-                self::PROFILES_PAYLOAD_KEY => array(
-                    self::DATA_KEY_PAYLOAD => array(
-                        array(
-                            self::TYPE_KEY_PAYLOAD => self::PROFILE_KEY_PAYLOAD,
-                            self::ATTRIBUTE_KEY_PAYLOAD => array(
-                                'email' => $email
+            self::DATA_KEY_PAYLOAD => array(
+                self::TYPE_KEY_PAYLOAD => self::PROFILE_SUBSCRIPTION_BULK_DELETE_JOB_PAYLOAD_KEY,
+                self::ATTRIBUTE_KEY_PAYLOAD => array(
+                    self::PROFILES_PAYLOAD_KEY => array(
+                        self::DATA_KEY_PAYLOAD => array(
+                            array(
+                                self::TYPE_KEY_PAYLOAD => self::PROFILE_KEY_PAYLOAD,
+                                self::ATTRIBUTE_KEY_PAYLOAD => array(
+                                    'email' => $email
+                                )
                             )
                         )
                     )
-                )
-            ),
-            self::RELATIONSHIPS_PAYLOAD_KEY => array(
-                self::LIST_PAYLOAD_KEY => array(
-                    self::DATA_KEY_PAYLOAD => array(
-                        self::TYPE_KEY_PAYLOAD => self::LIST_PAYLOAD_KEY,
-                        self::ID_KEY_PAYLOAD => $listId
+                ),
+                self::RELATIONSHIPS_PAYLOAD_KEY => array(
+                    self::LIST_PAYLOAD_KEY => array(
+                        self::DATA_KEY_PAYLOAD => array(
+                            self::TYPE_KEY_PAYLOAD => self::LIST_PAYLOAD_KEY,
+                            self::ID_KEY_PAYLOAD => $listId
+                        )
                     )
                 )
             )
@@ -341,10 +343,11 @@ class KlaviyoV3Api
         }
 
         $response = curl_exec($curl);
-
+        $phpVersionHttpCode = version_compare(phpversion(), '5.5.0', '>') ? CURLINFO_RESPONSE_CODE : CURLINFO_HTTP_CODE;
+        $statusCode = curl_getinfo($curl, $phpVersionHttpCode);
         // In the event that the curl_exec fails for whatever reason, it responds with `false`,
         // Implementing a timeout and retry mechanism which will attempt the API call 3 times at 5 second intervals
-        if (!$response) {
+        if ($statusCode < 200 || $statusCode >= 300 || $response == false) {
             if ($attempt < 3) {
                 sleep(1);
                 $this->requestV3($path, $method, $body, $attempt + 1);
@@ -352,9 +355,6 @@ class KlaviyoV3Api
                 throw new KlaviyoApiException(self::ERROR_API_CALL_FAILED);
             }
         }
-
-        $phpVersionHttpCode = version_compare(phpversion(), '5.5.0', '>') ? CURLINFO_RESPONSE_CODE : CURLINFO_HTTP_CODE;
-        $statusCode = curl_getinfo($curl, $phpVersionHttpCode);
         curl_close($curl);
 
         return $this->handleAPIResponse($response, $statusCode);
