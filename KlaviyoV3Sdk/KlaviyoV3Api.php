@@ -58,8 +58,8 @@ class KlaviyoV3Api
     const NAME_KEY_PAYLOAD = 'name';
     const EVENT_VALUE_PAYLOAD = 'event';
     const ID_KEY_PAYLOAD = 'id';
-    const PROFILE_SUBSCRIPTION_BULK_CREATE_JOB_PAYLOAD_KEY = 'profile-subscription-bulk-create-jobs';
-    const PROFILE_SUBSCRIPTION_BULK_DELETE_JOB_PAYLOAD_KEY = 'profile-subscription-bulk-delete-jobs';
+    const PROFILE_SUBSCRIPTION_BULK_CREATE_JOB_PAYLOAD_KEY = 'profile-subscription-bulk-create-job';
+    const PROFILE_SUBSCRIPTION_BULK_DELETE_JOB_PAYLOAD_KEY = 'profile-subscription-bulk-delete-job';
     const LIST_PAYLOAD_KEY = 'list';
     const RELATIONSHIPS_PAYLOAD_KEY = 'relationships';
     const PROFILES_PAYLOAD_KEY = 'profiles';
