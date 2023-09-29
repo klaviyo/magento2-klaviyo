@@ -341,10 +341,11 @@ class KlaviyoV3Api
         }
 
         $response = curl_exec($curl);
-
+        $phpVersionHttpCode = version_compare(phpversion(), '5.5.0', '>') ? CURLINFO_RESPONSE_CODE : CURLINFO_HTTP_CODE;
+        $statusCode = curl_getinfo($curl, $phpVersionHttpCode);
         // In the event that the curl_exec fails for whatever reason, it responds with `false`,
         // Implementing a timeout and retry mechanism which will attempt the API call 3 times at 5 second intervals
-        if (!$response) {
+        if ($statusCode != 202) {
             if ($attempt < 3) {
                 sleep(1);
                 $this->requestV3($path, $method, $body, $attempt + 1);
@@ -352,9 +353,6 @@ class KlaviyoV3Api
                 throw new KlaviyoApiException(self::ERROR_API_CALL_FAILED);
             }
         }
-
-        $phpVersionHttpCode = version_compare(phpversion(), '5.5.0', '>') ? CURLINFO_RESPONSE_CODE : CURLINFO_HTTP_CODE;
-        $statusCode = curl_getinfo($curl, $phpVersionHttpCode);
         curl_close($curl);
 
         return $this->handleAPIResponse($response, $statusCode);
