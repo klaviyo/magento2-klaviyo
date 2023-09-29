@@ -289,24 +289,26 @@ class KlaviyoV3Api
     public function unsubscribeEmailFromKlaviyoList($email, $listId)
     {
         $body = array(
-            self::TYPE_KEY_PAYLOAD => self::PROFILE_SUBSCRIPTION_BULK_DELETE_JOB_PAYLOAD_KEY,
-            self::ATTRIBUTE_KEY_PAYLOAD => array(
-                self::PROFILES_PAYLOAD_KEY => array(
-                    self::DATA_KEY_PAYLOAD => array(
-                        array(
-                            self::TYPE_KEY_PAYLOAD => self::PROFILE_KEY_PAYLOAD,
-                            self::ATTRIBUTE_KEY_PAYLOAD => array(
-                                'email' => $email
+            self::DATA_KEY_PAYLOAD => array(
+                self::TYPE_KEY_PAYLOAD => self::PROFILE_SUBSCRIPTION_BULK_DELETE_JOB_PAYLOAD_KEY,
+                self::ATTRIBUTE_KEY_PAYLOAD => array(
+                    self::PROFILES_PAYLOAD_KEY => array(
+                        self::DATA_KEY_PAYLOAD => array(
+                            array(
+                                self::TYPE_KEY_PAYLOAD => self::PROFILE_KEY_PAYLOAD,
+                                self::ATTRIBUTE_KEY_PAYLOAD => array(
+                                    'email' => $email
+                                )
                             )
                         )
                     )
-                )
-            ),
-            self::RELATIONSHIPS_PAYLOAD_KEY => array(
-                self::LIST_PAYLOAD_KEY => array(
-                    self::DATA_KEY_PAYLOAD => array(
-                        self::TYPE_KEY_PAYLOAD => self::LIST_PAYLOAD_KEY,
-                        self::ID_KEY_PAYLOAD => $listId
+                ),
+                self::RELATIONSHIPS_PAYLOAD_KEY => array(
+                    self::LIST_PAYLOAD_KEY => array(
+                        self::DATA_KEY_PAYLOAD => array(
+                            self::TYPE_KEY_PAYLOAD => self::LIST_PAYLOAD_KEY,
+                            self::ID_KEY_PAYLOAD => $listId
+                        )
                     )
                 )
             )
