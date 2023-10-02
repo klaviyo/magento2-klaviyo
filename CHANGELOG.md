@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
-### [2.3.0] - 2023-09-29
+### [2.2.0+v3api] - 2023-09-29
 
 #### Added
 - New Klaviyo onsite object
@@ -73,7 +73,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- END RELEASE NOTES -->
 <!-- BEGIN LINKS -->
 [Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/2.3.0...HEAD
-[2.3.0]: https://github.com/klaviyo/magento2-klaviyo/compare/2.2.0...2.3.0
+[2.2.0+v3api]: https://github.com/klaviyo/magento2-klaviyo/compare/2.2.0...2.2.0+v3api
 [2.1.1]: https://github.com/klaviyo/magento2-klaviyo/compare/2.1.0...2.1.1
 [2.1.0]: https://github.com/klaviyo/magento2-klaviyo/compare/2.0.0...2.1.0
 [2.0.0]: https://github.com/klaviyo/magento2-klaviyo/compare/1.2.4...2.0.0
