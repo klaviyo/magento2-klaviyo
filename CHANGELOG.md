@@ -3,8 +3,30 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
+<!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
+
+### [3.0.4+v3api] - 2023-10-02
+
+#### Added
+- New Klaviyo onsite object
+- New X-Klaviyo-User-Agent to headers to collect plugin usage meta data
+- Added support for Klaviyo V3 APIs
+
+#### Removed
+- Support for V2 APIs: /track and /identify
+- Removed _learnq onsite object in favor of klaviyo object
+
+### [3.0.5] - 2023-10-02
+
+#### Added
+- New Klaviyo onsite object
+- New X-Klaviyo-User-Agent to headers to collect plugin usage meta data
+- Added support for Klaviyo V3 APIs
+
+#### Removed
+- Support for V2 APIs: /track and /identify
+- Removed _learnq onsite object in favor of klaviyo object
 
 ### [3.0.4] - 2021-06-08
 
@@ -90,9 +112,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ##### Changed
 - Removes unused variable and DI from Reclaim.php
 - CSP now uses report-only mode
+<!-- END RELEASE NOTES -->
 
-
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.4...HEAD
+<!-- BEGIN LINKS -->
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.4+v3api...HEAD
+[3.0.4+v3api]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.5...3.0.4+v3api
+[3.0.5]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.4...3.0.5
 [3.0.4]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.3...3.0.4
 [3.0.3]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.2...3.0.3
 [3.0.2]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.1...3.0.2
@@ -104,7 +129,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [2.0.0]: https://github.com/klaviyo/magento2-klaviyo/compare/1.2.4...2.0.0
 [1.2.4]: https://github.com/klaviyo/magento2-klaviyo/compare/1.2.3...1.2.4
 [1.2.3]: https://github.com/klaviyo/magento2-klaviyo/compare/1.2.2...1.2.3
-
+<!-- END LINKS -->
 
 #### NOTE
 - The CHANGELOG was created on 2020-11-20 and does not contain information about earlier releases
