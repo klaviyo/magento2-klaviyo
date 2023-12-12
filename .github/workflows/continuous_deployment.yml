@@ -58,7 +58,7 @@ jobs:
         wrapper_dir="magento2-klaviyo"
         mkdir $wrapper_dir
         rsync -rc --exclude-from=".distignore" "$GITHUB_WORKSPACE/" $wrapper_dir/ --delete --delete-excluded
-        ls $wrapper_dir
+        ls -al $wrapper_dir
 
 #    - name: Create Archive
 #      uses: thedoctor0/zip-release@0.7.1
