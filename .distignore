@@ -1,5 +1,6 @@
 /docs
 .changelogger*
+.dev
 .DS_Store
 .git
 .github
