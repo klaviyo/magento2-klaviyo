@@ -1,0 +1,14 @@
+/docs
+.changelogger*
+.DS_Store
+.git
+.github
+.gitignore
+.idea
+.phpunit.*
+.phpcs.*
+.python-version
+.pre-commit-config.yaml
+CHANGELOG.md
+makefile
+.distignore
