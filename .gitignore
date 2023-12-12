@@ -206,3 +206,6 @@ fabric.properties
 /build/
 
 # End of https://www.toptal.com/developers/gitignore/api/phpunit,php-cs-fixer,phpcodesniffer,phpstorm,phpstorm+all
+
+# pyenv
+.python-version
