@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+### [4.1.1] - 2023-12-12
+
 #### Added
 - Added name to initialize block in checkout
 
@@ -256,7 +258,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- END RELEASE NOTES -->
 <!-- BEGIN LINKS -->
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.1.0...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.1.1...HEAD
+[4.1.1]: https://github.com/klaviyo/magento2-klaviyo/compare/4.1.0...4.1.1
 [4.1.0]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.12...4.1.0
 [4.0.12]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.11...4.0.12
 [4.0.11]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.10...4.0.11
