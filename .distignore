@@ -11,5 +11,6 @@
 .python-version
 .pre-commit-config.yaml
 CHANGELOG.md
+README.md
 makefile
 .distignore

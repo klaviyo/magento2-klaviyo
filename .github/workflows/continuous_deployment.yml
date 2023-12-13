@@ -56,12 +56,14 @@ jobs:
         echo ${DELIMITER} >> $GITHUB_ENV
 
     - name: Create Archive
+      # Create zip archive for release to composer repository (Packagist)
       run: |
         wrapper_dir="magento2-klaviyo"
         rsync -rc --exclude-from=".distignore" "$GITHUB_WORKSPACE/" $wrapper_dir/ --delete --delete-excluded
         zip -r ${{ env.ZIP_FILE_NAME }} ./$wrapper_dir
 
     - name: Create GitHub Tag & Release
+      # Creates GH tag and release, adds zip archive as artifact to release.
       uses: ncipollo/release-action@v1
       with:
         tag: ${{ needs.determine-if-deploy.outputs.version }}
