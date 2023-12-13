@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Added
 - Added name to initialize block in checkout
+- Added ACL rules for Klaviyo extension configuration.
 
 #### Fixed
 - Updated getKlaviyoLists() exception handling to properly print error message.
