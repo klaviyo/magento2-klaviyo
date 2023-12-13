@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <resource id="Magento_Backend::stores">
+                    <resource id="Magento_Backend::stores_settings">
+                        <resource id="Magento_Config::config">
+                            <resource id="Klaviyo_Reclaim::config" title="Klaviyo">
+                                <resource id="Klaviyo_Reclaim::klaviyo_reclaim_general" title="Klaviyo General" translate="title" sortOrder="150" />
+                                <resource id="Klaviyo_Reclaim::klaviyo_reclaim_newsletter" title="Klaviyo Newsletter" translate="title" sortOrder="160" />
+                                <resource id="Klaviyo_Reclaim::klaviyo_reclaim_consent_at_checkout" title="Klaviyo Consent at checkout" translate="title" sortOrder="170" />
+                                <resource id="Klaviyo_Reclaim::klaviyo_reclaim_oauth" title="Klaviyo Oauth" translate="title" sortOrder="180" />
+                                <resource id="Klaviyo_Reclaim::klaviyo_reclaim_webhook" title="Klaviyo Webhook" translate="title" sortOrder="190" />
+                            </resource>
+                        </resource>
+                    </resource>
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>
