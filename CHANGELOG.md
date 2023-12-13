@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Fixed
 - Updated getKlaviyoLists() exception handling to properly print error message.
 - Paginate to get all lists for account.
+- Updated response handling in KlaviyoV3Sdk to not retry for falsey responses from curl_exec.
 
 ### [4.1.0] - 2023-09-29
 
