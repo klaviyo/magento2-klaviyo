@@ -12,13 +12,16 @@ define([
     customerData.getInitCustomerData().done(function () {
         var customer = customerData.get('customer')();
 
-        if(_.has(customer, 'email') && customer.email && !klaviyo.isIdentified()) {
-            klaviyo.identify({
-                '$email': customer.email,
-                '$first_name': _.has(customer, 'firstname') ? customer.firstname : '',
-                '$last_name':  _.has(customer, 'lastname') ? customer.lastname : ''
-            });
-        }
+        klaviyo.isIdentified().then((identified)=> {
+            if(_.has(customer, 'email') && customer.email && !identified) {
+                klaviyo.identify({
+                    '$email': customer.email,
+                    '$first_name': _.has(customer, 'firstname') ? customer.firstname : '',
+                    '$last_name':  _.has(customer, 'lastname') ? customer.lastname : ''
+                });
+            }
+        });
+
     });
 
 });
