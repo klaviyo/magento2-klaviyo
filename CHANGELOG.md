@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+#### Fixed
+- Updated customer.js to correctly handle promise returned from isIdentified
+
 ### [4.1.1] - 2023-12-12
 
 #### Added
