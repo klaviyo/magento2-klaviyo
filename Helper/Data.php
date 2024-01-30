@@ -44,7 +44,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_klaviyoLogger = $klaviyoLogger;
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
         $this->observerAtcPayload = null;
-        $this->api = new KlaviyoV3Api($this->_klaviyoScopeSetting->getPublicApiKey(), $this->_klaviyoScopeSetting->getPrivateApiKey(), $klaviyoScopeSetting);
     }
 
     public function getObserverAtcPayload()
@@ -65,7 +64,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getKlaviyoLists()
     {
         try {
-            $lists_response = $this->api->getLists();
+            $api = new KlaviyoV3Api($this->_klaviyoScopeSetting->getPublicApiKey(), $this->_klaviyoScopeSetting->getPrivateApiKey(), $this->_klaviyoScopeSetting, $this->_klaviyoLogger);
+            $lists_response = $api->getLists();
             $lists = array();
 
             foreach ($lists_response as $list) {
@@ -109,6 +109,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $properties['last_name'] = $lastName;
         }
 
+        $api = new KlaviyoV3Api($this->_klaviyoScopeSetting->getPublicApiKey(), $this->_klaviyoScopeSetting->getPrivateApiKey(), $this->_klaviyoScopeSetting, $this->_klaviyoLogger);
+
         try {
             if ($optInSetting == ScopeSetting::API_SUBSCRIBE) {
                 // Subscribe profile using the profile creation endpoint for lists
@@ -124,18 +126,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     )
                 );
 
-                $response = $this->api->subscribeMembersToList($listId, array($consent_profile_object));
+                $response = $api->subscribeMembersToList($listId, array($consent_profile_object));
             } else {
                 // Search for profile by email using the api/profiles endpoint
-                $response = $this->api->searchProfileByEmail($email);
+                $response = $api->searchProfileByEmail($email);
                 $profile_id = $response["profile_id"];
                 // If the profile exists, use the ID to add to a list
                 // If the profile does not exist, create
                 if ($profile_id) {
-                    $this->api->addProfileToList($listId, $profile_id);
+                    $api->addProfileToList($listId, $profile_id);
                 } else {
-                    $new_profile = $this->api->createProfile($properties);
-                    $this->api->addProfileToList($listId, $new_profile["profile_id"]);
+                    $new_profile = $api->createProfile($properties);
+                    $api->addProfileToList($listId, $new_profile["profile_id"]);
                 }
             }
         } catch (\Exception $e) {
@@ -152,9 +154,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function unsubscribeEmailFromKlaviyoList($email)
     {
+        $api = new KlaviyoV3Api($this->_klaviyoScopeSetting->getPublicApiKey(), $this->_klaviyoScopeSetting->getPrivateApiKey(), $this->_klaviyoScopeSetting, $this->_klaviyoLogger);
         $listId = $this->_klaviyoScopeSetting->getNewsletter();
         try {
-            $response = $this->api->unsubscribeEmailFromKlaviyoList($email, $listId);
+            $response = $api->unsubscribeEmailFromKlaviyoList($email, $listId);
         } catch (\Exception $e) {
             $this->_klaviyoLogger->log(sprintf('Unable to unsubscribe %s from list %s: %s', $email, $listId, $e));
             $response = false;
@@ -181,6 +184,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         if (!is_null($timestamp)) {
             $params['time'] = $timestamp;
         }
-        return $this->api->track($params);
+
+        $api = new KlaviyoV3Api($this->_klaviyoScopeSetting->getPublicApiKey($storeId), $this->_klaviyoScopeSetting->getPrivateApiKey($storeId), $this->_klaviyoScopeSetting, $this->_klaviyoLogger);
+        return $api->track($params);
     }
 }

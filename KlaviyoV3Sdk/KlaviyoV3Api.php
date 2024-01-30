@@ -25,7 +25,8 @@ class KlaviyoV3Api
     /**
      * Error messages
      */
-    const ERROR_INVALID_API_KEY = 'The Private Klaviyo API Key you have set is invalid.';
+    const ERROR_FORBIDDEN = 'Private API key has invalid permissions.';
+    const ERROR_NOT_AUTHORIZED = 'Authentication key missing from request or is invalid. Check that Klaviyo Private API key is correctly set for scope.';
     const ERROR_NON_200_STATUS = 'Request Failed with HTTP Status Code: %s';
     const ERROR_API_CALL_FAILED = 'Request could be completed at this time, API call failed';
     const ERROR_MALFORMED_RESPONSE_BODY = 'Response from API could not be decoded from JSON, check response body';
@@ -364,7 +365,7 @@ class KlaviyoV3Api
                 sleep(1);
                 $this->requestV3($path, $method, $body, $attempt + 1);
             } else {
-                throw new KlaviyoApiException(self::ERROR_API_CALL_FAILED);
+                $this->handleAPIResponse($response, $statusCode);
             }
         }
         curl_close($curl);
@@ -463,14 +464,16 @@ class KlaviyoV3Api
     protected function handleAPIResponse($response, $statusCode)
     {
         $decoded_response = $this->decodeJsonResponse($response);
-        if ($statusCode == 403) {
-            throw new KlaviyoAuthenticationException(self::ERROR_INVALID_API_KEY, $statusCode);
+        if ($statusCode == 401) {
+            throw new KlaviyoAuthenticationException(self::ERROR_NOT_AUTHORIZED, $statusCode);
+        } elseif ($statusCode == 403) {
+            throw new KlaviyoAuthenticationException(self::ERROR_FORBIDDEN, $statusCode);
         } elseif ($statusCode == 429) {
             throw new KlaviyoRateLimitException(
                 self::ERROR_RATE_LIMIT_EXCEEDED
             );
         } elseif ($statusCode < 200 || $statusCode >= 300) {
-            throw new KlaviyoApiException(isset($decoded_response['detail']) ? $decoded_response['detail'] : sprintf(self::ERROR_NON_200_STATUS, $statusCode), $statusCode);
+            throw new KlaviyoApiException(isset($decoded_response['error']) ? $decoded_response['error'] : sprintf(self::ERROR_NON_200_STATUS, $statusCode), $statusCode);
         }
 
         return $decoded_response;

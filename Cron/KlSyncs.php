@@ -106,10 +106,13 @@ class KlSyncs
         $webhookTopics = ['product/save']; //List of topics that use webhooks
         $trackApiTopics = ['Added To Cart']; //List of topics that use the Track API
 
-        $responseManifest = ['1' => [], '0' => []];
+        $responseManifest = ['success' => [], 'failure' => []];
+        $failedRows = [];
+        $syncedRows = [];
 
         foreach ($groupedRows as $topic => $rows) {
             if (in_array($topic, $webhookTopics) && !empty($rows)) {
+                // This block is not currently used
                 foreach ($rows as $row) {
                     $response = $this->_webhookHelper->makeWebhookRequest(
                         $row['topic'],
@@ -132,7 +135,7 @@ class KlSyncs
                         if (is_null($decodedPayload)) {
                             // payload was likely truncated, default to failed response value for the row
                             $this->_klaviyoLogger->log(sprintf("[sendUpdatesToApp] Truncated Payload - Unable to process and sync row %d", $row['id']));
-                            array_push($responseManifest["0"], $row['id']);
+                            $failedRows[] = $row['id'];
                             continue;
                         }
 
@@ -146,7 +149,6 @@ class KlSyncs
                             unset($decodedPayload['StoreId']);
                         }
 
-                        // Call the Track API, which returns 0/1 for failed/successful requests
                         $response = $this->_dataHelper->klaviyoTrackEvent(
                             $row['topic'],
                             json_decode($row['user_properties'], true),
@@ -154,36 +156,37 @@ class KlSyncs
                             $eventTime,
                             $storeId
                         );
-                        if (!$response) {
-                            $response = '0';
-                        }
 
-                        // Add the response value to the manifest, all statuses will be updated after all rows have been processed.
-                        array_push($responseManifest["$response"], $row['id']);
+                        if (isset($response['errors'])) {
+                            $failedRows[] = $row['id'];
+                        } else {
+                            $syncedRows[] = $row['id'];
+                        }
                     } catch (\Exception $e) {
                         // Catch an exception raised while processing or sending the event
                         // defaults to a failed response and allows the other rows to continue syncing
-                        $this->_klaviyoLogger->log(sprintf("[sendUpdatesToApp] Unable to process and sync row %d: %s", $row['id'], $e));
-                        array_push($responseManifest["0"], $row['id']);
+                        $this->_klaviyoLogger->log(sprintf("[sendUpdatesToApp] Unable to process and sync row %d: %s", $row['id'], $e->getMessage()));
+                        $failedRows[] = $row['id'];
                         continue;
                     }
                 }
             }
         }
-        $this->updateRowStatuses($responseManifest, $isRetry);
+        $this->updateRowStatuses($syncedRows,$failedRows, $isRetry);
     }
 
     /**
      * Update statues of rows to SYNCED, RETRY and FAILED based on response and if Retry cron run
-     * @param array $responseManifest
+     * @param array $syncedRows
+     * @param array $failedRows
      * @param bool $isRetry
      */
-    private function updateRowStatuses(array $responseManifest, bool $isRetry)
+    private function updateRowStatuses(array $syncedRows, array $failedRows, bool $isRetry)
     {
         $syncCollection = $this->_syncCollectionFactory->create();
-        $syncCollection->updateRowStatus($responseManifest['1'], 'SYNCED');
+        $syncCollection->updateRowStatus($syncedRows, 'SYNCED');
 
-        $syncCollection->updateRowStatus($responseManifest['0'], $isRetry ? 'FAILED' : 'RETRY');
+        $syncCollection->updateRowStatus($failedRows, $isRetry ? 'FAILED' : 'RETRY');
     }
 
     /**
