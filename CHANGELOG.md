@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Fixed
 - Updated customer.js to correctly handle promise returned from isIdentified
+- Updated KlaviyoV3Api to handle new response patterns returned from V3 APIs
+- Fixed issue with Added to Cart events not syncing for multi-site configurations
+- Fixed Added to Cart observer to check for private key instead of public key
+- Fixed error handling from V3 APIs, logs out the error message instead of the stack trace on retries. 
 
 ### [4.1.1] - 2023-12-12
 
