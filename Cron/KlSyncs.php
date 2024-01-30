@@ -172,7 +172,7 @@ class KlSyncs
                 }
             }
         }
-        $this->updateRowStatuses($syncedRows,$failedRows, $isRetry);
+        $this->updateRowStatuses($syncedRows, $failedRows, $isRetry);
     }
 
     /**
