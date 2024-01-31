@@ -89,17 +89,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 $api->subscribeMembersToList($listId, array($consent_profile_object));
             } else {
                 // Search for profile by email using the api/profiles endpoint
-                $response = $api->searchProfileByEmail($email);
-                $profile_id = $response["profile_id"];
-                // If the profile exists, use the ID to add to a list
-                // If the profile does not exist, create
-                if ($profile_id) {
-                    $api->addProfileToList($listId, $profile_id);
-                } else {
+                $existing_profile = $api->searchProfileByEmail($email);
+                if (!$existing_profile) {
                     $new_profile = $api->createProfile($profileAttributes);
-                    $this->_klaviyoLogger->log($new_profile["profile_id"]);
-                    $api->addProfileToList($listId, $new_profile["profile_id"]);
+                    $profile_id = $new_profile["profile_id"];
+                } else {
+                    $profile_id = $existing_profile["profile_id"];
                 }
+                $api->addProfileToList($listId, $profile_id);
             }
         } catch (\Exception $e) {
             $this->_klaviyoLogger->log(sprintf('Unable to subscribe %s to list %s: %s', $email, $listId, $e->getMessage()));
