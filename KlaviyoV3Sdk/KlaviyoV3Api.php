@@ -191,8 +191,10 @@ class KlaviyoV3Api
     {
         $body = array(
             self::DATA_KEY_PAYLOAD => array(
-                self::TYPE_KEY_PAYLOAD => self::PROFILE_KEY_PAYLOAD,
-                self::ID_KEY_PAYLOAD => $profile_id
+                array(
+                    self::TYPE_KEY_PAYLOAD => self::PROFILE_KEY_PAYLOAD,
+                    self::ID_KEY_PAYLOAD => $profile_id
+                )
             )
         );
 
@@ -210,14 +212,16 @@ class KlaviyoV3Api
     public function createProfile($profile_properties)
     {
         $body = array(
-            self::DATA_KEY_PAYLOAD => array(
-                self::TYPE_KEY_PAYLOAD => self::PROFILE_KEY_PAYLOAD,
-                self::ATTRIBUTE_KEY_PAYLOAD => $profile_properties
-            )
+            self::DATA_KEY_PAYLOAD =>
+                array(
+                    self::TYPE_KEY_PAYLOAD => self::PROFILE_KEY_PAYLOAD,
+                    self::ATTRIBUTE_KEY_PAYLOAD => $profile_properties
+                )
+
         );
 
         $response_body = $this->requestV3('api/profiles/', self::HTTP_POST, $body);
-        $id = $response_body[self::DATA_KEY_PAYLOAD][0][self::ID_KEY_PAYLOAD];
+        $id = $response_body[self::DATA_KEY_PAYLOAD][self::ID_KEY_PAYLOAD];
         return [
             'data' => $response_body,
             'profile_id' => $id
@@ -473,7 +477,7 @@ class KlaviyoV3Api
                 self::ERROR_RATE_LIMIT_EXCEEDED
             );
         } elseif ($statusCode < 200 || $statusCode >= 300) {
-            throw new KlaviyoApiException(isset($decoded_response['error']) ? $decoded_response['error'] : sprintf(self::ERROR_NON_200_STATUS, $statusCode), $statusCode);
+            throw new KlaviyoApiException(isset($decoded_response['errors']) ? $decoded_response['errors'][0]['detail'] : sprintf(self::ERROR_NON_200_STATUS, $statusCode), $statusCode);
         }
 
         return $decoded_response;
