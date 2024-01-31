@@ -7,8 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+### [4.1.2] - 2024-01-31
+
 #### Fixed
 - Updated customer.js to correctly handle promise returned from isIdentified
+- Updated KlaviyoV3Api to handle new response patterns returned from V3 APIs
+- Fixed issue with Added to Cart events not syncing for multi-site configurations
+- Fixed Added to Cart observer to check for private key instead of public key
+- Fixed error handling from V3 APIs, logs out the error message instead of the stack trace on retries.
 
 ### [4.1.1] - 2023-12-12
 
@@ -266,7 +272,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- END RELEASE NOTES -->
 <!-- BEGIN LINKS -->
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.1.1...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.1.2...HEAD
+[4.1.2]: https://github.com/klaviyo/magento2-klaviyo/compare/4.1.1...4.1.2
 [4.1.1]: https://github.com/klaviyo/magento2-klaviyo/compare/4.1.0...4.1.1
 [4.1.0]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.12...4.1.0
 [4.0.12]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.11...4.0.12

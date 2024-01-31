@@ -76,10 +76,9 @@ class SalesQuoteSaveAfter implements ObserverInterface
         $kl_decoded_cookie = json_decode(base64_decode($_COOKIE['__kla_id']), true);
 
         // Get the custom variable set in the DataHelper object via the SalesQuoteProductAddAfter observer.
-        // Check if the public key and Added to Cart payload are set
-        $public_key = $this->_scopeSetting->getPublicApiKey();
+        // Check if the private key and Added to Cart payload are set
         $klAddedToCartPayload = $this->_dataHelper->getObserverAtcPayload();
-        if (!isset($klAddedToCartPayload) or !isset($public_key)) {
+        if (!isset($klAddedToCartPayload) or empty($this->_scopeSetting->getPrivateApiKey())) {
             return;
         }
 
