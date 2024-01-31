@@ -3,3 +3,4 @@ Test/log
 vendor
 
 .idea
+/composer.phar
