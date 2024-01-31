@@ -10,11 +10,13 @@ define([
     var klaviyo = window.klaviyo || [];
     var customer = customerData.get('customer')();
 
-    if(_.has(customer, 'email') && customer.email && !klaviyo.isIdentified()) {
-        klaviyo.identify({
-            '$email': customer.email,
-            '$first_name': _.has(customer, 'firstname') ? customer.firstname : '',
-            '$last_name':  _.has(customer, 'lastname') ? customer.lastname : ''
-        });
-    }
+    klaviyo.isIdentified().then((identified)=> {
+        if (!identified && customer.email && _.has(customer,'email')) {
+            klaviyo.identify({
+                '$email': customer.email,
+                '$first_name': _.has(customer, 'firstname') ? customer.firstname : '',
+                '$last_name':  _.has(customer, 'lastname') ? customer.lastname : ''
+            })
+        }
+    });
 });

@@ -44,18 +44,13 @@ define([
         self._email = jQuery(this).val();
 
         klaviyo.isIdentified().then((identified)=> {
-          if (identified) {
+          if (!identified) {
             klaviyo.push(['identify', {
               '$email': self._email
             }]);
           }
         })
 
-        if (!window._learnq.identify().email) {
-          window._learnq.push(['identify', {
-            '$email': self._email
-          }]);
-        }
         self.postUserEmail(self._email);
       });
     },
