@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 
-### [2.2.0-v3api] - 2024-01-31
+### [2.2.0-patch] - 2024-01-31
 
 #### Changed
 - Updates 2.2.0 release to utilize Klaviyo's v3 APIs. V1/V2 APIs will be retired on June 30, 2024.
@@ -65,8 +65,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CSP now uses report-only mode
 
 
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/2.2.0-v3api...HEAD
-[2.2.0-v3api]: https://github.com/klaviyo/magento2-klaviyo/compare/2.2.0...2.2.0-v3api
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/2.2.0-patch...HEAD
+[2.2.0-patch]: https://github.com/klaviyo/magento2-klaviyo/compare/2.2.0...2.2.0-patch
 [2.2.0]: https://github.com/klaviyo/magento2-klaviyo/compare/2.1.0...2.2.0
 [2.1.1]: https://github.com/klaviyo/magento2-klaviyo/compare/2.1.0...2.1.1
 [2.1.0]: https://github.com/klaviyo/magento2-klaviyo/compare/2.0.0...2.1.0
