@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### [Unreleased]
 
+### [3.0.4-patch] - 2024-02-01
+
+#### Deprecated
+- Removed usage of Klaviyo's V1/V2 APIs, which will be retired on June 30, 2024
+
+#### Added
+- Support for Klaviyo's V3 APIs
+
 ### [3.0.4] - 2021-06-08
 
 #### Fixed
@@ -92,7 +100,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CSP now uses report-only mode
 
 
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.4...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.4-patch...HEAD
+[3.0.4]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.4...3.0.4-patch
 [3.0.4]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.3...3.0.4
 [3.0.3]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.2...3.0.3
 [3.0.2]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.1...3.0.2

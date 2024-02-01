@@ -7,6 +7,21 @@ class ListOptions implements \Magento\Framework\Option\ArrayInterface
     const LABEL = 'label';
     const VALUE = 'value';
 
+    /**
+     * @var \Magento\Framework\Message\ManagerInterface
+     */
+    protected $messageManager;
+
+    /**
+     * @var \Klaviyo\Reclaim\Helper\ScopeSetting
+     */
+    protected $_klaviyoScopeSetting;
+
+    /**
+     * @var \Klaviyo\Reclaim\Helper\Data
+     */
+    protected $_dataHelper;
+
     public function __construct(
         \Magento\Framework\Message\ManagerInterface $messageManager,
         \Klaviyo\Reclaim\Helper\ScopeSetting $_klaviyoScopeSetting,
@@ -36,7 +51,7 @@ class ListOptions implements \Magento\Framework\Option\ArrayInterface
         $result = $this->_dataHelper->getKlaviyoLists();
         if (!$result['success']) {
             return [[
-                self::LABEL => $result['reason'] . ' To sync newsletter subscribers to Klaviyo, update the <strong>Private Klaviyo API Key</strong> on the "General" tab.',
+                self::LABEL => $result['error'] . ' Error: To sync newsletter subscribers to Klaviyo, update the <strong>Private Klaviyo API Key</strong> on the "General" tab.',
                 self::VALUE => 0
             ]];
         }
@@ -48,8 +63,8 @@ class ListOptions implements \Magento\Framework\Option\ArrayInterface
             ]];
         }
 
-        $options = array_map(function($list) {
-            return [self::LABEL => $list->list_name, self::VALUE => $list->list_id];
+        $options = array_map(function ($list) {
+            return [self::LABEL => $list['name'], self::VALUE => $list['id']];
         }, $result['lists']);
 
         $default_value = [

@@ -34,9 +34,7 @@ class UserProfileNewsletterSubscribeObserver implements ObserverInterface
 
           if ($subscriber->isSubscribed()) {
             $this->_dataHelper->subscribeEmailToKlaviyoList(
-                $customer->getEmail(),
-                $customer->getFirstname(),
-                $customer->getLastname()
+                $customer->getEmail()
             );
           } else {
             $this->_dataHelper->unsubscribeEmailFromKlaviyoList($customer->getEmail());
