@@ -51,7 +51,7 @@ class ListOptions implements \Magento\Framework\Option\ArrayInterface
         $result = $this->_dataHelper->getKlaviyoLists();
         if (!$result['success']) {
             return [[
-                self::LABEL => $result['reason'] . ' To sync newsletter subscribers to Klaviyo, update the <strong>Private Klaviyo API Key</strong> on the "General" tab.',
+                self::LABEL => $result['error'] . ' Error: To sync newsletter subscribers to Klaviyo, update the <strong>Private Klaviyo API Key</strong> on the "General" tab.',
                 self::VALUE => 0
             ]];
         }
