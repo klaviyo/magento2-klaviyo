@@ -21,7 +21,6 @@ class PrivateApiKeyObserver implements ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $field = $observer->getEvent()['config_data']->getData();
-
         if (!array_key_exists('field', $field) || $field['field'] !== 'private_api_key') return;
 
         $api_key = $field['value'];
