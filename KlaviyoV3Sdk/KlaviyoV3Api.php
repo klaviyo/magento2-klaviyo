@@ -164,8 +164,9 @@ class KlaviyoV3Api
      * @return false|mixed
      */
     public function searchProfileByEmail($email)
-    {
-        $response_body = $this->requestV3("api/profiles/?filter=equals(email,'$email')", self::HTTP_GET);
+    {    
+	$encoded_email = urlencode($email);    
+	$response_body = $this->requestV3("api/profiles/?filter=equals(email,'$encoded_email')", self::HTTP_GET);
 
         if (empty($response_body[self::DATA_KEY_PAYLOAD])) {
             return false;
@@ -423,14 +424,17 @@ class KlaviyoV3Api
 
         $data = array(
             self::TYPE_KEY_PAYLOAD => self::PROFILE_KEY_PAYLOAD,
-            self::ATTRIBUTE_KEY_PAYLOAD => $kl_properties,
-            self::PROPERTIES => $customerProperties,
+            self::ATTRIBUTE_KEY_PAYLOAD => $kl_properties
         );
 
         if (isset($customerProperties['$id'])) {
             $data[self::ID_KEY_PAYLOAD] = $customerProperties['$id'];
             unset($customerProperties['$id']);
-        }
+	}
+
+	if (!empty($customerProperties)) {
+	    $data[self::ATTRIBUTE_KEY_PAYLOAD][self::PROPERTIES] = $customerProperties;
+	}
 
         return array(
             self::PROFILE_KEY_PAYLOAD => array(

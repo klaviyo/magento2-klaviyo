@@ -12,7 +12,7 @@ class PrivateApiKeyObserver implements ObserverInterface
 
     public function __construct(
         \Magento\Framework\Message\ManagerInterface $messageManager,
-        \Klaviyo\Reclaim\Helper\Data $_dataHelper,
+        \Klaviyo\Reclaim\Helper\Data $_dataHelper
     ) {
         $this->messageManager = $messageManager;
         $this->_dataHelper = $_dataHelper;
