@@ -432,13 +432,16 @@ class KlaviyoV3Api
 
         $data = array(
             self::TYPE_KEY_PAYLOAD => self::PROFILE_KEY_PAYLOAD,
-            self::ATTRIBUTE_KEY_PAYLOAD => $kl_properties,
-            self::PROPERTIES => $customerProperties,
+            self::ATTRIBUTE_KEY_PAYLOAD => $kl_properties
         );
 
         if (isset($customerProperties['$id'])) {
             $data[self::ID_KEY_PAYLOAD] = $customerProperties['$id'];
             unset($customerProperties['$id']);
+        }
+
+        if(!empty($customerProperties)) {
+            $data[self::ATTRIBUTE_KEY_PAYLOAD][self::PROPERTIES] = $customerProperties;
         }
 
         return array(
