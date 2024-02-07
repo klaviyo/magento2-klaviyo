@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+#### Fixed
+- Updated KlaviyoV3Api to fix the profile properties sent in events to match the format required the V3 API 
+
 ### [4.1.2] - 2024-01-31
 
 #### Fixed
