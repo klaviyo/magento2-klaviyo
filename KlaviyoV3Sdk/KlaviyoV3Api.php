@@ -430,7 +430,7 @@ class KlaviyoV3Api
             unset($customerProperties['$id']);
         }
 
-        if(!empty($customerProperties)) {
+        if (!empty($customerProperties)) {
             $data[self::ATTRIBUTE_KEY_PAYLOAD][self::PROPERTIES] = $customerProperties;
         }
 
