@@ -11,7 +11,7 @@ Klaviyo extension for Magento 2. Allows pushing newsletters to Klaviyo's platfor
 
 - **Tracks viewing an item (catalog product)**
   - Only will work if user is signed in
-  - Inspect page source, find `learnq` snippet and see what PHP is echoing out
+  - Inspect page source, find `window.klaviyo` snippet and see what PHP is echoing out
   - Should be a `Viewed Product` track call with product details
 
 - **Saves checkout emails**
