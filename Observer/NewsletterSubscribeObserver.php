@@ -51,9 +51,7 @@ class NewsletterSubscribeObserver implements ObserverInterface
 
             if ($subscriber->isSubscribed()) {
                 $this->helper->subscribeEmailToKlaviyoList(
-                    $customer ? $customer->getEmail() : $subscriber->getEmail(),
-                    $customer ? $customer->getFirstname() : $subscriber->getFirstname(),
-                    $customer ? $customer->getLastname() : $subscriber->getLastname()
+                    $customer ? $customer->getEmail() : $subscriber->getEmail()
                 );
             } else {
                 $this->helper->unsubscribeEmailFromKlaviyoList(
