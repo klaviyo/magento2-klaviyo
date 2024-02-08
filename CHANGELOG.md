@@ -6,16 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
-### [3.0.11+v3api] - 2023-09-29
+### [3.0.11-patch] - 2024-02-08
 
 #### Added
-- New Klaviyo onsite object
-- New X-Klaviyo-User-Agent to headers to collect plugin usage meta data
 - Added support for Klaviyo V3 APIs
 
-#### Removed
-- Support for V2 APIs: /track and /identify
-- Removed _learnq onsite object in favor of klaviyo object
+#### Deprecated
+- Removed usage of Klaviyo's V1/V2 APIs, which will be retired on June 30, 2024
+
 
 ### [3.0.11] - 2021-12-21
 
@@ -151,7 +149,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- END RELEASE NOTES -->
 <!-- BEGIN LINKS -->
 [Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/3.1.0...HEAD
-[3.0.11+v3api]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.11...3.0.11+v3api
+[3.0.11-patch]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.11...3.0.11-patch
 [3.0.11]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.10...3.0.11
 [3.0.10]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.9...3.0.10
 [3.0.9]: https://github.com/klaviyo/magento2-klaviyo/compare/3.0.8...3.0.9
