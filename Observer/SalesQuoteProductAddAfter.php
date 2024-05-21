@@ -201,7 +201,8 @@ class SalesQuoteProductAddAfter implements ObserverInterface
      * @param $addedItem
      * @return mixed
      */
-    public function getSimpleProductForEvent($addedItem) {
+    public function getSimpleProductForEvent($addedItem)
+    {
         # try to grab the simple product
         $simpleProduct = null;
         try {
@@ -210,7 +211,8 @@ class SalesQuoteProductAddAfter implements ObserverInterface
             } elseif ($addedItem->getProductType() == "simple") {
                 $simpleProduct = $addedItem->getProduct();
             }
-        } catch (NoSuchEntityException $ex) {}
+        } catch (NoSuchEntityException $ex) {
+        }
         return $simpleProduct;
     }
 
