@@ -6,6 +6,8 @@ use Klaviyo\Reclaim\Helper\Data;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Catalog\Model\CategoryFactory;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Catalog\Api\ProductRepositoryInterface;
 
 class SalesQuoteProductAddAfter implements ObserverInterface
 {
@@ -22,15 +24,23 @@ class SalesQuoteProductAddAfter implements ObserverInterface
     protected $_categoryFactory;
 
     /**
+     * Magento Product Repository
+     * @var ProductRepositoryInterface
+     */
+    private $productRepository;
+
+    /**
      * @param Data $dataHelper
      * @param CategoryFactory $categoryFactory
      */
     public function __construct(
         Data $dataHelper,
-        CategoryFactory $categoryFactory
+        CategoryFactory $categoryFactory,
+        ProductRepositoryInterface $productRepository
     ) {
         $this->_dataHelper = $dataHelper;
         $this->_categoryFactory = $categoryFactory;
+        $this->productRepository = $productRepository;
     }
 
     public function execute(Observer $observer)
@@ -68,12 +78,16 @@ class SalesQuoteProductAddAfter implements ObserverInterface
     public function klAddedToCartItemData($quote, $addedItem)
     {
         $addedProduct = $addedItem->getProduct();
+        # try to grab the simple product
+        $simpleProduct = $this->getSimpleProductForEvent($addedItem);
+
         $addedItemData = [
             'AddedItemCategories' => (array) $addedProduct->getCategoryIds(),
-            'AddedItemImageUrlKey' => (string) is_null($addedProduct->getData('small_image')) ? "" : stripslashes($addedProduct->getData('small_image')),
+            'AddedItemImageUrlKey' => $this->getImagePreferringVariant($addedProduct, $simpleProduct),
             'AddedItemPrice' => (float) $addedProduct->getFinalPrice(),
             'AddedItemQuantity' => (int) $addedItem->getQty(),
             'AddedItemProductID' => (int) $addedProduct->getId(),
+            'AddedItemSimpleProductID' => (int) is_null($simpleProduct) ? null : $simpleProduct->getId(),
             'AddedItemProductName' => (string) $addedProduct->getName(),
             'AddedItemSku' => (string) $addedProduct->getSku(),
             'AddedItemUrl' => (string) is_null($addedProduct->getProductUrl()) ? "" : stripslashes($addedProduct->getProductUrl()),
@@ -111,13 +125,17 @@ class SalesQuoteProductAddAfter implements ObserverInterface
 
         foreach ($cartItems as $item) {
             $product = $item->getProduct();
+            # try to grab the simple product
+            $simpleProduct = $this->getSimpleProductForEvent($item);
+
             $cartItemId = $product->getId();
             $itemCategories = $product->getCategoryIds();
             $itemName = $item->getName();
             $currentProduct = [
                 'Categories' => (array) $itemCategories,
-                'ImageUrlKey' => (string) is_null($product->getData('small_image')) ? "" : stripslashes($product->getData('small_image')),
+                'ImageUrlKey' => $this->getImagePreferringVariant($product, $simpleProduct),
                 'ProductId' => (int) $cartItemId,
+                'SimpleProductId' => (int) is_null($simpleProduct) ? null : $simpleProduct->getId(),
                 'Price' => (float) $product->getFinalPrice(),
                 'Title' => (string) $itemName,
                 'Url' => (string) is_null($product->getProductUrl()) ? "" : stripslashes($product->getProductUrl()),
@@ -176,5 +194,38 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         }
 
         return $bundleOptionsData;
+    }
+
+    /**
+     * Helper function to get Simple Product for configurable item added to cart
+     * @param $addedItem
+     * @return mixed
+     */
+    public function getSimpleProductForEvent($addedItem) {
+        # try to grab the simple product
+        $simpleProduct = null;
+        try {
+            if ($addedItem->getProductType() == "configurable") {
+                $simpleProduct = $this->productRepository->get($addedItem->getSku());
+            } elseif ($addedItem->getProductType() == "simple") {
+                $simpleProduct = $addedItem->getProduct();
+            }
+        } catch (NoSuchEntityException $ex) {}
+        return $simpleProduct;
+    }
+
+    /**
+     * Helper function to get the correct image path
+     * @param $addedItem
+     * @return string
+     */
+    public function getImagePreferringVariant($addedItem, $addedSimpleProduct): string
+    {
+        $productToTest = $addedSimpleProduct;
+        if (is_null($addedSimpleProduct) || is_null($addedSimpleProduct->getData('small_image'))) {
+            $productToTest = $addedItem;
+        }
+
+        return is_null($productToTest->getData('small_image')) ? "" : stripslashes($productToTest->getData('small_image'));
     }
 }
