@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Fixed
 - Properly encodes emails before search request to Klaviyo
+- Updated KlaviyoV3Api to fix the profile properties sent in events to match the format required the V3 API
 
 ### [4.1.3] - 2024-03-29
 
