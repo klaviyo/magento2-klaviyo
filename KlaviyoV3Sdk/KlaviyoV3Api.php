@@ -165,7 +165,8 @@ class KlaviyoV3Api
      */
     public function searchProfileByEmail($email)
     {
-        $response_body = $this->requestV3("api/profiles/?filter=equals(email,'$email')", self::HTTP_GET);
+        $encoded_email = urlencode($email);
+        $response_body = $this->requestV3("api/profiles/?filter=equals(email,'$encoded_email')", self::HTTP_GET);
 
         if (empty($response_body[self::DATA_KEY_PAYLOAD])) {
             return false;
