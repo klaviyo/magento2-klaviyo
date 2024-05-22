@@ -126,7 +126,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     )
                 );
 
-                $response = $api->subscribeMembersToList($listId, array($consent_profile_object));
+                $api->subscribeMembersToList($listId, array($consent_profile_object));
             } else {
                 // Search for profile by email using the api/profiles endpoint
                 $existing_profile = $api->searchProfileByEmail($email);
@@ -142,10 +142,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             }
         } catch (\Exception $e) {
             $this->_klaviyoLogger->log(sprintf('Unable to subscribe %s to list %s: %s', $email, $listId, $e));
-            $response = false;
         }
-
-        return $response;
     }
 
     /**

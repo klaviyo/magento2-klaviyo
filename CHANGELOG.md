@@ -7,8 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+#### Changed
+- Updated Added to Cart events to show preference to simple product images over configurable product images.
+- Added StoreId and SimpleProductId fields to Added to Cart event.
+
 #### Fixed
 - Updated KlaviyoV3Api to fix the profile properties sent in events to match the format required the V3 API 
+
+### [4.1.3] - 2024-03-29
+
+#### Fixed
+- BUGPORT-1750: unassigned $response variable from api call during list subscription
 
 ### [4.1.2] - 2024-01-31
 
@@ -275,7 +284,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- END RELEASE NOTES -->
 <!-- BEGIN LINKS -->
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.1.2...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.1.3...HEAD
+[4.1.3]: https://github.com/klaviyo/magento2-klaviyo/compare/4.1.2...4.1.3
 [4.1.2]: https://github.com/klaviyo/magento2-klaviyo/compare/4.1.1...4.1.2
 [4.1.1]: https://github.com/klaviyo/magento2-klaviyo/compare/4.1.0...4.1.1
 [4.1.0]: https://github.com/klaviyo/magento2-klaviyo/compare/4.0.12...4.1.0

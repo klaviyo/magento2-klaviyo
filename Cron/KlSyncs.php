@@ -146,7 +146,6 @@ class KlSyncs
                         $storeId = '';
                         if (isset($decodedPayload['StoreId'])) {
                             $storeId = $decodedPayload['StoreId'];
-                            unset($decodedPayload['StoreId']);
                         }
 
                         $response = $this->_dataHelper->klaviyoTrackEvent(
