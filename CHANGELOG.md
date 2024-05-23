@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+### [4.1.4] - 2024-05-22
+
 #### Changed
 - Updated Added to Cart events to show preference to simple product images over configurable product images.
 - Added StoreId and SimpleProductId fields to Added to Cart event.
@@ -285,7 +287,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- END RELEASE NOTES -->
 <!-- BEGIN LINKS -->
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.1.3...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.1.4...HEAD
+[4.1.4]: https://github.com/klaviyo/magento2-klaviyo/compare/4.1.3...4.1.4
 [4.1.3]: https://github.com/klaviyo/magento2-klaviyo/compare/4.1.2...4.1.3
 [4.1.2]: https://github.com/klaviyo/magento2-klaviyo/compare/4.1.1...4.1.2
 [4.1.1]: https://github.com/klaviyo/magento2-klaviyo/compare/4.1.0...4.1.1
