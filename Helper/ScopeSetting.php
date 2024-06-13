@@ -52,7 +52,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @var int
      */
-    protected $_storeId;
+    public $storeId;
 
     /**
      * @var \Magento\Framework\Module\ModuleListInterface
@@ -75,7 +75,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_scopeConfig = $context->getScopeConfig();
         $this->_request = $context->getRequest();
         $this->_state = $state;
-        $this->_storeId = $storeManager->getStore()->getId();
+        $this->storeId = $storeManager->getStore()->getId();
         $this->_moduleList = $moduleList;
         $this->_configWriter = $configWriter;
     }
@@ -114,7 +114,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
             $scopedWebsiteCode = $this->_request->getParam('website');
         } else {
             // In frontend area. Only concerned with store for frontend.
-            $scopedStoreCode = $this->_storeId;
+            $scopedStoreCode = $this->storeId;
         }
 
         if (isset($scopedStoreCode)) {
@@ -142,7 +142,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
             $scopedWebsiteCode = $this->_request->getParam('website');
         } else {
             // In frontend area. Only concerned with store for frontend.
-            $scopedStoreCode = $this->_storeId;
+            $scopedStoreCode = $this->storeId;
         }
 
         if (isset($scopedStoreCode)) {

@@ -200,7 +200,8 @@ class ViewedProduct extends Template
             'URL' => $_product->getProductUrl(),
             'Price' => $this->getPrice(),
             'FinalPrice' => $this->getFinalPrice(),
-            'Categories' => $this->getProductCategories()
+            'Categories' => $this->getProductCategories(),
+            'StoreID' => $this->_klaviyoScopeSetting->storeId
         ];
 
         if ($this->getProductImage()) {
@@ -224,7 +225,8 @@ class ViewedProduct extends Template
             'Categories' => $this->getProductCategories(),
             'Metadata' => array(
                 'Price' => $this->getPrice()
-            )
+            ),
+            'StoreID' => $this->_klaviyoScopeSetting->storeId
         ];
 
         if ($this->getProductImage()) {
