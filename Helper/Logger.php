@@ -28,10 +28,10 @@ class Logger
     protected $_klaviyoLogger;
 
     /**
-     * is the logger enabled?
-     * @var boolean
+     * Klaviyo Scope setting Helper
+     * @var ScopeSetting
      */
-    protected $_loggerEnabled;
+    protected $_scopeSetting;
 
     public function __construct(
         DirectoryList $dir,
@@ -41,7 +41,7 @@ class Logger
     ) {
         $this->_dir = $dir;
         $this->_klaviyoLogger = $klaviyoLogger;
-        $this->_loggerEnabled = $klaviyoScopeSetting->isLoggerEnabled();
+        $this->_scopeSetting = $klaviyoScopeSetting;
         $this->_logPath = (!empty($logPath)) ? $logPath : $this->_dir->getPath('log') . '/klaviyo.log';
     }
 
@@ -60,7 +60,7 @@ class Logger
      */
     public function log($message)
     {
-        if ($this->_loggerEnabled) {
+        if ($this->_scopeSetting->isLoggerEnabled()) {
             $this->_klaviyoLogger->info($message);
         }
     }
