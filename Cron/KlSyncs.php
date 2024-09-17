@@ -144,8 +144,8 @@ class KlSyncs
 
                         //TODO: if conditional for backward compatibility, needs to be removed in future versions
                         $storeId = '';
-                        if (isset($decodedPayload['StoreID'])) {
-                            $storeId = $decodedPayload['StoreID'];
+                        if (isset($decodedPayload['StoreId'])) {
+                            $storeId = $decodedPayload['StoreId'];
                         }
 
                         $response = $this->_dataHelper->klaviyoTrackEvent(

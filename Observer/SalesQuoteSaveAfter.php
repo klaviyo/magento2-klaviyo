@@ -98,7 +98,7 @@ class SalesQuoteSaveAfter implements ObserverInterface
         // Setting QuoteId at this point since the MaskedQuoteId is not updated when this event is dispatched,
         $klAddedToCartPayload['QuoteId'] = isset($encodedCustomerId) ? "kx_identifier_$encodedCustomerId" : $quote->getId();
         // Setting StoreId in payload
-        $klAddedToCartPayload['StoreID'] = $quote->getStoreId();
+        $klAddedToCartPayload['StoreId'] = $quote->getStoreId();
 
         $stringifiedPayload = json_encode($klAddedToCartPayload);
 
