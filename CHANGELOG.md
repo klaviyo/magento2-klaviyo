@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+### [4.2.0] - 2024-09-17
+
+#### Added
+- Adds StoreId field to Viewed Product events
+
+#### Changed
+- Updated the klaviyo onsite javascript to the new url format
+
 ### [4.1.4] - 2024-05-22
 
 #### Changed
