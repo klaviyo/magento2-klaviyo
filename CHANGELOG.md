@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Changed
 - Updated the klaviyo onsite javascript to the new url format
 
+#### Fixed
+- Removes call to isLoggerEnabled() in Logger __construct to address "Area Code is already set" issue when running consumer-based jobs
+
 ### [4.1.4] - 2024-05-22
 
 #### Changed
