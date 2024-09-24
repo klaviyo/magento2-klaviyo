@@ -7,12 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
-#### Added
-- Adds StoreID field to Viewed Product events
-
-#### Changed
-- Updates StoreId field to StoreID for Added to Cart events
-
 ### [4.1.4] - 2024-05-22
 
 #### Changed
