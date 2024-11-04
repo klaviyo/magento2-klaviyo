@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+#### Fixed
+- Fixed Deprecated use of base64_encode in Observer/SalesQuoteSaveAfter.php
+
 ### [4.2.0] - 2024-09-17
 
 #### Added

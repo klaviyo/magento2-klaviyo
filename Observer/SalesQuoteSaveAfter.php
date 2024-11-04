@@ -134,7 +134,7 @@ class SalesQuoteSaveAfter implements ObserverInterface
      */
     private function checkCustomerAndReturnEncodedId($quote)
     {
-        if ($this->_customerSession->isLoggedIn()) {
+        if ($this->_customerSession->isLoggedIn() && $quote->getCustomer()->getId()) {
             $customerId = $quote->getCustomer()->getId();
             return base64_encode($customerId);
         } else {
