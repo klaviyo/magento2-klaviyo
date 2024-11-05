@@ -158,7 +158,7 @@ class ViewedProduct extends Template
      */
     public function getFinalPrice()
     {
-        return  number_format($this->getProduct()->getPriceInfo()->getPrice('final_price')->getValue(), 2);
+        return  number_format($this->getProduct()->getPriceInfo()->getPrice('final_price')->getAmount()->getValue(), 2);
     }
 
     public function getProductImage()
