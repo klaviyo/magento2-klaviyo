@@ -47,7 +47,7 @@ define([
         self._email = jQuery(this).val();
 
         window.klaviyo.isIdentified().then((identified)=> {
-          if (!identified) {
+          if (self._email && !identified) {
             window.klaviyo.identify({
               '$email': self._email
             });
