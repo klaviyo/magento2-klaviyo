@@ -45,11 +45,14 @@ define([
         }
 
         self._email = jQuery(this).val();
-        if (!window.klaviyo.isIdentified()) {
-          window.klaviyo.push(['identify', {
-            '$email': self._email
-          }]);
-        }
+
+        window.klaviyo.isIdentified().then((identified)=> {
+          if (!identified) {
+            window.klaviyo.identify({
+              '$email': self._email
+            });
+          }
+        })
         self.postUserEmail(self._email);
       });
     },
