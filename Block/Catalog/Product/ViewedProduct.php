@@ -202,11 +202,11 @@ class ViewedProduct extends Template
      */
     public function getViewedProductJson()
     {
-        $this->_klaviyoLogger->log($this->_storeManager->getStore()->getId());
+        $external_catalog_id = $this->_storeManager->getStore()->getWebsiteId() . '-' . $this->_storeManager->getStore()->getId();
         $_product = $this->getProduct();
 
         $result = [
-            'external_catalog_id' => (string) $this->_storeManager->getStore()->getId(),
+            'external_catalog_id' => $external_catalog_id,
             'ProductID' => $_product->getId(),
             'Name' => $_product->getName(),
             'SKU' => $_product->getSku(),

@@ -101,7 +101,7 @@ class SalesQuoteSaveAfter implements ObserverInterface
         $klAddedToCartPayload['StoreId'] = $quote->getStoreId();
 
         // Setting external_catalog_id in payload - this connects the event to the right localized product in the klaviyo catalog and should not be changed
-        $klAddedToCartPayload['external_catalog_id'] = (string) $quote->getStoreId();
+        $klAddedToCartPayload['external_catalog_id'] =  $quote->getStore()->getWebsiteId() . '-' . $quote->getStoreId();
 
         $stringifiedPayload = json_encode($klAddedToCartPayload);
 
