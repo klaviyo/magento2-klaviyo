@@ -2,6 +2,7 @@
 
 namespace Klaviyo\Reclaim\Block\Catalog\Product;
 
+use Klaviyo\Reclaim\Helper\Logger;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Magento\Catalog\Helper\Image;
 use Magento\Framework\Registry;
@@ -17,6 +18,12 @@ class ViewedProduct extends Template
     protected $price = 0;
 
     /**
+     * Klaviyo Logger
+     * @var Logger
+     */
+    protected $_klaviyoLogger;
+
+    /**
      * @var Magento\Catalog\Helper\Image
      */
     private $imageHelper;
@@ -25,6 +32,7 @@ class ViewedProduct extends Template
      * ViewedProduct constructor.
      * @param Context $context
      * @param ScopeSetting $klaviyoScopeSetting
+     * @param Logger $klaviyoLogger
      * @param Registry $registry
      * @param Image $imageHelper
      * @param array $data
@@ -32,11 +40,14 @@ class ViewedProduct extends Template
     public function __construct(
         Context $context,
         ScopeSetting $klaviyoScopeSetting,
+        Logger $klaviyoLogger,
         Registry $registry,
         Image $imageHelper,
         array $data = []
     ) {
+//        $this->_storeManager = $context->getStoreManager();
         parent::__construct($context, $data);
+        $this->_klaviyoLogger = $klaviyoLogger;
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
         $this->_registry = $registry;
         $this->imageHelper = $imageHelper;
@@ -191,9 +202,11 @@ class ViewedProduct extends Template
      */
     public function getViewedProductJson()
     {
+        $this->_klaviyoLogger->log($this->_storeManager->getStore()->getId());
         $_product = $this->getProduct();
 
         $result = [
+            'external_catalog_id' => (string) $this->_storeManager->getStore()->getId(),
             'ProductID' => $_product->getId(),
             'Name' => $_product->getName(),
             'SKU' => $_product->getSku(),
