@@ -1,0 +1,19 @@
+{
+  "name": "magento2_klaviyo_test_automation",
+  "version": "1.0.0",
+  "description": "This repository contains the source code for [Klaviyo's Magento 2 extension](https://github.com/klaviyo/magento2-klaviyo). Klaviyo's Integration eCommerce Self-Hosted team owns this repository and its development.",
+  "main": "index.js",
+  "scripts": {},
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.51.1",
+    "@types/node": "^22.13.10",
+    "dotenv": "^16.4.7"
+  },
+  "dependencies": {
+    "axios": "^1.8.3",
+    "exponential-backoff": "^3.1.2",
+    "uuid": "^11.1.0"
+  }
+}
