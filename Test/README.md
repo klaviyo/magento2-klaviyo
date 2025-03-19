@@ -41,12 +41,12 @@ Functionally, these test cases cover:
     * Lists are fetched when correct klaviyo credentials are supplied in admin
     * An appropriate error shows in Admin if we are unable to fetch lists
 * Subscriptions
-    * Extension is configured to honor DOI:
+    * Extension is configured to honor DOI setting:
         * When a customer signs up to the newsletter via the Account Registration Page, the profile is subscribed to the list.
         * When a customer signs up to the newsletter via the footer form, the profile is subscribed to the list.
         * When a customer removes their subscription via the Account management page, the profile is unsubscribed from the list.
         * When a customer adds their subscription via the Account management page, the profile is subscribed to the list.
-    * Extension is configured to not honor DOI:
+    * Extension is configured to not honor DOI setting:
         * When a customer signs up to the newsletter via the Account Registration Page, the profile is added to list.
         * When a customer signs up to the newsletter via the footer form, the profile is added to list.
         * When a customer removes their subscription via the Account management page, the profile is removed from the list.
