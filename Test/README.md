@@ -20,12 +20,10 @@ The following frameworks and packages are used for testing
 ```
 KLAVIYO_PRIVATE_KEY=pk_...
 KLAVIYO_V3_URL=a.klaviyo.com/api
-METRIC_ID_ACCOUNT_CREATED=AAAAAA
-METRIC_ID_PLACED_ORDER_TRANSACTIONAL=AAAAAA
-METRIC_ID_BIS=AAAAAA
+METRIC_ID_ATC=AAAAAA
 M2_BASE_URL=https://www.example.com
-M2_BO_USERNAME=someone@example.com
-M2_BO_PASSWORD=astrongpassword
+M2_ADMIN_USERNAME=someone@example.com
+M2_ADMIN_PASSWORD=astrongpassword
 ```
 
 ## Instructions
