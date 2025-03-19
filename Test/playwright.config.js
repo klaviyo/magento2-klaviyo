@@ -15,6 +15,8 @@ import path from 'path';
  */
 export default defineConfig({
   testDir: './e2e',
+  /* Increase timeout (ms) if we need to retry API requests.  */
+  timeout: 1000 * 60 * 3,
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -44,6 +46,7 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
 
+    /* Not concerned about browser compatibility for API tests. */
     // {
     //   name: 'firefox',
     //   use: { ...devices['Desktop Firefox'] },

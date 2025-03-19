@@ -23,9 +23,6 @@ test.use({ storageState: 'playwright/.auth/admin.json' });
 test.describe('Newsletter Lists Configuration', () => {
   test('should display more than 10 lists in the newsletter configuration dropdown', async ({ page }) => {
     const baseUrl = process.env.M2_BASE_URL;
-    if (!baseUrl) {
-      throw new Error('M2_BASE_URL environment variable is not set');
-    }
 
     await page.goto(`${baseUrl}/admin/admin/dashboard`);
 
@@ -50,9 +47,6 @@ test.describe('Newsletter Lists Configuration', () => {
 
   test('should display more than 10 lists in the consent at checkout configuration dropdown', async ({ page }) => {
     const baseUrl = process.env.M2_BASE_URL;
-    if (!baseUrl) {
-      throw new Error('M2_BASE_URL environment variable is not set');
-    }
 
     await page.goto(`${baseUrl}/admin/admin/dashboard`);
     // Initialize Admin class

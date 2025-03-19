@@ -1,6 +1,9 @@
 const axios = require('axios');
 
-function getHeaders(klaviyoPrivateKey) {
+const klaviyoPrivateKey = process.env.KLAVIYO_PRIVATE_KEY;
+const klaviyoV3Url = process.env.KLAVIYO_V3_URL;
+
+function getHeaders() {
     return {
         'Authorization': `Klaviyo-API-Key ${klaviyoPrivateKey}`,
         'Content-Type': 'application/json',
@@ -10,12 +13,10 @@ function getHeaders(klaviyoPrivateKey) {
 
 /**
  * Creates a profile in Klaviyo
- * @param {string} klaviyoPrivateKey - Klaviyo private API key
- * @param {string} klaviyoV3Url - Klaviyo V3 API URL
  * @param {string} email - Email address for the profile
  * @returns {Promise<string>} The created profile ID
  */
-async function createProfileInKlaviyo(klaviyoPrivateKey, klaviyoV3Url, email) {
+async function createProfileInKlaviyo(email) {
     const response = await axios.post(`https://${klaviyoV3Url}/profiles/`, {
         data: {
             type: 'profile',
@@ -31,13 +32,11 @@ async function createProfileInKlaviyo(klaviyoPrivateKey, klaviyoV3Url, email) {
 
 /**
  * Checks for events in Klaviyo matching the given profile ID and metric ID
- * @param {string} klaviyoPrivateKey - Klaviyo private API key
- * @param {string} klaviyoV3Url - Klaviyo V3 API URL
  * @param {string} profileId - Klaviyo profile ID
  * @param {string} metricId - Klaviyo metric ID for the event type
  * @returns {Promise<Array>} Array of matching events
  */
-async function checkEvent(klaviyoPrivateKey, klaviyoV3Url, profileId, metricId) {
+async function checkEvent(profileId, metricId) {
     const response = await axios.get(`https://${klaviyoV3Url}/events/`, {
         headers: getHeaders(klaviyoPrivateKey),
         params: {
@@ -53,12 +52,10 @@ async function checkEvent(klaviyoPrivateKey, klaviyoV3Url, profileId, metricId) 
 
 /**
  * Checks if a profile exists in Klaviyo and returns its data
- * @param {string} klaviyoPrivateKey - Klaviyo private API key
- * @param {string} klaviyoV3Url - Klaviyo V3 API URL
  * @param {string} email - Email address to search for
  * @returns {Promise<Array>} Array of profile data
  */
-async function checkProfileInKlaviyo(klaviyoPrivateKey, klaviyoV3Url, email) {
+async function checkProfileInKlaviyo(email) {
     const response = await axios.get(`https://${klaviyoV3Url}/profiles/`, {
         headers: getHeaders(klaviyoPrivateKey),
         params: {
@@ -71,12 +68,10 @@ async function checkProfileInKlaviyo(klaviyoPrivateKey, klaviyoV3Url, email) {
 
 /**
  * Checks a profile's list relationships in Klaviyo
- * @param {string} klaviyoPrivateKey - Klaviyo private API key
- * @param {string} klaviyoV3Url - Klaviyo V3 API URL
  * @param {string} profileId - Klaviyo profile ID
  * @returns {Promise<Array>} Array of list relationships
  */
-async function checkProfileListRelationships(klaviyoPrivateKey, klaviyoV3Url, profileId) {
+async function checkProfileListRelationships(profileId) {
     const response = await axios.get(`https://${klaviyoV3Url}/profiles/${profileId}/lists`, {
         headers: getHeaders(klaviyoPrivateKey),
         params: {}

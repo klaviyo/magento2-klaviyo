@@ -1,11 +1,10 @@
 const { test, expect } = require('@playwright/test');
 const dotenv = require('dotenv');
 const path = require('path');
-const axios = require('axios');
 const { backOff } = require('exponential-backoff');
 const { generateEmail } = require('../utils/email');
 const Admin = require('../locators/admin');
-const { createProfileInKlaviyo, checkEvent, getProfileIdByEmail, checkProfileInKlaviyo, checkProfileListRelationships } = require('../utils/klaviyo-api');
+const { createProfileInKlaviyo, checkProfileInKlaviyo, checkProfileListRelationships } = require('../utils/klaviyo-api');
 
 // Load environment variables
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
@@ -75,13 +74,7 @@ test.describe('Profile Subscription - honor Klaviyo consent', () => {
 
   test('should successfully subscribe a user via footer form and validate via Klaviyo API', async ({ page }) => {
     const baseUrl = process.env.M2_BASE_URL;
-    const klaviyoPrivateKey = process.env.KLAVIYO_PRIVATE_KEY;
-    const klaviyoV3Url = process.env.KLAVIYO_V3_URL;
     const testEmail = generateEmail();
-
-    if (!baseUrl || !klaviyoPrivateKey || !klaviyoV3Url) {
-      throw new Error('Required environment variables are not set');
-    }
 
     // Navigate to the homepage
     await page.goto(baseUrl);
@@ -98,7 +91,7 @@ test.describe('Profile Subscription - honor Klaviyo consent', () => {
     // Use exponential backoff to check for profile
     const profiles = await backOff(
       async () => {
-        const results = await checkProfileInKlaviyo(klaviyoPrivateKey, klaviyoV3Url, testEmail);
+        const results = await checkProfileInKlaviyo(testEmail);
         if (results.length === 0) {
           throw new Error('Profile not found yet');
         }
@@ -125,14 +118,8 @@ test.describe('Profile Subscription - honor Klaviyo consent', () => {
 
   test('should successfully subscribe a user via account creation page and validate via Klaviyo API', async ({ page }) => {
     const baseUrl = process.env.M2_BASE_URL;
-    const klaviyoPrivateKey = process.env.KLAVIYO_PRIVATE_KEY;
-    const klaviyoV3Url = process.env.KLAVIYO_V3_URL;
     const testEmail = generateEmail();
     const testPassword = 'Test123!@#';
-
-    if (!baseUrl || !klaviyoPrivateKey || !klaviyoV3Url) {
-      throw new Error('Required environment variables are not set');
-    }
 
     // Navigate to the account creation page
     await page.goto(`${baseUrl}/customer/account/create/`);
@@ -156,7 +143,7 @@ test.describe('Profile Subscription - honor Klaviyo consent', () => {
     // Use exponential backoff to check for profile
     const profiles = await backOff(
       async () => {
-        const results = await checkProfileInKlaviyo(klaviyoPrivateKey, klaviyoV3Url, testEmail);
+        const results = await checkProfileInKlaviyo(testEmail);
         if (results.length === 0) {
           throw new Error('Profile not found yet');
         }
@@ -183,14 +170,9 @@ test.describe('Profile Subscription - honor Klaviyo consent', () => {
 
   test('should successfully unsubscribe a user via newsletter management page and validate via Klaviyo API', async ({ page }) => {
     const baseUrl = process.env.M2_BASE_URL;
-    const klaviyoPrivateKey = process.env.KLAVIYO_PRIVATE_KEY;
-    const klaviyoV3Url = process.env.KLAVIYO_V3_URL;
     const testEmail = generateEmail();
     const testPassword = 'Test123!@#';
 
-    if (!baseUrl || !klaviyoPrivateKey || !klaviyoV3Url) {
-      throw new Error('Required environment variables are not set');
-    }
 
     // First create an account with newsletter subscription
     await page.goto(`${baseUrl}/customer/account/create/`);
@@ -206,7 +188,7 @@ test.describe('Profile Subscription - honor Klaviyo consent', () => {
     // Wait for initial subscription to be processed
     await backOff(
       async () => {
-        const results = await checkProfileInKlaviyo(klaviyoPrivateKey, klaviyoV3Url, testEmail);
+        const results = await checkProfileInKlaviyo(testEmail);
         if (results.length === 0) {
           throw new Error('Profile not found yet');
         }
@@ -235,7 +217,7 @@ test.describe('Profile Subscription - honor Klaviyo consent', () => {
     // Use exponential backoff to check for updated profile
     const profiles = await backOff(
       async () => {
-        const results = await checkProfileInKlaviyo(klaviyoPrivateKey, klaviyoV3Url, testEmail);
+        const results = await checkProfileInKlaviyo(testEmail);
         if (results.length === 0) {
           throw new Error('Profile not found yet');
         }
@@ -282,9 +264,6 @@ test.describe('Profile Subscription - honor Klaviyo consent', () => {
 test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
     test.beforeEach(async ({ page }) => {
       const baseUrl = process.env.M2_BASE_URL;
-      if (!baseUrl) {
-        throw new Error('M2_BASE_URL environment variable is not set');
-      }
 
       try {
         // Navigate to admin dashboard
@@ -331,13 +310,7 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
 
     test('Add a profile to a list via footer form and validate via Klaviyo API', async ({ page }) => {
         const baseUrl = process.env.M2_BASE_URL;
-        const klaviyoPrivateKey = process.env.KLAVIYO_PRIVATE_KEY;
-        const klaviyoV3Url = process.env.KLAVIYO_V3_URL;
         const testEmail = generateEmail();
-
-        if (!baseUrl || !klaviyoPrivateKey || !klaviyoV3Url) {
-          throw new Error('Required environment variables are not set');
-        }
 
         // Navigate to the homepage
         await page.goto(baseUrl);
@@ -354,7 +327,7 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
         // Use exponential backoff to check for profile
         const profiles = await backOff(
           async () => {
-            const results = await checkProfileInKlaviyo(klaviyoPrivateKey, klaviyoV3Url, testEmail);
+            const results = await checkProfileInKlaviyo(testEmail);
             if (results.length === 0) {
               throw new Error('Profile not found yet');
             }
@@ -377,7 +350,7 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
         expect(profiles[0].attributes.subscriptions.email.marketing.can_receive_email_marketing).toBe(true);
 
         // Check list relationships
-        const listRelationships = await checkProfileListRelationships(klaviyoPrivateKey, klaviyoV3Url, profiles[0].id);
+        const listRelationships = await checkProfileListRelationships(profiles[0].id);
         expect(listRelationships).toBeDefined();
         expect(listRelationships.length).toBeGreaterThan(0);
         expect(listRelationships[0].type).toBe('list');
@@ -388,14 +361,9 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
 
     test('Add a profile to a list via account creation and validate via Klaviyo API', async ({ page }) => {
         const baseUrl = process.env.M2_BASE_URL;
-        const klaviyoPrivateKey = process.env.KLAVIYO_PRIVATE_KEY;
-        const klaviyoV3Url = process.env.KLAVIYO_V3_URL;
         const testEmail = generateEmail();
         const testPassword = 'Test123!@#';
 
-        if (!baseUrl || !klaviyoPrivateKey || !klaviyoV3Url) {
-          throw new Error('Required environment variables are not set');
-        }
 
         // Navigate to the account creation page
         await page.goto(`${baseUrl}/customer/account/create/`);
@@ -419,7 +387,7 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
         // Use exponential backoff to check for profile
         const profiles = await backOff(
           async () => {
-            const results = await checkProfileInKlaviyo(klaviyoPrivateKey, klaviyoV3Url, testEmail);
+            const results = await checkProfileInKlaviyo(testEmail);
             if (results.length === 0) {
               throw new Error('Profile not found yet');
             }
@@ -442,7 +410,7 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
         expect(profiles[0].attributes.subscriptions.email.marketing.can_receive_email_marketing).toBe(true);
 
         // Check list relationships
-        const listRelationships = await checkProfileListRelationships(klaviyoPrivateKey, klaviyoV3Url, profiles[0].id);
+        const listRelationships = await checkProfileListRelationships(profiles[0].id);
         expect(listRelationships).toBeDefined();
         expect(listRelationships.length).toBeGreaterThan(0);
         expect(listRelationships[0].type).toBe('list');
@@ -453,14 +421,9 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
 
     test('should successfully unsubscribe a user via newsletter management page and validate via Klaviyo API', async ({ page }) => {
         const baseUrl = process.env.M2_BASE_URL;
-        const klaviyoPrivateKey = process.env.KLAVIYO_PRIVATE_KEY;
-        const klaviyoV3Url = process.env.KLAVIYO_V3_URL;
         const testEmail = generateEmail();
         const testPassword = 'Test123!@#';
 
-        if (!baseUrl || !klaviyoPrivateKey || !klaviyoV3Url) {
-          throw new Error('Required environment variables are not set');
-        }
 
         // First create an account with newsletter subscription
         await page.goto(`${baseUrl}/customer/account/create/`);
@@ -476,7 +439,7 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
         // Wait for initial subscription to be processed
         await backOff(
           async () => {
-            const results = await checkProfileInKlaviyo(klaviyoPrivateKey, klaviyoV3Url, testEmail);
+            const results = await checkProfileInKlaviyo(testEmail);
             if (results.length === 0) {
               throw new Error('Profile not found yet');
             }
@@ -505,7 +468,7 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
         // Use exponential backoff to check for profile
         const profiles = await backOff(
           async () => {
-            const results = await checkProfileInKlaviyo(klaviyoPrivateKey, klaviyoV3Url, testEmail);
+            const results = await checkProfileInKlaviyo(testEmail);
             if (results.length === 0) {
               throw new Error('Profile not found yet');
             }
@@ -538,16 +501,11 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
 
     test('Add an existing profile to a list via footer form and validate via Klaviyo API', async ({ page }) => {
         const baseUrl = process.env.M2_BASE_URL;
-        const klaviyoPrivateKey = process.env.KLAVIYO_PRIVATE_KEY;
-        const klaviyoV3Url = process.env.KLAVIYO_V3_URL;
         const testEmail = generateEmail();
 
-        if (!baseUrl || !klaviyoPrivateKey || !klaviyoV3Url) {
-          throw new Error('Required environment variables are not set');
-        }
 
         // First create the profile in Klaviyo without any subscription info
-        await createProfileInKlaviyo(klaviyoPrivateKey, klaviyoV3Url, testEmail);
+        await createProfileInKlaviyo(testEmail);
 
         // Navigate to the homepage
         await page.goto(baseUrl);
@@ -564,7 +522,7 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
         // Use exponential backoff to check for profile
         const profiles = await backOff(
           async () => {
-            const results = await checkProfileInKlaviyo(klaviyoPrivateKey, klaviyoV3Url, testEmail);
+            const results = await checkProfileInKlaviyo(testEmail);
             if (results.length === 0) {
               throw new Error('Profile not found yet');
             }
@@ -587,7 +545,7 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
         expect(profiles[0].attributes.subscriptions.email.marketing.can_receive_email_marketing).toBe(true);
 
         // Check list relationships
-        const listRelationships = await checkProfileListRelationships(klaviyoPrivateKey, klaviyoV3Url, profiles[0].id);
+        const listRelationships = await checkProfileListRelationships(profiles[0].id);
         expect(listRelationships).toBeDefined();
         expect(listRelationships.length).toBeGreaterThan(0);
         expect(listRelationships[0].type).toBe('list');
@@ -598,17 +556,12 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
 
     test('Add an existing profile to a list via account creation and validate via Klaviyo API', async ({ page }) => {
         const baseUrl = process.env.M2_BASE_URL;
-        const klaviyoPrivateKey = process.env.KLAVIYO_PRIVATE_KEY;
-        const klaviyoV3Url = process.env.KLAVIYO_V3_URL;
         const testEmail = generateEmail();
         const testPassword = 'Test123!@#';
 
-        if (!baseUrl || !klaviyoPrivateKey || !klaviyoV3Url) {
-          throw new Error('Required environment variables are not set');
-        }
 
         // First create the profile in Klaviyo without any subscription info
-        await createProfileInKlaviyo(klaviyoPrivateKey, klaviyoV3Url, testEmail);
+        await createProfileInKlaviyo(testEmail);
 
         // Navigate to the account creation page
         await page.goto(`${baseUrl}/customer/account/create/`);
@@ -632,7 +585,7 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
         // Use exponential backoff to check for profile
         const profiles = await backOff(
           async () => {
-            const results = await checkProfileInKlaviyo(klaviyoPrivateKey, klaviyoV3Url, testEmail);
+            const results = await checkProfileInKlaviyo(testEmail);
             if (results.length === 0) {
               throw new Error('Profile not found yet');
             }
@@ -655,7 +608,7 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
         expect(profiles[0].attributes.subscriptions.email.marketing.can_receive_email_marketing).toBe(true);
 
         // Check list relationships
-        const listRelationships = await checkProfileListRelationships(klaviyoPrivateKey, klaviyoV3Url, profiles[0].id);
+        const listRelationships = await checkProfileListRelationships(profiles[0].id);
         expect(listRelationships).toBeDefined();
         expect(listRelationships.length).toBeGreaterThan(0);
         expect(listRelationships[0].type).toBe('list');

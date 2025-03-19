@@ -17,19 +17,13 @@ const { createProfileInKlaviyo, checkEvent } = require('../utils/klaviyo-api');
 test.describe('Added To Cart Event Tracking', () => {
 
     test('should create an Added To Cart event in Klaviyo when a user adds an item to their cart', async ({ page }) => {
-        test.setTimeout(420000); // 7 minutes to account for the near real-time nature of this event sync
+        test.slow(); // this test is slow, Magento 2 syncs events every 5 minutes.
         const baseUrl = process.env.M2_BASE_URL;
-        const klaviyoPrivateKey = process.env.KLAVIYO_PRIVATE_KEY;
-        const klaviyoV3Url = process.env.KLAVIYO_V3_URL;
         const klaviyoAtcMetricId = process.env.METRIC_ID_ATC;
         const testEmail = generateEmail();
 
-        if (!baseUrl || !klaviyoPrivateKey || !klaviyoV3Url || !klaviyoAtcMetricId) {
-            throw new Error('Required environment variables are not set');
-        }
-
         // Create profile in Klaviyo first
-        const profileId = await createProfileInKlaviyo(klaviyoPrivateKey, klaviyoV3Url, testEmail);
+        const profileId = await createProfileInKlaviyo(testEmail);
 
         // Navigate to a product page (using the first product from the homepage)
         await page.goto(`${baseUrl}/radiant-tee.html?utm_email=${testEmail}`);
@@ -49,7 +43,7 @@ test.describe('Added To Cart Event Tracking', () => {
         // Use exponential backoff to check for the Added To Cart event
         const events = await backOff(
             async () => {
-                const results = await checkEvent(klaviyoPrivateKey, klaviyoV3Url, profileId, klaviyoAtcMetricId);
+                const results = await checkEvent(profileId, klaviyoAtcMetricId);
                 if (results.data.length === 0) {
                     throw new Error('Added To Cart event not found yet');
                 }
