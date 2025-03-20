@@ -4,14 +4,13 @@ const Admin = require('../locators/admin');
 /**
  * Tests the Klaviyo list population in admin dropdowns. Ensures more than 10
  * lists exist to validate pagination works as expected.
- * Endpoints tested:
- * - GET /lists/ - Retrieves all lists
- * - GET /list-relationships/ - Retrieves list relationships
- * Tests the configuration of newsletter lists in the Magento admin panel
- * and validates that the lists are properly synced with Klaviyo
  *
- * @see https://developers.klaviyo.com/en/reference/get-lists
- * @see https://developers.klaviyo.com/en/reference/get-list-relationships
+ * Tests the following Klaviyo API functionality:
+ * - List retrieval and pagination in admin configuration
+ * - List synchronization between Magento and Klaviyo
+ * - List availability in newsletter and consent settings
+ *
+ * @see https://developers.klaviyo.com/en/reference/get_lists
  */
 test.describe('Newsletter Lists Configuration', () => {
   test('should display more than 10 lists in the newsletter configuration dropdown', async ({ page }) => {

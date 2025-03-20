@@ -7,15 +7,14 @@ const { createProfileInKlaviyo, checkProfileInKlaviyo, checkProfileListRelations
 test.describe.configure({ mode: 'serial' }); // This is necessary to ensure that the Klaviyo newsletter config is updated before running the tests
 
 /**
- * Tests the Klaviyo profile subscription endpoints when honor Klaviyo consent is enabled
- * Endpoints tested:
- * - POST /profiles/ - Creates a profile with SUBSCRIBED consent
- * - GET /profiles/ - Retrieves profile data to validate consent state
- * Tests various subscription methods (footer form, account creation) and unsubscription
- * to ensure proper consent state management when honor Klaviyo consent is enabled
+ * Tests the Klaviyo profile subscription functionality when honor Klaviyo consent is enabled
  *
- * @see https://developers.klaviyo.com/en/reference/create-profile
- * @see https://developers.klaviyo.com/en/reference/get-profiles
+ * Tests the following Klaviyo API functionality:
+ * - Profile creation with SUBSCRIBED consent via footer form
+ * - Profile creation with SUBSCRIBED consent via account creation
+ * - Profile consent updates via newsletter management
+ *
+ * @see https://developers.klaviyo.com/en/reference/bulk_subscribe_profiles
  */
 test.describe('Profile Subscription - honor Klaviyo consent', () => {
     test.describe.configure({ mode: 'default' });
@@ -180,17 +179,16 @@ test.describe('Profile Subscription - honor Klaviyo consent', () => {
 });
 
 /**
- * Tests the Klaviyo profile subscription and list relationship endpoints when the option to honor Klaviyo consent is disabled
- * Endpoints tested:
- * - POST /profiles/ - Creates a profile with NEVER_SUBSCRIBED consent
- * - GET /profiles/ - Retrieves profile data to validate consent state
- * - GET /profile-list-relationships/ - Validates profile is added to lists
- * Tests various subscription methods (footer form, account creation) and unsubscription
- * to ensure proper consent state management and list relationships when the option to honor Klaviyo consent is disabled
+ * Tests the Klaviyo profile subscription functionality when honor Klaviyo consent is disabled
  *
- * @see https://developers.klaviyo.com/en/reference/create-profile
- * @see https://developers.klaviyo.com/en/reference/get-profiles
- * @see https://developers.klaviyo.com/en/reference/get-profile-list-relationships
+ * Tests the following Klaviyo API functionality:
+ * - Profile creation and list addition for new subscribers
+ * - List addition for existing profiles
+ * - List removal for unsubscribers
+ *
+ * @see https://developers.klaviyo.com/en/reference/get_profiles
+ * @see https://developers.klaviyo.com/en/reference/create_profile
+ * @see https://developers.klaviyo.com/en/reference/add_profiles_to_list
  */
 test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
     test.beforeEach(async ({ page }) => {

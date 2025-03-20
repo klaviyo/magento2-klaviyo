@@ -4,15 +4,14 @@ const { createProfileInKlaviyo, checkEvent } = require('../utils/klaviyo-api');
 const Storefront = require('../locators/storefront');
 
 /**
- * Tests the Klaviyo event tracking endpoint for the "Added To Cart" event.
- * Endpoints tested:
- * - POST /profiles/ - Creates a profile for event tracking
- * - GET /events/ - Retrieves events to validate tracking
- * Tests the "Added To Cart" event tracking functionality
- * and validates that events are properly recorded in Klaviyo
+ * Tests the Klaviyo event tracking functionality
  *
- * @see https://developers.klaviyo.com/en/reference/create-profile
- * @see https://developers.klaviyo.com/en/reference/get-events
+ * Tests the following Klaviyo API functionality:
+ * - Event tracking when products are added to cart
+ * - Event properties including product details and cart information
+ * - Event association with customer profiles
+ *
+ * @see https://developers.klaviyo.com/en/reference/create_event
  */
 test.describe('Added To Cart Event Tracking', () => {
 
