@@ -14,7 +14,6 @@ const Storefront = require('../locators/storefront');
  * @see https://developers.klaviyo.com/en/reference/create_event
  */
 test.describe('Added To Cart Event Tracking', () => {
-
     test('should create an Added To Cart event in Klaviyo when a user adds an item to their cart', async ({ page }) => {
         test.slow(); // this test is slow, Magento 2 syncs events every 5 minutes.
         const klaviyoAtcMetricId = process.env.METRIC_ID_ATC;

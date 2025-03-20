@@ -25,6 +25,7 @@ M2_BASE_URL=https://www.example.com
 M2_ADMIN_USERNAME=someone@example.com
 M2_ADMIN_PASSWORD=astrongpassword
 ```
+where METRIC_ID_ATC is the metric ID for the "Added To Cart" event in Klaviyo.
 
 ## Instructions
 From this directory

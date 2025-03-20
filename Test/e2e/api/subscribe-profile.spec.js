@@ -21,161 +21,161 @@ test.describe('Profile Subscription - honor Klaviyo consent', () => {
     test.beforeEach(async ({ page }) => {
         const baseUrl = process.env.M2_BASE_URL;
         if (!baseUrl) {
-        throw new Error('M2_BASE_URL environment variable is not set');
+            throw new Error('M2_BASE_URL environment variable is not set');
         }
 
         try {
-          // Navigate to admin dashboard
-          await page.goto(`${baseUrl}/admin/admin/dashboard`);
+            // Navigate to admin dashboard
+            await page.goto(`${baseUrl}/admin/admin/dashboard`);
 
-          // Wait for the admin dashboard to be ready
-          await page.locator('.admin__menu').waitFor();
-          console.log('Page loaded');
+            // Wait for the admin dashboard to be ready
+            await page.locator('.admin__menu').waitFor();
+            console.log('Page loaded');
 
-          const admin = new Admin(page);
+            const admin = new Admin(page);
 
-          await admin.navigateToKlaviyoNewsletterConfig();
-          await admin.updateKlaviyoNewsletterConfig('Yes, use the Klaviyo settings for this list');
+            await admin.navigateToKlaviyoNewsletterConfig();
+            await admin.updateKlaviyoNewsletterConfig('Yes, use the Klaviyo settings for this list');
 
-          // Log success for debugging
-          console.log('Honor Klaviyo consent setting enabled');
+            // Log success for debugging
+            console.log('Honor Klaviyo consent setting enabled');
         } catch (error) {
-          console.error('Error updating Klaviyo newsletter config:', error);
-          throw error;
+            console.error('Error updating Klaviyo newsletter config:', error);
+            throw error;
         }
     });
 
-  test('should successfully subscribe a user via footer form and validate via Klaviyo API', async ({ page }) => {
-    const storefront = new Storefront(page);
+    test('should successfully subscribe a user via footer form and validate via Klaviyo API', async ({ page }) => {
+        const storefront = new Storefront(page);
 
-    // Navigate to the homepage and fill out the newsletter subscription form
-    await storefront.goToHomepage();
-    await storefront.fillOutNewsletterFooterForm();
+        // Navigate to the homepage and fill out the newsletter subscription form
+        await storefront.goToHomepage();
+        await storefront.fillOutNewsletterFooterForm();
 
-    // Use exponential backoff to check for profile
-    const profiles = await backOff(
-      async () => {
-        const results = await checkProfileInKlaviyo(storefront.email);
-        if (results.length === 0) {
-          throw new Error('Profile not found yet');
-        }
-        return results;
-      },
-      {
-        numOfAttempts: 10,
-        retry: (error, attemptNumber) => {
-          console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
-          return true;
-        }
-      }
-    );
+        // Use exponential backoff to check for profile
+        const profiles = await backOff(
+            async () => {
+                const results = await checkProfileInKlaviyo(storefront.email);
+                if (results.length === 0) {
+                    throw new Error('Profile not found yet');
+                }
+                return results;
+            },
+            {
+                numOfAttempts: 10,
+                retry: (error, attemptNumber) => {
+                    console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
+                    return true;
+                }
+            }
+        );
 
-    // Assert that the profile exists and is subscribed
-    expect(profiles).toBeDefined();
-    expect(profiles.length).toBe(1);
-    expect(profiles[0].attributes.email).toBe(storefront.email);
-    expect(profiles[0].attributes.subscriptions.email.marketing.consent).toBe('SUBSCRIBED');
+        // Assert that the profile exists and is subscribed
+        expect(profiles).toBeDefined();
+        expect(profiles.length).toBe(1);
+        expect(profiles[0].attributes.email).toBe(storefront.email);
+        expect(profiles[0].attributes.subscriptions.email.marketing.consent).toBe('SUBSCRIBED');
 
-    // Log success for debugging
-    console.log(`Successfully subscribed ${storefront.email} to newsletter`);
-  });
+        // Log success for debugging
+        console.log(`Successfully subscribed ${storefront.email} to newsletter`);
+    });
 
-  test('should successfully subscribe a user via account creation page and validate via Klaviyo API', async ({ page }) => {
-    const storefront = new Storefront(page);
-    await storefront.goToAccountCreationPage();
-    await storefront.fillOutAccountCreationForm();
-    await storefront.checkNewsletterSubscriptionCheckbox();
-    await storefront.submitAccountCreationForm();
+    test('should successfully subscribe a user via account creation page and validate via Klaviyo API', async ({ page }) => {
+        const storefront = new Storefront(page);
+        await storefront.goToAccountCreationPage();
+        await storefront.fillOutAccountCreationForm();
+        await storefront.checkNewsletterSubscriptionCheckbox();
+        await storefront.submitAccountCreationForm();
 
-    // Use exponential backoff to check for profile
-    const profiles = await backOff(
-      async () => {
-        const results = await checkProfileInKlaviyo(storefront.email);
-        if (results.length === 0) {
-          throw new Error('Profile not found yet');
-        }
-        return results;
-      },
-      {
-        numOfAttempts: 10,
-        retry: (error, attemptNumber)  => {
-          console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
-          return true;
-        }
-      }
-    );
+        // Use exponential backoff to check for profile
+        const profiles = await backOff(
+            async () => {
+                const results = await checkProfileInKlaviyo(storefront.email);
+                if (results.length === 0) {
+                    throw new Error('Profile not found yet');
+                }
+                return results;
+            },
+            {
+                numOfAttempts: 10,
+                retry: (error, attemptNumber) => {
+                    console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
+                    return true;
+                }
+            }
+        );
 
-    // Assert that the profile exists and is subscribed
-    expect(profiles).toBeDefined();
-    expect(profiles.length).toBe(1);
-    expect(profiles[0].attributes.email).toBe(storefront.email);
-    expect(profiles[0].attributes.subscriptions.email.marketing.consent).toBe('SUBSCRIBED');
-    expect(profiles[0].attributes.subscriptions.email.marketing.can_receive_email_marketing).toBe(true);
-    // Log success for debugging
-    console.log(`Successfully subscribed ${storefront.email} to newsletter via account creation`);
-  });
+        // Assert that the profile exists and is subscribed
+        expect(profiles).toBeDefined();
+        expect(profiles.length).toBe(1);
+        expect(profiles[0].attributes.email).toBe(storefront.email);
+        expect(profiles[0].attributes.subscriptions.email.marketing.consent).toBe('SUBSCRIBED');
+        expect(profiles[0].attributes.subscriptions.email.marketing.can_receive_email_marketing).toBe(true);
+        // Log success for debugging
+        console.log(`Successfully subscribed ${storefront.email} to newsletter via account creation`);
+    });
 
-  test('should successfully unsubscribe a user via newsletter management page and validate via Klaviyo API', async ({ page }) => {
-    const storefront = new Storefront(page);
+    test('should successfully unsubscribe a user via newsletter management page and validate via Klaviyo API', async ({ page }) => {
+        const storefront = new Storefront(page);
 
-    // First create an account with newsletter subscription
-    await storefront.goToAccountCreationPage();
-    await storefront.fillOutAccountCreationForm();
-    await storefront.checkNewsletterSubscriptionCheckbox();
-    await storefront.submitAccountCreationForm();
+        // First create an account with newsletter subscription
+        await storefront.goToAccountCreationPage();
+        await storefront.fillOutAccountCreationForm();
+        await storefront.checkNewsletterSubscriptionCheckbox();
+        await storefront.submitAccountCreationForm();
 
-    // Wait for initial subscription to be processed
-    await backOff(
-      async () => {
-        const results = await checkProfileInKlaviyo(storefront.email);
-        if (results.length === 0) {
-          throw new Error('Profile not found yet');
-        }
-      },
-      {
-        numOfAttempts: 10,
-        retry: (error, attemptNumber) => {
-          console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
-          return true;
-        }
-      }
-    );
+        // Wait for initial subscription to be processed
+        await backOff(
+            async () => {
+                const results = await checkProfileInKlaviyo(storefront.email);
+                if (results.length === 0) {
+                    throw new Error('Profile not found yet');
+                }
+            },
+            {
+                numOfAttempts: 10,
+                retry: (error, attemptNumber) => {
+                    console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
+                    return true;
+                }
+            }
+        );
 
-    // Navigate to newsletter management page
-    await storefront.goToAccountPageAndUnsubscribeFromNewsletter();
+        // Navigate to newsletter management page
+        await storefront.goToAccountPageAndUnsubscribeFromNewsletter();
 
-    // Use exponential backoff to check for updated profile
-    const profiles = await backOff(
-      async () => {
-        const results = await checkProfileInKlaviyo(storefront.email);
-        if (results.length === 0) {
-          throw new Error('Profile not found yet');
-        }
-        const profile = results[0];
-        // Check if email marketing subscription is unsubscribed
-        if (profile.attributes.subscriptions?.email?.marketing?.consent !== 'UNSUBSCRIBED') {
-          throw new Error('Profile still has email marketing consent');
-        }
-        return results;
-      },
-      {
-        numOfAttempts: 10,
-        retry: (error, attemptNumber) => {
-          console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
-          return true;
-        }
-      }
-    );
+        // Use exponential backoff to check for updated profile
+        const profiles = await backOff(
+            async () => {
+                const results = await checkProfileInKlaviyo(storefront.email);
+                if (results.length === 0) {
+                    throw new Error('Profile not found yet');
+                }
+                const profile = results[0];
+                // Check if email marketing subscription is unsubscribed
+                if (profile.attributes.subscriptions?.email?.marketing?.consent !== 'UNSUBSCRIBED') {
+                    throw new Error('Profile still has email marketing consent');
+                }
+                return results;
+            },
+            {
+                numOfAttempts: 10,
+                retry: (error, attemptNumber) => {
+                    console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
+                    return true;
+                }
+            }
+        );
 
-    // Assert that the profile exists and is unsubscribed
-    expect(profiles).toBeDefined();
-    expect(profiles.length).toBe(1);
-    expect(profiles[0].attributes.email).toBe(storefront.email);
-    expect(profiles[0].attributes.subscriptions.email.marketing.consent).toBe('UNSUBSCRIBED');
+        // Assert that the profile exists and is unsubscribed
+        expect(profiles).toBeDefined();
+        expect(profiles.length).toBe(1);
+        expect(profiles[0].attributes.email).toBe(storefront.email);
+        expect(profiles[0].attributes.subscriptions.email.marketing.consent).toBe('UNSUBSCRIBED');
 
-    // Log success for debugging
-    console.log(`Successfully unsubscribed ${storefront.email} from newsletter via newsletter management page`);
-  });
+        // Log success for debugging
+        console.log(`Successfully unsubscribed ${storefront.email} from newsletter via newsletter management page`);
+    });
 });
 
 /**
@@ -192,29 +192,29 @@ test.describe('Profile Subscription - honor Klaviyo consent', () => {
  */
 test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
     test.beforeEach(async ({ page }) => {
-      const baseUrl = process.env.M2_BASE_URL;
+        const baseUrl = process.env.M2_BASE_URL;
 
-      try {
-        // Navigate to admin dashboard
-        await page.goto(`${baseUrl}/admin/admin/dashboard`);
+        try {
+            // Navigate to admin dashboard
+            await page.goto(`${baseUrl}/admin/admin/dashboard`);
 
-        // Wait for the admin dashboard to be ready
-        await page.locator('.admin__menu').waitFor();
-        console.log('Page loaded');
+            // Wait for the admin dashboard to be ready
+            await page.locator('.admin__menu').waitFor();
+            console.log('Page loaded');
 
-        // Initialize Admin class
-        const admin = new Admin(page);
+            // Initialize Admin class
+            const admin = new Admin(page);
 
-        // Navigate to Klaviyo Newsletter configuration using Admin class method
-        await admin.navigateToKlaviyoNewsletterConfig();
-        await admin.updateKlaviyoNewsletterConfig('No, do not send opt-in emails from Klaviyo');
+            // Navigate to Klaviyo Newsletter configuration using Admin class method
+            await admin.navigateToKlaviyoNewsletterConfig();
+            await admin.updateKlaviyoNewsletterConfig('No, do not send opt-in emails from Klaviyo');
 
-        // Log success for debugging
-        console.log('Honor Klaviyo consent setting disabled');
-      } catch (error) {
-        console.error('Error updating Klaviyo newsletter config:', error);
-        throw error;
-      }
+            // Log success for debugging
+            console.log('Honor Klaviyo consent setting disabled');
+        } catch (error) {
+            console.error('Error updating Klaviyo newsletter config:', error);
+            throw error;
+        }
     });
 
     test('Add a profile to a list via footer form and validate via Klaviyo API', async ({ page }) => {
@@ -226,20 +226,20 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
 
         // Use exponential backoff to check for profile
         const profiles = await backOff(
-          async () => {
-            const results = await checkProfileInKlaviyo(storefront.email);
-            if (results.length === 0) {
-              throw new Error('Profile not found yet');
+            async () => {
+                const results = await checkProfileInKlaviyo(storefront.email);
+                if (results.length === 0) {
+                    throw new Error('Profile not found yet');
+                }
+                return results;
+            },
+            {
+                numOfAttempts: 10,
+                retry: (error, attemptNumber) => {
+                    console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
+                    return true;
+                }
             }
-            return results;
-          },
-          {
-            numOfAttempts: 10,
-            retry: (error, attemptNumber) => {
-              console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
-              return true;
-            }
-          }
         );
 
         // Assert that the profile exists and is subscribed
@@ -266,23 +266,22 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
         await storefront.checkNewsletterSubscriptionCheckbox();
         await storefront.submitAccountCreationForm();
 
-
         // Use exponential backoff to check for profile
         const profiles = await backOff(
-          async () => {
-            const results = await checkProfileInKlaviyo(storefront.email);
-            if (results.length === 0) {
-              throw new Error('Profile not found yet');
+            async () => {
+                const results = await checkProfileInKlaviyo(storefront.email);
+                if (results.length === 0) {
+                    throw new Error('Profile not found yet');
+                }
+                return results;
+            },
+            {
+                numOfAttempts: 10,
+                retry: (error, attemptNumber) => {
+                    console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
+                    return true;
+                }
             }
-            return results;
-          },
-          {
-            numOfAttempts: 10,
-            retry: (error, attemptNumber) => {
-              console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
-              return true;
-            }
-          }
         );
 
         // Assert that the profile exists and is never subscribed
@@ -313,19 +312,19 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
 
         // Wait for initial subscription to be processed
         await backOff(
-          async () => {
-            const results = await checkProfileInKlaviyo(storefront.email);
-            if (results.length === 0) {
-              throw new Error('Profile not found yet');
+            async () => {
+                const results = await checkProfileInKlaviyo(storefront.email);
+                if (results.length === 0) {
+                    throw new Error('Profile not found yet');
+                }
+            },
+            {
+                numOfAttempts: 10,
+                retry: (error, attemptNumber) => {
+                    console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
+                    return true;
+                }
             }
-          },
-          {
-            numOfAttempts: 10,
-            retry: (error, attemptNumber) => {
-              console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
-              return true;
-            }
-          }
         );
 
         // Navigate to account page and unsubscribe from newsletter
@@ -333,25 +332,25 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
 
         // Use exponential backoff to check for profile
         const profiles = await backOff(
-          async () => {
-            const results = await checkProfileInKlaviyo(storefront.email);
-            if (results.length === 0) {
-              throw new Error('Profile not found yet');
+            async () => {
+                const results = await checkProfileInKlaviyo(storefront.email);
+                if (results.length === 0) {
+                    throw new Error('Profile not found yet');
+                }
+                const profile = results[0];
+                // Check if email marketing subscription is unsubscribed
+                if (profile.attributes.subscriptions?.email?.marketing?.consent !== 'UNSUBSCRIBED') {
+                    throw new Error('Profile still has email marketing consent');
+                }
+                return results;
+            },
+            {
+                numOfAttempts: 10,
+                retry: (error, attemptNumber) => {
+                    console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
+                    return true;
+                }
             }
-            const profile = results[0];
-            // Check if email marketing subscription is unsubscribed
-            if (profile.attributes.subscriptions?.email?.marketing?.consent !== 'UNSUBSCRIBED') {
-              throw new Error('Profile still has email marketing consent');
-            }
-            return results;
-          },
-          {
-            numOfAttempts: 10,
-            retry: (error, attemptNumber) => {
-              console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
-              return true;
-            }
-          }
         );
 
         // Assert that the profile exists and is unsubscribed
@@ -377,20 +376,20 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
 
         // Use exponential backoff to check for profile
         const profiles = await backOff(
-          async () => {
-            const results = await checkProfileInKlaviyo(storefront.email);
-            if (results.length === 0) {
-              throw new Error('Profile not found yet');
+            async () => {
+                const results = await checkProfileInKlaviyo(storefront.email);
+                if (results.length === 0) {
+                    throw new Error('Profile not found yet');
+                }
+                return results;
+            },
+            {
+                numOfAttempts: 10,
+                retry: (error, attemptNumber) => {
+                    console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
+                    return true;
+                }
             }
-            return results;
-          },
-          {
-            numOfAttempts: 10,
-            retry: (error, attemptNumber) => {
-              console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
-              return true;
-            }
-          }
         );
 
         // Assert that the profile exists and is subscribed
@@ -424,20 +423,20 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
 
         // Use exponential backoff to check for profile
         const profiles = await backOff(
-          async () => {
-            const results = await checkProfileInKlaviyo(storefront.email);
-            if (results.length === 0) {
-              throw new Error('Profile not found yet');
+            async () => {
+                const results = await checkProfileInKlaviyo(storefront.email);
+                if (results.length === 0) {
+                    throw new Error('Profile not found yet');
+                }
+                return results;
+            },
+            {
+                numOfAttempts: 10,
+                retry: (error, attemptNumber) => {
+                    console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
+                    return true;
+                }
             }
-            return results;
-          },
-          {
-            numOfAttempts: 10,
-            retry: (error, attemptNumber) => {
-              console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
-              return true;
-            }
-          }
         );
 
         // Assert that the profile exists and is subscribed

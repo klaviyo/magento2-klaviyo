@@ -13,53 +13,53 @@ const Admin = require('../locators/admin');
  * @see https://developers.klaviyo.com/en/reference/get_lists
  */
 test.describe('Newsletter Lists Configuration', () => {
-  test('should display more than 10 lists in the newsletter configuration dropdown', async ({ page }) => {
-    const baseUrl = process.env.M2_BASE_URL;
+    test('should display more than 10 lists in the newsletter configuration dropdown', async ({ page }) => {
+        const baseUrl = process.env.M2_BASE_URL;
 
-    await page.goto(`${baseUrl}/admin/admin/dashboard`);
+        await page.goto(`${baseUrl}/admin/admin/dashboard`);
 
-    // Initialize Admin class
-    const admin = new Admin(page);
+        // Initialize Admin class
+        const admin = new Admin(page);
 
-    // Navigate to Stores > Configuration > Klaviyo > Newsletter
-    await admin.navigateToKlaviyoNewsletterConfig();
+        // Navigate to Stores > Configuration > Klaviyo > Newsletter
+        await admin.navigateToKlaviyoNewsletterConfig();
 
-    // Wait for the page to load and the lists dropdown to be visible
-    await page.locator('#klaviyo_reclaim_newsletter_newsletter_newsletter').waitFor({ state: 'visible', timeout: 5000 });
+        // Wait for the page to load and the lists dropdown to be visible
+        await page.locator('#klaviyo_reclaim_newsletter_newsletter_newsletter').waitFor({ state: 'visible', timeout: 5000 });
 
-    // Get all options from the dropdown
-    const options = await page.locator('#klaviyo_reclaim_newsletter_newsletter_newsletter option').all();
+        // Get all options from the dropdown
+        const options = await page.locator('#klaviyo_reclaim_newsletter_newsletter_newsletter option').all();
 
-    // Assert that there are more than 10 lists
-    expect(options.length).toBeGreaterThan(10);
+        // Assert that there are more than 10 lists
+        expect(options.length).toBeGreaterThan(10);
 
-    // Log the number of lists found for debugging
-    console.log(`Found ${options.length} newsletter lists`);
-  });
+        // Log the number of lists found for debugging
+        console.log(`Found ${options.length} newsletter lists`);
+    });
 
-  test('should display more than 10 lists in the consent at checkout configuration dropdown', async ({ page }) => {
-    const baseUrl = process.env.M2_BASE_URL;
+    test('should display more than 10 lists in the consent at checkout configuration dropdown', async ({ page }) => {
+        const baseUrl = process.env.M2_BASE_URL;
 
-    await page.goto(`${baseUrl}/admin/admin/dashboard`);
-    // Initialize Admin class
-    const admin = new Admin(page);
+        await page.goto(`${baseUrl}/admin/admin/dashboard`);
+        // Initialize Admin class
+        const admin = new Admin(page);
 
-    // Navigate to Stores > Configuration > Klaviyo > Consent at Checkout
-    await admin.navigateToKlaviyoConsentAtCheckoutConfig();
+        // Navigate to Stores > Configuration > Klaviyo > Consent at Checkout
+        await admin.navigateToKlaviyoConsentAtCheckoutConfig();
 
-    // Wait for the page to load and the lists dropdowns to be visible
-    await page.locator('#klaviyo_reclaim_consent_at_checkout_email_consent_list_id').waitFor({ state: 'visible', timeout: 5000 });
-    await page.locator('#klaviyo_reclaim_consent_at_checkout_sms_consent_list_id').waitFor({ state: 'visible', timeout: 5000 });
+        // Wait for the page to load and the lists dropdowns to be visible
+        await page.locator('#klaviyo_reclaim_consent_at_checkout_email_consent_list_id').waitFor({ state: 'visible', timeout: 5000 });
+        await page.locator('#klaviyo_reclaim_consent_at_checkout_sms_consent_list_id').waitFor({ state: 'visible', timeout: 5000 });
 
-    // Get all options from the dropdowns
-    const emailOptions = await page.locator('#klaviyo_reclaim_consent_at_checkout_email_consent_list_id option').all();
-    const smsOptions = await page.locator('#klaviyo_reclaim_consent_at_checkout_sms_consent_list_id option').all();
+        // Get all options from the dropdowns
+        const emailOptions = await page.locator('#klaviyo_reclaim_consent_at_checkout_email_consent_list_id option').all();
+        const smsOptions = await page.locator('#klaviyo_reclaim_consent_at_checkout_sms_consent_list_id option').all();
 
-    // Assert that there are more than 10 lists in each dropdown
-    expect(emailOptions.length).toBeGreaterThan(10);
-    expect(smsOptions.length).toBeGreaterThan(10);
+        // Assert that there are more than 10 lists in each dropdown
+        expect(emailOptions.length).toBeGreaterThan(10);
+        expect(smsOptions.length).toBeGreaterThan(10);
 
-    // Log the number of lists found for debugging
-    console.log(`Found ${emailOptions.length} consent at checkout lists`);
-  });
+        // Log the number of lists found for debugging
+        console.log(`Found ${emailOptions.length} consent at checkout lists`);
+    });
 });
