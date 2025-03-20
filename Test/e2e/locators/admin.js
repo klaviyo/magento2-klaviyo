@@ -23,7 +23,7 @@ class Admin {
     this.klaviyoConsentAtCheckoutLink = this.klaviyoConfigMenu.locator("//span[text()='Consent at Checkout']");
   }
 
-  async navigateToKlaviyoNewsletterConfig(page) {
+  async navigateToKlaviyoNewsletterConfig() {
     await this.page.waitForLoadState();
     await this.storesLink.click();
     await this.page.waitForLoadState();
@@ -34,7 +34,30 @@ class Admin {
     await this.page.waitForLoadState();
   }
 
-  async navigateToKlaviyoConsentAtCheckoutConfig(page) {
+  async updateKlaviyoNewsletterConfig(desiredOptionLabel) {
+    const honorKlaviyoConsentValue = await this.page.getByLabel(desiredOptionLabel).isChecked();
+
+    // Enable honor Klaviyo consent setting
+    if (!honorKlaviyoConsentValue) {
+        await this.page.getByLabel(desiredOptionLabel).check();
+
+        // Wait for the checkbox to be fully checked
+        await this.page.waitForTimeout(1000);
+
+        // Wait for save button to be visible and clickable
+        const saveButton = this.page.getByRole('button', { name: 'Save Config' });
+        await saveButton.waitFor({ state: 'visible', timeout: 10000 });
+
+        // Try to click with a longer timeout
+        await saveButton.click();
+
+        // Wait for the click to register and success message
+        await this.page.locator('.message-success').waitFor();
+        await this.page.getByLabel(desiredOptionLabel).waitFor();
+    }
+  }
+
+  async navigateToKlaviyoConsentAtCheckoutConfig() {
     await this.page.waitForLoadState();
     await this.storesLink.click();
     await this.configurationLink.click();

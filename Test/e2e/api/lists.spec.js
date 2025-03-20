@@ -1,12 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const dotenv = require('dotenv');
-const path = require('path');
 const Admin = require('../locators/admin');
-
-// Load environment variables
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
-
-test.use({ storageState: 'playwright/.auth/admin.json' });
 
 /**
  * Tests the Klaviyo list population in admin dropdowns. Ensures more than 10
@@ -30,7 +23,7 @@ test.describe('Newsletter Lists Configuration', () => {
     const admin = new Admin(page);
 
     // Navigate to Stores > Configuration > Klaviyo > Newsletter
-    await admin.navigateToKlaviyoNewsletterConfig(page);
+    await admin.navigateToKlaviyoNewsletterConfig();
 
     // Wait for the page to load and the lists dropdown to be visible
     await page.locator('#klaviyo_reclaim_newsletter_newsletter_newsletter').waitFor({ state: 'visible', timeout: 5000 });
@@ -53,7 +46,7 @@ test.describe('Newsletter Lists Configuration', () => {
     const admin = new Admin(page);
 
     // Navigate to Stores > Configuration > Klaviyo > Consent at Checkout
-    await admin.navigateToKlaviyoConsentAtCheckoutConfig(page);
+    await admin.navigateToKlaviyoConsentAtCheckoutConfig();
 
     // Wait for the page to load and the lists dropdowns to be visible
     await page.locator('#klaviyo_reclaim_consent_at_checkout_email_consent_list_id').waitFor({ state: 'visible', timeout: 5000 });

@@ -1,15 +1,10 @@
 const { test, expect } = require('@playwright/test');
-const dotenv = require('dotenv');
-const path = require('path');
 const { backOff } = require('exponential-backoff');
-const { generateEmail } = require('../utils/email');
 const Admin = require('../locators/admin');
+const Storefront = require('../locators/storefront');
 const { createProfileInKlaviyo, checkProfileInKlaviyo, checkProfileListRelationships } = require('../utils/klaviyo-api');
 
-// Load environment variables
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
-
-test.describe.configure({ mode: 'serial' });
+test.describe.configure({ mode: 'serial' }); // This is necessary to ensure that the Klaviyo newsletter config is updated before running the tests
 
 /**
  * Tests the Klaviyo profile subscription endpoints when honor Klaviyo consent is enabled
@@ -31,67 +26,37 @@ test.describe('Profile Subscription - honor Klaviyo consent', () => {
         }
 
         try {
-        // Navigate to admin dashboard
-        await page.goto(`${baseUrl}/admin/admin/dashboard`);
+          // Navigate to admin dashboard
+          await page.goto(`${baseUrl}/admin/admin/dashboard`);
 
-        // Wait for the admin dashboard to be ready
-        await page.locator('.admin__menu').waitFor();
-        console.log('Page loaded');
+          // Wait for the admin dashboard to be ready
+          await page.locator('.admin__menu').waitFor();
+          console.log('Page loaded');
 
-        // Initialize Admin class
-        const admin = new Admin(page);
+          const admin = new Admin(page);
 
-        // Navigate to Klaviyo Newsletter configuration using Admin class method
-        await admin.navigateToKlaviyoNewsletterConfig(admin.page);
+          await admin.navigateToKlaviyoNewsletterConfig();
+          await admin.updateKlaviyoNewsletterConfig('Yes, use the Klaviyo settings for this list');
 
-        const honorKlaviyoConsentValue = await page.getByLabel('Yes, use the Klaviyo settings for this list').isChecked();
-        console.log('Honor Klaviyo consent value:', honorKlaviyoConsentValue);
-        // Enable honor Klaviyo consent setting
-        if (!honorKlaviyoConsentValue) {
-            await page.getByLabel('Yes, use the Klaviyo settings for this list').check();
-
-            // Wait for the checkbox to be fully checked
-            await page.waitForTimeout(1000);
-
-            // Wait for save button to be visible and clickable
-            const saveButton = page.getByRole('button', { name: 'Save Config' });
-            await saveButton.waitFor({ state: 'visible', timeout: 5000 });
-
-            // Try to click with a longer timeout
-            await saveButton.click({ timeout: 5000 });
-
-            // Wait for the click to register and success message
-            await page.locator('.message-success').waitFor();
-        }
-
-        // Log success for debugging
-        console.log('Honor Klaviyo consent setting enabled');
+          // Log success for debugging
+          console.log('Honor Klaviyo consent setting enabled');
         } catch (error) {
-        console.error('Error in beforeEach:', error);
-        throw error;
+          console.error('Error updating Klaviyo newsletter config:', error);
+          throw error;
         }
     });
 
   test('should successfully subscribe a user via footer form and validate via Klaviyo API', async ({ page }) => {
-    const baseUrl = process.env.M2_BASE_URL;
-    const testEmail = generateEmail();
+    const storefront = new Storefront(page);
 
-    // Navigate to the homepage
-    await page.goto(baseUrl);
-
-    // Fill in the newsletter subscription form in the footer
-    await page.fill('#newsletter', testEmail);
-
-    // Click the subscribe button
-    await page.click('button[title="Subscribe"]');
-
-    // Wait for success message
-    await page.locator('.message-success').waitFor();
+    // Navigate to the homepage and fill out the newsletter subscription form
+    await storefront.goToHomepage();
+    await storefront.fillOutNewsletterFooterForm();
 
     // Use exponential backoff to check for profile
     const profiles = await backOff(
       async () => {
-        const results = await checkProfileInKlaviyo(testEmail);
+        const results = await checkProfileInKlaviyo(storefront.email);
         if (results.length === 0) {
           throw new Error('Profile not found yet');
         }
@@ -109,41 +74,24 @@ test.describe('Profile Subscription - honor Klaviyo consent', () => {
     // Assert that the profile exists and is subscribed
     expect(profiles).toBeDefined();
     expect(profiles.length).toBe(1);
-    expect(profiles[0].attributes.email).toBe(testEmail);
+    expect(profiles[0].attributes.email).toBe(storefront.email);
     expect(profiles[0].attributes.subscriptions.email.marketing.consent).toBe('SUBSCRIBED');
 
     // Log success for debugging
-    console.log(`Successfully subscribed ${testEmail} to newsletter`);
+    console.log(`Successfully subscribed ${storefront.email} to newsletter`);
   });
 
   test('should successfully subscribe a user via account creation page and validate via Klaviyo API', async ({ page }) => {
-    const baseUrl = process.env.M2_BASE_URL;
-    const testEmail = generateEmail();
-    const testPassword = 'Test123!@#';
-
-    // Navigate to the account creation page
-    await page.goto(`${baseUrl}/customer/account/create/`);
-
-    // Fill in the registration form
-    await page.fill('#firstname', 'Test');
-    await page.fill('#lastname', 'User');
-    await page.fill('#email_address', testEmail);
-    await page.fill('#password', testPassword);
-    await page.fill('#password-confirmation', testPassword);
-
-    // Check the newsletter subscription checkbox
-    await page.check('#is_subscribed');
-
-    // Submit the form
-    await page.click('button[title="Create an Account"]');
-
-    // Wait for successful registration
-    await page.locator('.message-success').waitFor();
+    const storefront = new Storefront(page);
+    await storefront.goToAccountCreationPage();
+    await storefront.fillOutAccountCreationForm();
+    await storefront.checkNewsletterSubscriptionCheckbox();
+    await storefront.submitAccountCreationForm();
 
     // Use exponential backoff to check for profile
     const profiles = await backOff(
       async () => {
-        const results = await checkProfileInKlaviyo(testEmail);
+        const results = await checkProfileInKlaviyo(storefront.email);
         if (results.length === 0) {
           throw new Error('Profile not found yet');
         }
@@ -161,34 +109,26 @@ test.describe('Profile Subscription - honor Klaviyo consent', () => {
     // Assert that the profile exists and is subscribed
     expect(profiles).toBeDefined();
     expect(profiles.length).toBe(1);
-    expect(profiles[0].attributes.email).toBe(testEmail);
+    expect(profiles[0].attributes.email).toBe(storefront.email);
     expect(profiles[0].attributes.subscriptions.email.marketing.consent).toBe('SUBSCRIBED');
     expect(profiles[0].attributes.subscriptions.email.marketing.can_receive_email_marketing).toBe(true);
     // Log success for debugging
-    console.log(`Successfully subscribed ${testEmail} to newsletter via account creation`);
+    console.log(`Successfully subscribed ${storefront.email} to newsletter via account creation`);
   });
 
   test('should successfully unsubscribe a user via newsletter management page and validate via Klaviyo API', async ({ page }) => {
-    const baseUrl = process.env.M2_BASE_URL;
-    const testEmail = generateEmail();
-    const testPassword = 'Test123!@#';
-
+    const storefront = new Storefront(page);
 
     // First create an account with newsletter subscription
-    await page.goto(`${baseUrl}/customer/account/create/`);
-    await page.fill('#firstname', 'Test');
-    await page.fill('#lastname', 'User');
-    await page.fill('#email_address', testEmail);
-    await page.fill('#password', testPassword);
-    await page.fill('#password-confirmation', testPassword);
-    await page.check('#is_subscribed');
-    await page.click('button[title="Create an Account"]');
-    await page.locator('.message-success').waitFor();
+    await storefront.goToAccountCreationPage();
+    await storefront.fillOutAccountCreationForm();
+    await storefront.checkNewsletterSubscriptionCheckbox();
+    await storefront.submitAccountCreationForm();
 
     // Wait for initial subscription to be processed
     await backOff(
       async () => {
-        const results = await checkProfileInKlaviyo(testEmail);
+        const results = await checkProfileInKlaviyo(storefront.email);
         if (results.length === 0) {
           throw new Error('Profile not found yet');
         }
@@ -203,21 +143,12 @@ test.describe('Profile Subscription - honor Klaviyo consent', () => {
     );
 
     // Navigate to newsletter management page
-    await page.goto(`${baseUrl}/newsletter/manage/`);
-
-    // Uncheck the newsletter subscription checkbox
-    await page.uncheck('#subscription');
-
-    // Save the changes
-    await page.click('button[title="Save"]');
-
-    // Wait for success message
-    await page.locator('.message-success').waitFor();
+    await storefront.goToAccountPageAndUnsubscribeFromNewsletter();
 
     // Use exponential backoff to check for updated profile
     const profiles = await backOff(
       async () => {
-        const results = await checkProfileInKlaviyo(testEmail);
+        const results = await checkProfileInKlaviyo(storefront.email);
         if (results.length === 0) {
           throw new Error('Profile not found yet');
         }
@@ -240,11 +171,11 @@ test.describe('Profile Subscription - honor Klaviyo consent', () => {
     // Assert that the profile exists and is unsubscribed
     expect(profiles).toBeDefined();
     expect(profiles.length).toBe(1);
-    expect(profiles[0].attributes.email).toBe(testEmail);
+    expect(profiles[0].attributes.email).toBe(storefront.email);
     expect(profiles[0].attributes.subscriptions.email.marketing.consent).toBe('UNSUBSCRIBED');
 
     // Log success for debugging
-    console.log(`Successfully unsubscribed ${testEmail} from newsletter via newsletter management page`);
+    console.log(`Successfully unsubscribed ${storefront.email} from newsletter via newsletter management page`);
   });
 });
 
@@ -277,57 +208,28 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
         const admin = new Admin(page);
 
         // Navigate to Klaviyo Newsletter configuration using Admin class method
-        await admin.navigateToKlaviyoNewsletterConfig(admin.page);
-
-        const honorKlaviyoConsentValue = await page.getByLabel('Yes, use the Klaviyo settings for this list').isChecked();
-        console.log('Honor Klaviyo consent value:', honorKlaviyoConsentValue);
-        // Enable honor Klaviyo consent setting
-        if (honorKlaviyoConsentValue) {
-          await page.getByLabel('No, do not send opt-in emails from Klaviyo').check();
-
-          // Wait for the checkbox to be fully checked
-          await page.waitForTimeout(1000);
-
-          // Wait for save button to be visible and clickable
-          const saveButton = page.getByRole('button', { name: 'Save Config' });
-          await saveButton.waitFor({ state: 'visible', timeout: 5000 });
-
-          // Try to click with a longer timeout
-          await saveButton.click({ timeout: 5000 });
-
-          // Wait for the click to register and success message
-          await page.locator('.message-success').waitFor();
-          await page.getByLabel('Yes, use the Klaviyo settings for this list').waitFor();
-        }
+        await admin.navigateToKlaviyoNewsletterConfig();
+        await admin.updateKlaviyoNewsletterConfig('No, do not send opt-in emails from Klaviyo');
 
         // Log success for debugging
         console.log('Honor Klaviyo consent setting disabled');
       } catch (error) {
-        console.error('Error in beforeEach:', error);
+        console.error('Error updating Klaviyo newsletter config:', error);
         throw error;
       }
     });
 
     test('Add a profile to a list via footer form and validate via Klaviyo API', async ({ page }) => {
-        const baseUrl = process.env.M2_BASE_URL;
-        const testEmail = generateEmail();
+        const storefront = new Storefront(page);
 
-        // Navigate to the homepage
-        await page.goto(baseUrl);
-
-        // Fill in the newsletter subscription form in the footer
-        await page.fill('#newsletter', testEmail);
-
-        // Click the subscribe button
-        await page.click('button[title="Subscribe"]');
-
-        // Wait for success message
-        await page.locator('.message-success').waitFor();
+        // Navigate to the homepage and fill out the newsletter subscription form
+        await storefront.goToHomepage();
+        await storefront.fillOutNewsletterFooterForm();
 
         // Use exponential backoff to check for profile
         const profiles = await backOff(
           async () => {
-            const results = await checkProfileInKlaviyo(testEmail);
+            const results = await checkProfileInKlaviyo(storefront.email);
             if (results.length === 0) {
               throw new Error('Profile not found yet');
             }
@@ -345,7 +247,7 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
         // Assert that the profile exists and is subscribed
         expect(profiles).toBeDefined();
         expect(profiles.length).toBe(1);
-        expect(profiles[0].attributes.email).toBe(testEmail);
+        expect(profiles[0].attributes.email).toBe(storefront.email);
         expect(profiles[0].attributes.subscriptions.email.marketing.consent).toBe('NEVER_SUBSCRIBED');
         expect(profiles[0].attributes.subscriptions.email.marketing.can_receive_email_marketing).toBe(true);
 
@@ -356,38 +258,21 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
         expect(listRelationships[0].type).toBe('list');
 
         // Log success for debugging
-        console.log(`Successfully added profile ${testEmail} to list via footer form`);
+        console.log(`Successfully added profile ${storefront.email} to list via footer form`);
     });
 
     test('Add a profile to a list via account creation and validate via Klaviyo API', async ({ page }) => {
-        const baseUrl = process.env.M2_BASE_URL;
-        const testEmail = generateEmail();
-        const testPassword = 'Test123!@#';
+        const storefront = new Storefront(page);
+        await storefront.goToAccountCreationPage();
+        await storefront.fillOutAccountCreationForm();
+        await storefront.checkNewsletterSubscriptionCheckbox();
+        await storefront.submitAccountCreationForm();
 
-
-        // Navigate to the account creation page
-        await page.goto(`${baseUrl}/customer/account/create/`);
-
-        // Fill in the registration form
-        await page.fill('#firstname', 'Test');
-        await page.fill('#lastname', 'User');
-        await page.fill('#email_address', testEmail);
-        await page.fill('#password', testPassword);
-        await page.fill('#password-confirmation', testPassword);
-
-        // Check the newsletter subscription checkbox
-        await page.check('#is_subscribed');
-
-        // Submit the form
-        await page.click('button[title="Create an Account"]');
-
-        // Wait for successful registration
-        await page.locator('.message-success').waitFor();
 
         // Use exponential backoff to check for profile
         const profiles = await backOff(
           async () => {
-            const results = await checkProfileInKlaviyo(testEmail);
+            const results = await checkProfileInKlaviyo(storefront.email);
             if (results.length === 0) {
               throw new Error('Profile not found yet');
             }
@@ -405,7 +290,7 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
         // Assert that the profile exists and is never subscribed
         expect(profiles).toBeDefined();
         expect(profiles.length).toBe(1);
-        expect(profiles[0].attributes.email).toBe(testEmail);
+        expect(profiles[0].attributes.email).toBe(storefront.email);
         expect(profiles[0].attributes.subscriptions.email.marketing.consent).toBe('NEVER_SUBSCRIBED');
         expect(profiles[0].attributes.subscriptions.email.marketing.can_receive_email_marketing).toBe(true);
 
@@ -416,30 +301,22 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
         expect(listRelationships[0].type).toBe('list');
 
         // Log success for debugging
-        console.log(`Successfully added profile ${testEmail} to list via account creation`);
+        console.log(`Successfully added profile ${storefront.email} to list via account creation`);
     });
 
     test('should successfully unsubscribe a user via newsletter management page and validate via Klaviyo API', async ({ page }) => {
-        const baseUrl = process.env.M2_BASE_URL;
-        const testEmail = generateEmail();
-        const testPassword = 'Test123!@#';
-
+        const storefront = new Storefront(page);
 
         // First create an account with newsletter subscription
-        await page.goto(`${baseUrl}/customer/account/create/`);
-        await page.fill('#firstname', 'Test');
-        await page.fill('#lastname', 'User');
-        await page.fill('#email_address', testEmail);
-        await page.fill('#password', testPassword);
-        await page.fill('#password-confirmation', testPassword);
-        await page.check('#is_subscribed');
-        await page.click('button[title="Create an Account"]');
-        await page.locator('.message-success').waitFor();
+        await storefront.goToAccountCreationPage();
+        await storefront.fillOutAccountCreationForm();
+        await storefront.checkNewsletterSubscriptionCheckbox();
+        await storefront.submitAccountCreationForm();
 
         // Wait for initial subscription to be processed
         await backOff(
           async () => {
-            const results = await checkProfileInKlaviyo(testEmail);
+            const results = await checkProfileInKlaviyo(storefront.email);
             if (results.length === 0) {
               throw new Error('Profile not found yet');
             }
@@ -453,22 +330,13 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
           }
         );
 
-        // Navigate to newsletter management page
-        await page.goto(`${baseUrl}/newsletter/manage/`);
-
-        // Uncheck the newsletter subscription checkbox
-        await page.uncheck('#subscription');
-
-        // Save changes
-        await page.click('button[title="Save"]');
-
-        // Wait for success message
-        await page.locator('.message-success').waitFor();
+        // Navigate to account page and unsubscribe from newsletter
+        await storefront.goToAccountPageAndUnsubscribeFromNewsletter();
 
         // Use exponential backoff to check for profile
         const profiles = await backOff(
           async () => {
-            const results = await checkProfileInKlaviyo(testEmail);
+            const results = await checkProfileInKlaviyo(storefront.email);
             if (results.length === 0) {
               throw new Error('Profile not found yet');
             }
@@ -491,38 +359,28 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
         // Assert that the profile exists and is unsubscribed
         expect(profiles).toBeDefined();
         expect(profiles.length).toBe(1);
-        expect(profiles[0].attributes.email).toBe(testEmail);
+        expect(profiles[0].attributes.email).toBe(storefront.email);
         expect(profiles[0].attributes.subscriptions.email.marketing.consent).toBe('UNSUBSCRIBED');
         expect(profiles[0].attributes.subscriptions.email.marketing.can_receive_email_marketing).toBe(false);
 
         // Log success for debugging
-        console.log(`Successfully unsubscribed ${testEmail} from newsletter via newsletter management page`);
+        console.log(`Successfully unsubscribed ${storefront.email} from newsletter via newsletter management page`);
     });
 
     test('Add an existing profile to a list via footer form and validate via Klaviyo API', async ({ page }) => {
-        const baseUrl = process.env.M2_BASE_URL;
-        const testEmail = generateEmail();
-
+        const storefront = new Storefront(page);
 
         // First create the profile in Klaviyo without any subscription info
-        await createProfileInKlaviyo(testEmail);
+        await createProfileInKlaviyo(storefront.email);
 
-        // Navigate to the homepage
-        await page.goto(baseUrl);
-
-        // Fill in the newsletter subscription form in the footer
-        await page.fill('#newsletter', testEmail);
-
-        // Click the subscribe button
-        await page.click('button[title="Subscribe"]');
-
-        // Wait for success message
-        await page.locator('.message-success').waitFor();
+        // Navigate to the homepage and fill out the newsletter subscription form
+        await storefront.goToHomepage();
+        await storefront.fillOutNewsletterFooterForm();
 
         // Use exponential backoff to check for profile
         const profiles = await backOff(
           async () => {
-            const results = await checkProfileInKlaviyo(testEmail);
+            const results = await checkProfileInKlaviyo(storefront.email);
             if (results.length === 0) {
               throw new Error('Profile not found yet');
             }
@@ -540,7 +398,7 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
         // Assert that the profile exists and is subscribed
         expect(profiles).toBeDefined();
         expect(profiles.length).toBe(1);
-        expect(profiles[0].attributes.email).toBe(testEmail);
+        expect(profiles[0].attributes.email).toBe(storefront.email);
         expect(profiles[0].attributes.subscriptions.email.marketing.consent).toBe('NEVER_SUBSCRIBED');
         expect(profiles[0].attributes.subscriptions.email.marketing.can_receive_email_marketing).toBe(true);
 
@@ -551,41 +409,25 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
         expect(listRelationships[0].type).toBe('list');
 
         // Log success for debugging
-        console.log(`Successfully added existing profile ${testEmail} to list via footer form`);
+        console.log(`Successfully added existing profile ${storefront.email} to list via footer form`);
     });
 
     test('Add an existing profile to a list via account creation and validate via Klaviyo API', async ({ page }) => {
-        const baseUrl = process.env.M2_BASE_URL;
-        const testEmail = generateEmail();
-        const testPassword = 'Test123!@#';
-
+        const storefront = new Storefront(page);
 
         // First create the profile in Klaviyo without any subscription info
-        await createProfileInKlaviyo(testEmail);
+        await createProfileInKlaviyo(storefront.email);
 
-        // Navigate to the account creation page
-        await page.goto(`${baseUrl}/customer/account/create/`);
-
-        // Fill in the registration form
-        await page.fill('#firstname', 'Test');
-        await page.fill('#lastname', 'User');
-        await page.fill('#email_address', testEmail);
-        await page.fill('#password', testPassword);
-        await page.fill('#password-confirmation', testPassword);
-
-        // Check the newsletter subscription checkbox
-        await page.check('#is_subscribed');
-
-        // Submit the form
-        await page.click('button[title="Create an Account"]');
-
-        // Wait for successful registration
-        await page.locator('.message-success').waitFor();
+        // fill out account creation form and submit
+        await storefront.goToAccountCreationPage();
+        await storefront.fillOutAccountCreationForm();
+        await storefront.checkNewsletterSubscriptionCheckbox();
+        await storefront.submitAccountCreationForm();
 
         // Use exponential backoff to check for profile
         const profiles = await backOff(
           async () => {
-            const results = await checkProfileInKlaviyo(testEmail);
+            const results = await checkProfileInKlaviyo(storefront.email);
             if (results.length === 0) {
               throw new Error('Profile not found yet');
             }
@@ -603,7 +445,7 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
         // Assert that the profile exists and is subscribed
         expect(profiles).toBeDefined();
         expect(profiles.length).toBe(1);
-        expect(profiles[0].attributes.email).toBe(testEmail);
+        expect(profiles[0].attributes.email).toBe(storefront.email);
         expect(profiles[0].attributes.subscriptions.email.marketing.consent).toBe('NEVER_SUBSCRIBED');
         expect(profiles[0].attributes.subscriptions.email.marketing.can_receive_email_marketing).toBe(true);
 
@@ -614,6 +456,6 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
         expect(listRelationships[0].type).toBe('list');
 
         // Log success for debugging
-        console.log(`Successfully added existing profile ${testEmail} to list via account creation`);
+        console.log(`Successfully added existing profile ${storefront.email} to list via account creation`);
     });
 });

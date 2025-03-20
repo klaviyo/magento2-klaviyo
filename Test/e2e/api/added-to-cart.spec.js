@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const { backOff } = require('exponential-backoff');
-const { generateEmail } = require('../utils/email');
 const { createProfileInKlaviyo, checkEvent } = require('../utils/klaviyo-api');
+const Storefront = require('../locators/storefront');
 
 /**
  * Tests the Klaviyo event tracking endpoint for the "Added To Cart" event.
@@ -18,27 +18,16 @@ test.describe('Added To Cart Event Tracking', () => {
 
     test('should create an Added To Cart event in Klaviyo when a user adds an item to their cart', async ({ page }) => {
         test.slow(); // this test is slow, Magento 2 syncs events every 5 minutes.
-        const baseUrl = process.env.M2_BASE_URL;
         const klaviyoAtcMetricId = process.env.METRIC_ID_ATC;
-        const testEmail = generateEmail();
-
-        // Create profile in Klaviyo first
-        const profileId = await createProfileInKlaviyo(testEmail);
 
         // Navigate to a product page (using the first product from the homepage)
-        await page.goto(`${baseUrl}/radiant-tee.html?utm_email=${testEmail}`);
-        await page.locator('.page-title').waitFor();
+        const storefront = new Storefront(page);
 
-        // Get product details before adding to cart
-        const productName = await page.locator('.page-title').textContent();
+        // Create profile in Klaviyo first
+        const profileId = await createProfileInKlaviyo(storefront.email);
 
-        // Select size small and orange color
-        await page.locator('#option-label-size-144-item-167').click(); // Small size
-        await page.locator('#option-label-color-93-item-56').click(); // Orange color
-
-        // Add product to cart
-        await page.click('button[title="Add to Cart"]');
-        await page.locator('.message-success').waitFor({ state: 'visible', timeout: 5000 });
+        const productName = await storefront.goToProductPageAndGetProductName();
+        await storefront.addProductToCart();
 
         // Use exponential backoff to check for the Added To Cart event
         const events = await backOff(
@@ -69,6 +58,6 @@ test.describe('Added To Cart Event Tracking', () => {
         expect(eventData.AddedItemProductName).toBe(productName.trim());
 
         // Log success for debugging
-        console.log(`Successfully verified Added To Cart event for ${testEmail}`);
+        console.log(`Successfully verified Added To Cart event for ${storefront.email}`);
     });
 });
