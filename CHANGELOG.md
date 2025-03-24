@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Fixed
 - Fixed Deprecated use of base64_encode in Observer/SalesQuoteSaveAfter.php
 - Fixed profile identification on checkout page
+- Fixed edge case attempting to get product images when product is null
 
 ### [4.2.0] - 2024-09-17
 
