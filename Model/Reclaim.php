@@ -423,9 +423,12 @@ class Reclaim implements ReclaimInterface
 
     public function _getImages($product)
     {
-        $images = $product->getMediaGalleryImages();
         $image_array = array();
+        if (!$product) {
+            return $image_array;
+        }
 
+        $images = $product->getMediaGalleryImages();
         foreach ($images as $image) {
             $image_array[] = $this->handleMediaURL($image);
         }
