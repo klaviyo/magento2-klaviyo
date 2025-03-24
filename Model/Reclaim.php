@@ -424,7 +424,7 @@ class Reclaim implements ReclaimInterface
     public function _getImages($product)
     {
         $image_array = array();
-        if (!$product) {
+        if (!$product || is_null($product->getId())) {
             return $image_array;
         }
 
