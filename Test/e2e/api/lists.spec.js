@@ -1,4 +1,5 @@
 const { test, expect } = require('@playwright/test');
+const playwright = require('playwright');
 const Admin = require('../locators/admin');
 
 /**
@@ -21,8 +22,18 @@ test.describe('Newsletter Lists Configuration', () => {
         // Initialize Admin class
         const admin = new Admin(page);
 
-        // Navigate to Stores > Configuration > Klaviyo > Newsletter
-        await admin.navigateToKlaviyoNewsletterConfig();
+        try {
+          // Navigate to Stores > Configuration > Klaviyo > Newsletter
+          await admin.navigateToKlaviyoNewsletterConfig();
+        } catch (error) {
+          if (error instanceof playwright.errors.TimeoutError) {
+            await admin.page.reload();
+            await admin.page.locator('.admin__menu').waitFor();
+            console.log('Page reloaded');
+            await admin.navigateToKlaviyoNewsletterConfig();
+          }
+        }
+
 
         // Wait for the page to load and the lists dropdown to be visible
         await page.locator('#klaviyo_reclaim_newsletter_newsletter_newsletter').waitFor({ state: 'visible', timeout: 5000 });
@@ -44,8 +55,17 @@ test.describe('Newsletter Lists Configuration', () => {
         // Initialize Admin class
         const admin = new Admin(page);
 
-        // Navigate to Stores > Configuration > Klaviyo > Consent at Checkout
-        await admin.navigateToKlaviyoConsentAtCheckoutConfig();
+        try {
+          // Navigate to Stores > Configuration > Klaviyo > Consent at Checkout
+          await admin.navigateToKlaviyoConsentAtCheckoutConfig();
+        } catch (error) {
+          if (error instanceof playwright.errors.TimeoutError) {
+            await admin.page.reload();
+            await admin.page.locator('.admin__menu').waitFor();
+            console.log('Page reloaded');
+            await admin.navigateToKlaviyoConsentAtCheckoutConfig();
+          }
+        }
 
         // Wait for the page to load and the lists dropdowns to be visible
         await page.locator('#klaviyo_reclaim_consent_at_checkout_email_consent_list_id').waitFor({ state: 'visible', timeout: 5000 });

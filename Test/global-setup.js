@@ -1,7 +1,7 @@
 const { chromium } = require('@playwright/test');
 const dotenv = require('dotenv');
 const path = require('path');
-
+const Admin = require('./e2e/locators/admin');
 // Load environment variables from .env file
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
@@ -33,6 +33,12 @@ async function globalSetup(config) {
 
   // Save the authenticated state
   await page.context().storageState({ path: path.join(__dirname, 'playwright/.auth/admin.json') });
+
+  console.log("CACHE MANAGEMENT");
+  const admin = new Admin(page);
+  await admin.navigateToCacheManagement();
+  await admin.refreshConfigCache();
+
 
   await browser.close();
 }

@@ -1,10 +1,71 @@
 const { test, expect } = require('@playwright/test');
+const playwright = require('playwright');
 const { backOff } = require('exponential-backoff');
 const Admin = require('../locators/admin');
 const Storefront = require('../locators/storefront');
 const { createProfileInKlaviyo, checkProfileInKlaviyo, checkProfileListRelationships } = require('../utils/klaviyo-api');
 
 test.describe.configure({ mode: 'serial' }); // This is necessary to ensure that the Klaviyo newsletter config is updated before running the tests
+
+/**
+ * Helper function to set up the admin page and update newsletter config
+ * @param {Page} page - Playwright page object
+ * @param {Browser} browser - Playwright browser object
+ * @param {string} configOption - The newsletter config option to set
+ * @param {string} logMessage - Message to log after successful config update
+ */
+async function setupAdminConfig(page, browser, configOption, logMessage) {
+    const baseUrl = process.env.M2_BASE_URL;
+    if (!baseUrl) {
+        throw new Error('M2_BASE_URL environment variable is not set');
+    }
+
+    const admin = new Admin(page);
+
+    try {
+        // Navigate to admin dashboard
+        await admin.page.goto(`${baseUrl}/admin/admin/dashboard`);
+
+        // Wait for the admin dashboard to be ready
+        await admin.page.locator('.admin__menu').waitFor();
+        console.log('Page loaded');
+
+        await admin.navigateToNewsletterConfigAndHandleRefresh();
+        await admin.updateKlaviyoNewsletterConfig(configOption, 15000);
+        console.log(logMessage);
+    } catch (error) {
+      for (let i = 0; i < 4; i++) {
+        try {
+          // Handle "Target page, context or browser has been closed" error
+          if (error.message.includes('Target page, context or browser has been closed')) {
+              admin.page = await browser.newPage();
+              console.log('Created new page context after page was closed');
+          }
+
+          await admin.page.reload();
+          await admin.page.locator('.admin__menu').waitFor();
+          console.log('Page reloaded');
+
+          await admin.navigateToNewsletterConfigAndHandleRefresh();
+          console.log('Navigated to newsletter config');
+          await admin.updateKlaviyoNewsletterConfig(configOption, 15000);
+          console.log('Successfully updated newsletter config');
+          break;
+        } catch (retryError) {
+          console.log('Error reloading page, retrying', retryError.message);
+          console.log('try number', i);
+          if (retryError.message.includes('Target page, context or browser has been closed')) {
+            admin.page = await browser.newPage();
+            console.log('Created new page context after page was closed');
+          }
+          // if we've tried 3 times, throw the error
+          if (i === 3) {
+              throw retryError;
+          }
+        }
+    }
+}
+}
 
 /**
  * Tests the Klaviyo profile subscription functionality when honor Klaviyo consent is enabled
@@ -17,32 +78,13 @@ test.describe.configure({ mode: 'serial' }); // This is necessary to ensure that
  * @see https://developers.klaviyo.com/en/reference/bulk_subscribe_profiles
  */
 test.describe('Profile Subscription - honor Klaviyo consent', () => {
-    test.describe.configure({ mode: 'default' });
-    test.beforeEach(async ({ page }) => {
-        const baseUrl = process.env.M2_BASE_URL;
-        if (!baseUrl) {
-            throw new Error('M2_BASE_URL environment variable is not set');
-        }
-
-        try {
-            // Navigate to admin dashboard
-            await page.goto(`${baseUrl}/admin/admin/dashboard`);
-
-            // Wait for the admin dashboard to be ready
-            await page.locator('.admin__menu').waitFor();
-            console.log('Page loaded');
-
-            const admin = new Admin(page);
-
-            await admin.navigateToKlaviyoNewsletterConfig();
-            await admin.updateKlaviyoNewsletterConfig('Yes, use the Klaviyo settings for this list');
-
-            // Log success for debugging
-            console.log('Honor Klaviyo consent setting enabled');
-        } catch (error) {
-            console.error('Error updating Klaviyo newsletter config:', error);
-            throw error;
-        }
+    test.beforeEach(async ({ page, browser }) => {
+        await setupAdminConfig(
+            page,
+            browser,
+            'Yes, use the Klaviyo settings for this list',
+            'Honor Klaviyo consent setting enabled'
+        );
     });
 
     test('should successfully subscribe a user via footer form and validate via Klaviyo API', async ({ page }) => {
@@ -62,7 +104,7 @@ test.describe('Profile Subscription - honor Klaviyo consent', () => {
                 return results;
             },
             {
-                numOfAttempts: 10,
+                numOfAttempts: 11,
                 retry: (error, attemptNumber) => {
                     console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
                     return true;
@@ -97,7 +139,7 @@ test.describe('Profile Subscription - honor Klaviyo consent', () => {
                 return results;
             },
             {
-                numOfAttempts: 10,
+                numOfAttempts: 11,
                 retry: (error, attemptNumber) => {
                     console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
                     return true;
@@ -133,7 +175,7 @@ test.describe('Profile Subscription - honor Klaviyo consent', () => {
                 }
             },
             {
-                numOfAttempts: 10,
+                numOfAttempts: 11,
                 retry: (error, attemptNumber) => {
                     console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
                     return true;
@@ -159,7 +201,7 @@ test.describe('Profile Subscription - honor Klaviyo consent', () => {
                 return results;
             },
             {
-                numOfAttempts: 10,
+                numOfAttempts: 11,
                 retry: (error, attemptNumber) => {
                     console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
                     return true;
@@ -191,30 +233,13 @@ test.describe('Profile Subscription - honor Klaviyo consent', () => {
  * @see https://developers.klaviyo.com/en/reference/add_profiles_to_list
  */
 test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
-    test.beforeEach(async ({ page }) => {
-        const baseUrl = process.env.M2_BASE_URL;
-
-        try {
-            // Navigate to admin dashboard
-            await page.goto(`${baseUrl}/admin/admin/dashboard`);
-
-            // Wait for the admin dashboard to be ready
-            await page.locator('.admin__menu').waitFor();
-            console.log('Page loaded');
-
-            // Initialize Admin class
-            const admin = new Admin(page);
-
-            // Navigate to Klaviyo Newsletter configuration using Admin class method
-            await admin.navigateToKlaviyoNewsletterConfig();
-            await admin.updateKlaviyoNewsletterConfig('No, do not send opt-in emails from Klaviyo');
-
-            // Log success for debugging
-            console.log('Honor Klaviyo consent setting disabled');
-        } catch (error) {
-            console.error('Error updating Klaviyo newsletter config:', error);
-            throw error;
-        }
+    test.beforeEach(async ({ page, browser }) => {
+        await setupAdminConfig(
+            page,
+            browser,
+            'No, do not send opt-in emails from Klaviyo',
+            'Honor Klaviyo consent setting disabled'
+        );
     });
 
     test('Add a profile to a list via footer form and validate via Klaviyo API', async ({ page }) => {
@@ -234,7 +259,7 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
                 return results;
             },
             {
-                numOfAttempts: 10,
+                numOfAttempts: 11,
                 retry: (error, attemptNumber) => {
                     console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
                     return true;
@@ -276,7 +301,7 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
                 return results;
             },
             {
-                numOfAttempts: 10,
+                numOfAttempts: 11,
                 retry: (error, attemptNumber) => {
                     console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
                     return true;
@@ -319,7 +344,7 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
                 }
             },
             {
-                numOfAttempts: 10,
+                numOfAttempts: 11,
                 retry: (error, attemptNumber) => {
                     console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
                     return true;
@@ -345,7 +370,7 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
                 return results;
             },
             {
-                numOfAttempts: 10,
+                numOfAttempts: 11,
                 retry: (error, attemptNumber) => {
                     console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
                     return true;
@@ -384,7 +409,7 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
                 return results;
             },
             {
-                numOfAttempts: 10,
+                numOfAttempts: 11,
                 retry: (error, attemptNumber) => {
                     console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
                     return true;
@@ -431,7 +456,7 @@ test.describe('Profile Subscription - do not honor Klaviyo consent', () => {
                 return results;
             },
             {
-                numOfAttempts: 10,
+                numOfAttempts: 11,
                 retry: (error, attemptNumber) => {
                     console.log(`Attempt ${attemptNumber} failed. Error: ${error.message}`);
                     return true;
