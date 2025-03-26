@@ -16,7 +16,10 @@ class Storefront {
 
     async goToProductPageAndGetProductName() {
         // Navigate to a product page (using the first product from the homepage)
-        await this.page.goto(`${process.env.M2_BASE_URL}/radiant-tee.html?utm_email=${this.email}`);
+        await Promise.all([
+            this.page.waitForResponse(resp => resp.url().includes(`/client/profiles/?company_id=`) && resp.status() === 202 && resp.request().method() === 'POST'),
+            this.page.goto(`${process.env.M2_BASE_URL}/radiant-tee.html?utm_email=${this.email}`),
+        ])
         await this.page.locator('.page-title').waitFor();
         // Get product details before adding to cart
         const productName = await this.page.locator('.page-title').textContent();
