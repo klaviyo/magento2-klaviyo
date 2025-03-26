@@ -185,4 +185,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $api = new KlaviyoV3Api($this->_klaviyoScopeSetting->getPublicApiKey($storeId), $this->_klaviyoScopeSetting->getPrivateApiKey($storeId), $this->_klaviyoScopeSetting, $this->_klaviyoLogger);
         return $api->track($params);
     }
+
+    /**
+     * Get the external catalog ID for an event. This is used to link events to a specific scoped catalog in Klaviyo, so that
+     * profile interest events can be connected to a specific scoped product when building flow audiences.
+     *
+     * @param int $website_id
+     * @param int $store_id
+     * @return string
+     */
+    public function getExternalCatalogIdForEvent($website_id, $store_id)
+    {
+        return $website_id . '-' . $store_id;
+    }
 }

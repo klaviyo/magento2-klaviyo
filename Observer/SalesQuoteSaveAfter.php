@@ -14,6 +14,7 @@ class SalesQuoteSaveAfter implements ObserverInterface
 {
     // Character limit for a TEXT datatype field
     const PAYLOAD_CHARACTER_LIMIT = 65535;
+    const INTEGRATION_KEY = 'magento_two';
 
     /**
      * Klaviyo Scope setting Helper
@@ -100,8 +101,10 @@ class SalesQuoteSaveAfter implements ObserverInterface
         // Setting StoreId in payload
         $klAddedToCartPayload['StoreId'] = $quote->getStoreId();
 
-        // Setting external_catalog_id in payload - this connects the event to the right localized product in the klaviyo catalog and should not be changed
-        $klAddedToCartPayload['external_catalog_id'] =  $quote->getStore()->getWebsiteId() . '-' . $quote->getStoreId();
+        // Setting external_catalog_id in payload - this connects the event to the right localized product in the klaviyo catalog.
+        $klAddedToCartPayload['external_catalog_id'] = $this->_dataHelper->getExternalCatalogIdForEvent($quote->getStore()->getWebsiteId(), $quote->getStoreId());
+
+        $klAddedToCartPayload['integration_key'] = self::INTEGRATION_KEY;
 
         $stringifiedPayload = json_encode($klAddedToCartPayload);
 
