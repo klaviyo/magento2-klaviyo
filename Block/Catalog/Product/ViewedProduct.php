@@ -3,6 +3,7 @@
 namespace Klaviyo\Reclaim\Block\Catalog\Product;
 
 use Klaviyo\Reclaim\Helper\ScopeSetting;
+use Klaviyo\Reclaim\Helper\Data;
 use Magento\Catalog\Helper\Image;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
@@ -15,6 +16,7 @@ class ViewedProduct extends Template
     protected $imageUrl = null;
     protected $categories = [];
     protected $price = 0;
+    const INTEGRATION_KEY = 'magento_two';
 
     /**
      * @var Magento\Catalog\Helper\Image
@@ -27,6 +29,7 @@ class ViewedProduct extends Template
      * @param ScopeSetting $klaviyoScopeSetting
      * @param Registry $registry
      * @param Image $imageHelper
+     * @param Data $dataHelper
      * @param array $data
      */
     public function __construct(
@@ -34,12 +37,14 @@ class ViewedProduct extends Template
         ScopeSetting $klaviyoScopeSetting,
         Registry $registry,
         Image $imageHelper,
+        Data $dataHelper,
         array $data = []
     ) {
         parent::__construct($context, $data);
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
         $this->_registry = $registry;
         $this->imageHelper = $imageHelper;
+        $this->_dataHelper = $dataHelper;
     }
 
     /**
@@ -191,9 +196,16 @@ class ViewedProduct extends Template
      */
     public function getViewedProductJson()
     {
+        $external_catalog_id = $this->_dataHelper->getExternalCatalogIdForEvent(
+            $this->_storeManager->getStore()->getWebsiteId(),
+            $this->_storeManager->getStore()->getId()
+        );
+
         $_product = $this->getProduct();
 
         $result = [
+            'external_catalog_id' => $external_catalog_id,
+            'integration_key' => self::INTEGRATION_KEY,
             'ProductID' => $_product->getId(),
             'Name' => $_product->getName(),
             'SKU' => $_product->getSku(),

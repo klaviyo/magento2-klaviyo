@@ -48,6 +48,7 @@ class Admin {
       await this.configurationLink.scrollIntoViewIfNeeded();
       await this.configurationLink.click({timeout: 15000});
       await this.page.waitForLoadState();
+      await this.klaviyoConfigLink.scrollIntoViewIfNeeded();
       await this.klaviyoConfigLink.click({timeout: 15000});
       await Promise.all([
         this.page.waitForResponse(resp => resp.request().url().includes('/admin/admin/system_config/edit/section/klaviyo_reclaim_newsletter') && resp.status() === 200, {timeout: 15000}),
@@ -107,10 +108,14 @@ class Admin {
 
   async navigateToKlaviyoConsentAtCheckoutConfig() {
     await this.page.waitForLoadState();
+    await this.storesLink.scrollIntoViewIfNeeded();
     await this.storesLink.click();
+    await this.configurationLink.scrollIntoViewIfNeeded();
     await this.configurationLink.click();
     await this.page.waitForLoadState();
+    await this.klaviyoConfigLink.scrollIntoViewIfNeeded();
     await this.klaviyoConfigLink.click();
+    await this.klaviyoConsentAtCheckoutLink.scrollIntoViewIfNeeded();
     await this.klaviyoConsentAtCheckoutLink.click();
     await this.page.waitForLoadState();
   }

@@ -68,8 +68,6 @@ class KlaviyoV3Api
     const PROFILES_PAYLOAD_KEY = 'profiles';
     const CUSTOM_SOURCE_PAYLOAD_KEY = 'custom_source';
     const MAGENTO_TWO_PAYLOAD_VALUE = 'Magento Two';
-    const MAGENTO_TWO_INTEGRATION_SERVICE_KEY = 'magentotwo';
-    const SERVICE_PAYLOAD_KEY = 'service';
 
     /**
      * @var string
@@ -396,8 +394,7 @@ class KlaviyoV3Api
                 self::DATA_KEY_PAYLOAD => array(
                     self::TYPE_KEY_PAYLOAD => self::METRIC_KEY_PAYLOAD,
                     self::ATTRIBUTE_KEY_PAYLOAD => array(
-                        self::NAME_KEY_PAYLOAD => $metric,
-                        self::SERVICE_PAYLOAD_KEY => self::MAGENTO_TWO_INTEGRATION_SERVICE_KEY
+                        self::NAME_KEY_PAYLOAD => $metric
                     )
                 )
             )
