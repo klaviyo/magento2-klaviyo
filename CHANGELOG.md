@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Added
 - Add 'external_catalog_id' and 'integration_key' to Viewed Product and Added To Cart events.
 
+#### Changed
+- Bumps Klaviyo API revision to 2025-04-15
+
 #### Fixed
 - Fixed Deprecated use of base64_encode in Observer/SalesQuoteSaveAfter.php
 - Fixed profile identification on checkout page

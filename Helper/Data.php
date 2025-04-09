@@ -119,9 +119,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     'attributes' => array(
                         'email' => $email,
                         'subscriptions' => array(
-                            'email' => [
-                                'MARKETING'
-                            ]
+                            'email' => array(
+                                'marketing' => array(
+                                    "consent" => "SUBSCRIBED"
+                                )
+                            )
                         )
                     )
                 );
