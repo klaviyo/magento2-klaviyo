@@ -214,7 +214,7 @@ class ViewedProduct extends Template
             'FinalPrice' => $this->getFinalPrice(),
             'Categories' => $this->getProductCategories(),
             'StoreId' => $this->_klaviyoScopeSetting->storeId,
-            'value' => $this->getPrice()
+            '$value' => $this->getPrice()
         ];
 
         if ($this->getProductImage()) {
