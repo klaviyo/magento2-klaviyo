@@ -180,7 +180,7 @@ class ViewedProductTest extends TestCase
             'Name' => SampleProduct::PRODUCT_NAME,
             'SKU' => SampleProduct::PRODUCT_SKU,
             'URL' => SampleProduct::PRODUCT_URL,
-            'Price' => str_replace(",","", number_format(SampleProduct::PRODUCT_PRICE, 2)),
+            'Price' => str_replace(",", "", number_format(SampleProduct::PRODUCT_PRICE, 2)),
             'FinalPrice' => number_format(SampleProduct::PRODUCT_PRICE_FINAL, 2),
             'Categories' => SampleProduct::PRODUCT_CATEGORY_NAMES,
             'ImageURL' => SampleProduct::PRODUCT_IMAGE_URL
