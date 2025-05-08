@@ -210,7 +210,7 @@ class ViewedProduct extends Template
             'Name' => $_product->getName(),
             'SKU' => $_product->getSku(),
             'URL' => $_product->getProductUrl(),
-            'Price' => $this->getPrice(),
+            'Price' => str_replace(",","", $this->getPrice()),
             'FinalPrice' => $this->getFinalPrice(),
             'Categories' => $this->getProductCategories(),
             'StoreId' => $this->_klaviyoScopeSetting->storeId,
