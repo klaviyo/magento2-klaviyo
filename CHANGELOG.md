@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+### [4.3.1] - 2025-05-09
+
+#### Fixed
+- BUGPORT-8326: Formatted $value field in Viewed Product snippet causes API error in latest extension.
+
 ### [4.3.0] - 2025-04-16
 
 #### Added
@@ -312,7 +317,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- END RELEASE NOTES -->
 <!-- BEGIN LINKS -->
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.3.0...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.3.1...HEAD
+[4.3.1]: https://github.com/klaviyo/magento2-klaviyo/compare/4.3.0...4.3.1
 [4.3.0]: https://github.com/klaviyo/magento2-klaviyo/compare/4.2.0...4.3.0
 [4.2.0]: https://github.com/klaviyo/magento2-klaviyo/compare/4.1.4...4.2.0
 [4.1.4]: https://github.com/klaviyo/magento2-klaviyo/compare/4.1.3...4.1.4
