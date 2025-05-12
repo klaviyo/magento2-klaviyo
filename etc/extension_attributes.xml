@@ -11,4 +11,7 @@
     <extension_attributes for="Magento\Quote\Api\Data\CartInterface">
         <attribute code="kl_masked_id" type="string" />
     </extension_attributes>
+    <extension_attributes for="Magento\Catalog\Api\Data\ProductInterface">
+        <attribute code="kl_parent_ids" type="int[]" />
+    </extension_attributes>
 </config>

@@ -3,4 +3,7 @@
     <type name="Magento\Quote\Api\CartRepositoryInterface">
         <plugin name="checkoutMaskId" type="Klaviyo\Reclaim\Plugin\Api\CartSearchRepository" />
     </type>
+    <type name="Magento\Catalog\Api\ProductRepositoryInterface">
+        <plugin name="klProductRelationships" type="Klaviyo\Reclaim\Plugin\Api\AddProductRelationships" />
+    </type>
 </config>

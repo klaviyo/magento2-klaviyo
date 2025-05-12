@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+#### Added
+-  Add 'kl_parent_ids' extension attribute in product requests.
+
 ### [4.3.1] - 2025-05-09
 
 #### Fixed
