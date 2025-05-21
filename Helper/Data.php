@@ -93,12 +93,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param string|null $firstName
      * @param string|null $lastName
      * @param string|null $source
+     * @param int|null $storeId
      * @return array|false|null|string
      */
-    public function subscribeEmailToKlaviyoList($email, $firstName = null, $lastName = null)
+    public function subscribeEmailToKlaviyoList($email, $firstName = null, $lastName = null, $storeId = null)
     {
-        $listId = $this->_klaviyoScopeSetting->getNewsletter();
-        $optInSetting = $this->_klaviyoScopeSetting->getOptInSetting();
+        $listId = $this->_klaviyoScopeSetting->getNewsletter($storeId);
+        $optInSetting = $this->_klaviyoScopeSetting->getOptInSetting($storeId);
 
         $properties = [];
         $properties['email'] = $email;
@@ -109,7 +110,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $properties['last_name'] = $lastName;
         }
 
-        $api = new KlaviyoV3Api($this->_klaviyoScopeSetting->getPublicApiKey(), $this->_klaviyoScopeSetting->getPrivateApiKey(), $this->_klaviyoScopeSetting, $this->_klaviyoLogger);
+        $api = new KlaviyoV3Api(
+            $this->_klaviyoScopeSetting->getPublicApiKey($storeId),
+            $this->_klaviyoScopeSetting->getPrivateApiKey($storeId),
+            $this->_klaviyoScopeSetting,
+            $this->_klaviyoLogger
+        );
 
         try {
             if ($optInSetting == ScopeSetting::API_SUBSCRIBE) {
@@ -149,12 +155,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * @param string $email
+     * @param int|null $storeId
      * @return array|string|null
      */
-    public function unsubscribeEmailFromKlaviyoList($email)
+    public function unsubscribeEmailFromKlaviyoList($email, $storeId = null)
     {
-        $api = new KlaviyoV3Api($this->_klaviyoScopeSetting->getPublicApiKey(), $this->_klaviyoScopeSetting->getPrivateApiKey(), $this->_klaviyoScopeSetting, $this->_klaviyoLogger);
-        $listId = $this->_klaviyoScopeSetting->getNewsletter();
+        $api = new KlaviyoV3Api(
+            $this->_klaviyoScopeSetting->getPublicApiKey($storeId),
+            $this->_klaviyoScopeSetting->getPrivateApiKey($storeId),
+            $this->_klaviyoScopeSetting,
+            $this->_klaviyoLogger
+        );
+        $listId = $this->_klaviyoScopeSetting->getNewsletter($storeId);
         try {
             $response = $api->unsubscribeEmailFromKlaviyoList($email, $listId);
         } catch (\Exception $e) {
