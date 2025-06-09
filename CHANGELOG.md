@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+#### Fixed
+- Fixed Deprecated Functionality: str_replace(): Passing null in Block/Catalog/Product/ViewedProduct 
+
 ### [4.3.1] - 2025-05-09
 
 #### Fixed
