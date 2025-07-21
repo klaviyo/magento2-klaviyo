@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+### [4.3.2] - 2025-07-21
+
+#### Fixed
+- null argument to str_replace() caused by getPrice() fallback return of null instead of "0".
+
 ### [4.3.1] - 2025-05-09
 
 #### Fixed
@@ -317,7 +322,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- END RELEASE NOTES -->
 <!-- BEGIN LINKS -->
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.3.1...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.3.2...HEAD
+[4.3.2]: https://github.com/klaviyo/magento2-klaviyo/compare/4.3.1...4.3.2
 [4.3.1]: https://github.com/klaviyo/magento2-klaviyo/compare/4.3.0...4.3.1
 [4.3.0]: https://github.com/klaviyo/magento2-klaviyo/compare/4.2.0...4.3.0
 [4.2.0]: https://github.com/klaviyo/magento2-klaviyo/compare/4.1.4...4.2.0
