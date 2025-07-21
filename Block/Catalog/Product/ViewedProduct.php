@@ -148,8 +148,8 @@ class ViewedProduct extends Template
         }
 
         if (!$this->price) {
-            // as a fallback, return null
-            return null;
+            // as a fallback, return 0 in consistent format
+            return number_format(0, 2);
         }
 
 
