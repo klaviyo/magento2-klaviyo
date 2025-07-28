@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
+### [4.3.3] - 2025-07-28
+
+#### Added
+- Add isKlaviyoEnabled to product/viewed.phtml.
 
 ### [4.3.2] - 2025-07-21
 
@@ -322,6 +326,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- END RELEASE NOTES -->
 <!-- BEGIN LINKS -->
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.3.3...HEAD
 [Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.3.2...HEAD
 [4.3.2]: https://github.com/klaviyo/magento2-klaviyo/compare/4.3.1...4.3.2
 [4.3.1]: https://github.com/klaviyo/magento2-klaviyo/compare/4.3.0...4.3.1
