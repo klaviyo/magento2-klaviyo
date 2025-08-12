@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+#### Added
+- Add isKlaviyoEnabled to product/viewed.phtml.
+
 ### [4.3.2] - 2025-07-21
 
 #### Fixed
