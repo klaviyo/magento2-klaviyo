@@ -38,3 +38,15 @@ jobs:
         run: pip install changelogged==0.11.3
       - name: Validate Changelog
         run: changelogger check --fail
+  magento-coding-standard:
+    runs-on: ubuntu-latest
+    env:
+      COMPOSER: composer.magento-coding-standard.dev.json
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        uses: php-actions/composer@v6
+        with:
+          dev: yes
+      - name: Run Magento Coding Standard via PHPCS
+        run: vendor/bin/phpcs --standard=Magento2 --ignore="*/vendor/*,*/Test/*" --severity=10 .
