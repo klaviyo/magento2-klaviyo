@@ -1,5 +1,8 @@
 <?php
 /** @var Klaviyo\Reclaim\Block\Catalog\Product\ViewedProduct $block */
+if (!$block->isKlaviyoEnabled()) {
+    return;
+}
 ?>
 
 <script text="text/javascript">
