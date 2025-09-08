@@ -2,7 +2,7 @@
 <?php if ( $this->isKlaviyoEnabled() && $klaviyoKey ): ?>
     <?php $escapedKey = $block->escapeHtml($klaviyoKey); $klaviyoSrc = 'https://static.klaviyo.com/onsite/js/'. $escapedKey . '/klaviyo.js'?>
     <script type="application/javascript" async
-            src=<?php echo $klaviyoSrc ?> ></script>
+            src=<?php echo $block->escapeUrl($klaviyoSrc) ?> ></script>
 
     <script type="text/x-magento-init">
         {
