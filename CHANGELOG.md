@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Added
 - Add 'kl_parent_ids' extension attribute in product requests.
 
+### [4.3.2] - 2025-07-21
+
 #### Fixed
 - null argument to str_replace() caused by getPrice() fallback return of null instead of "0".
 
