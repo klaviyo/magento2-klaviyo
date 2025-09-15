@@ -192,7 +192,7 @@ class ViewedProduct extends Template
     }
 
     /**
-     * @return string
+     * @return array
      */
     public function getViewedProductJson()
     {
@@ -221,11 +221,11 @@ class ViewedProduct extends Template
             $result['ImageURL'] = $this->getProductImage();
         }
 
-        return json_encode($result);
+        return $result;
     }
 
     /**
-     * @return string
+     * @return array
      */
     public function getViewedItemJson()
     {
@@ -246,6 +246,6 @@ class ViewedProduct extends Template
             $result['ImageURL'] = $this->getProductImage();
         }
 
-        return json_encode($result);
+        return $result;
     }
 }
