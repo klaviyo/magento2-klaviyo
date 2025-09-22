@@ -7,15 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
-#### Added
-- Add isKlaviyoEnabled to product/viewed.phtml.
+### [4.4.1] - 2025-09-15
+
+#### Fixed
+- Removes escapeJs call that was preventing Viewed Product events from syncing successfully in 4.4.0
 
 ### [4.4.0] - 2025-08-11
 
 #### Added
 - Add 'kl_parent_ids' extension attribute in product requests.
-
-### [4.3.2] - 2025-07-21
 
 #### Fixed
 - null argument to str_replace() caused by getPrice() fallback return of null instead of "0".
@@ -330,8 +330,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- END RELEASE NOTES -->
 <!-- BEGIN LINKS -->
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.3.2...HEAD
-[4.3.2]: https://github.com/klaviyo/magento2-klaviyo/compare/4.3.1...4.3.2
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.4.1...HEAD
+[4.4.1]: https://github.com/klaviyo/magento2-klaviyo/compare/4.4.0...4.4.1
+[4.4.0]: https://github.com/klaviyo/magento2-klaviyo/compare/4.3.1...4.4.0
 [4.3.1]: https://github.com/klaviyo/magento2-klaviyo/compare/4.3.0...4.3.1
 [4.3.0]: https://github.com/klaviyo/magento2-klaviyo/compare/4.2.0...4.3.0
 [4.2.0]: https://github.com/klaviyo/magento2-klaviyo/compare/4.1.4...4.2.0
