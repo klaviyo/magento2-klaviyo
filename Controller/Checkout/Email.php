@@ -15,7 +15,7 @@ class Email extends \Magento\Framework\App\Action\Action
     protected $_objectManager;
 
     public function __construct(
-        \Magento\Backend\App\Action\Context $context,
+        \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
     ) {
         parent::__construct($context);
