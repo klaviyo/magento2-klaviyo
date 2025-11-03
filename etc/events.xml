@@ -12,4 +12,7 @@
     <event name="sales_quote_save_after" >
         <observer name="klaviyo_reclaim_atc" instance="Klaviyo\Reclaim\Observer\SalesQuoteSaveAfter" />
     </event>
+    <event name="sales_order_invoice_pay">
+        <observer name="klaviyo_reclaim_order_payment_confirmed" instance="Klaviyo\Reclaim\Observer\OrderPaymentConfirmed" />
+    </event>
 </config>
