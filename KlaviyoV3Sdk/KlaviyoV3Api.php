@@ -14,7 +14,7 @@ class KlaviyoV3Api
      * Host and versions
      */
     const KLAVIYO_HOST = 'https://a.klaviyo.com/';
-    const KLAVIYO_V3_REVISION = '2025-04-15';
+    const KLAVIYO_V3_REVISION = '2025-10-15';
 
     /**
      * Request methods
@@ -130,7 +130,7 @@ class KlaviyoV3Api
 
     /**
      * Query for all available lists in Klaviyo
-     * https://developers.klaviyo.com/en/v2025-04-15/reference/get_lists
+     * https://developers.klaviyo.com/en/v2025-10-15/reference/get_lists
      *
      * @return array
      * @throws KlaviyoApiException
@@ -156,7 +156,7 @@ class KlaviyoV3Api
 
     /**
      * Search for profile by Email
-     * https://developers.klaviyo.com/en/v2025-04-15/reference/get_profiles
+     * https://developers.klaviyo.com/en/v2025-10-15/reference/get_profiles
      *
      * @param $email
      * @return false|mixed
@@ -179,7 +179,7 @@ class KlaviyoV3Api
 
     /**
      * Add a Profile to a list using profile id
-     * https://developers.klaviyo.com/en/v2025-04-15/reference/create_list_relationships
+     * https://developers.klaviyo.com/en/v2025-10-15/reference/create_list_relationships
      *
      * @param $list_id
      * @param $profile_id
@@ -202,7 +202,7 @@ class KlaviyoV3Api
 
     /**
      * Create a new Profile in Klaviyo
-     * https://developers.klaviyo.com/en/v2025-04-15/reference/create_profile
+     * https://developers.klaviyo.com/en/v2025-10-15/reference/create_profile
      *
      * @param $profile_properties
      * @return array|string|null
@@ -236,7 +236,7 @@ class KlaviyoV3Api
      */
     /**
      * Record an event for a customer on their Klaviyo profile
-     * https://developers.klaviyo.com/en/v2025-04-15/reference/create_event
+     * https://developers.klaviyo.com/en/v2025-10-15/reference/create_event
      *
      * @param $config
      * @return array
@@ -263,7 +263,7 @@ class KlaviyoV3Api
 
     /**
      * Subscribe members to a Klaviyo list
-     * https://developers.klaviyo.com/en/v2025-04-15/reference/bulk_subscribe_profiles
+     * https://developers.klaviyo.com/en/v2025-10-15/reference/bulk_subscribe_profiles
      *
      * @param $listId
      * @param $profiles
@@ -300,7 +300,7 @@ class KlaviyoV3Api
 
     /**
      * Unsubscribe profile from a Klaviyo list
-     * https://developers.klaviyo.com/en/v2025-04-15/reference/bulk_subscribe_profiles
+     * https://developers.klaviyo.com/en/v2025-10-15/reference/bulk_subscribe_profiles
      * @param string $email
      * @return array|null|string
      */

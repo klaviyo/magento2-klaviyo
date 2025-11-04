@@ -2,7 +2,7 @@
     "name": "klaviyo/magento2-extension-coding-standard-dev",
     "description": "The development composer file for coding standard.",
     "type": "magento2-module",
-    "version": "4.4.1",
+    "version": "4.4.2",
     "config": {
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true
