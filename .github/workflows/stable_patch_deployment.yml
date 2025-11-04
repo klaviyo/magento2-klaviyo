@@ -16,6 +16,8 @@ jobs:
     - uses: actions/setup-python@v4.4.0
       with:
         python-version: "3.11"
+    - name: Install click 8.2.2 until bug in 8.3.0 is resolved
+      run: pip install click==8.2.2
     - name: Install Changelogger
       run: pip install changelogged==0.11.3
     - name: Get Latest Version
@@ -76,7 +78,8 @@ jobs:
       uses: actions/setup-python@v4.4.0
       with:
         python-version: '3.11'
-
+    - name: Install click 8.2.2 until bug in 8.3.0 is resolved
+      run: pip install click==8.2.2
     - name: Install Changelogger
       run: pip install changelogged==0.11.3
 
