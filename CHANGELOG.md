@@ -7,10 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+### [4.4.2] - 2025-11-04
+
+#### Changed
+- Update Klaviyo V3 API revision to 2025-10-15
+
 #### Added
 - Add isKlaviyoEnabled to product/viewed.phtml.
+
 #### Fixed
-- Ensure Controller/Checkout/Email.php loads proper classes on frontend
+- Ensure Controller/Checkout/Email.php loads proper classes on frontend.
 
 ### [4.4.1] - 2025-09-15
 
@@ -335,7 +341,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- END RELEASE NOTES -->
 <!-- BEGIN LINKS -->
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.4.1...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.4.2...HEAD
+[4.4.2]: https://github.com/klaviyo/magento2-klaviyo/compare/4.4.1...4.4.2
 [4.4.1]: https://github.com/klaviyo/magento2-klaviyo/compare/4.4.0...4.4.1
 [4.4.0]: https://github.com/klaviyo/magento2-klaviyo/compare/4.3.1...4.4.0
 [4.3.1]: https://github.com/klaviyo/magento2-klaviyo/compare/4.3.0...4.3.1
