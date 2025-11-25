@@ -90,7 +90,7 @@ class SalesQuoteProductAddAfter implements ObserverInterface
             'AddedItemSimpleProductID' => (int) is_null($simpleProduct) ? null : $simpleProduct->getId(),
             'AddedItemProductName' => (string) $addedProduct->getName(),
             'AddedItemSku' => (string) $addedProduct->getSku(),
-            'AddedItemUrl' => (string) is_null($addedProduct->getProductUrl()) ? "" : stripslashes($addedProduct->getProductUrl()),
+            'AddedItemUrl' => $this->getUrlPreferringVariant($addedProduct, $simpleProduct),
         ];
 
         $klAddedToCartPayload = array_merge(
@@ -138,7 +138,7 @@ class SalesQuoteProductAddAfter implements ObserverInterface
                 'SimpleProductId' => (int) is_null($simpleProduct) ? null : $simpleProduct->getId(),
                 'Price' => (float) $product->getFinalPrice(),
                 'Title' => (string) $itemName,
-                'Url' => (string) is_null($product->getProductUrl()) ? "" : stripslashes($product->getProductUrl()),
+                'Url' => $this->getUrlPreferringVariant($product, $simpleProduct),
                 'Quantity' => (int) $item->getQty()
             ];
             $cartQty += $item->getQty();
@@ -229,5 +229,21 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         }
 
         return is_null($productToTest->getData('small_image')) ? "" : stripslashes($productToTest->getData('small_image'));
+    }
+
+    /**
+     * Helper function to get the correct product URL, preferring variant over parent
+     * @param $addedItem
+     * @param $addedSimpleProduct
+     * @return string
+     */
+    public function getUrlPreferringVariant($addedItem, $addedSimpleProduct): string
+    {
+        $productToTest = $addedSimpleProduct;
+        if (is_null($addedSimpleProduct) || is_null($addedSimpleProduct->getProductUrl())) {
+            $productToTest = $addedItem;
+        }
+
+        return is_null($productToTest->getProductUrl()) ? "" : stripslashes($productToTest->getProductUrl());
     }
 }
