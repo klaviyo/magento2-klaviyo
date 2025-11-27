@@ -8,15 +8,22 @@ define([
 ], function (Component, url, $) {
   'use strict';
 
-  // initialize the customerData prior to returning the component
-  var _klaviyoCustomerData = window.customerData;
-
   return Component.extend({
     initialize: function () {
       this._super();
-      this._klaviyoCustomerData = _klaviyoCustomerData;
-      this._email;
-      this.handleCheckout();
+      // Read customerData at initialization time rather than module definition time
+      // to ensure it's populated after Magento's customer-data module has loaded
+      this._klaviyoCustomerData = window.customerData || null;
+      this._email = undefined;
+      this._listenerBound = false;
+
+      // Wrap in try-catch to prevent errors from breaking checkout rendering
+      try {
+        this.handleCheckout();
+      } catch (e) {
+        console.error('Klaviyo_Reclaim - Error during checkout initialization:', e);
+      }
+
       return this;
     },
     handleCheckout: function () {
@@ -31,40 +38,83 @@ define([
       if (this._email) {
         return true;
       }
+      return false;
     },
-    isKlaviyoActive: function() {
-      return !!(window.klaviyo && window.klaviyo.identify);
+    isKlaviyoActive: function () {
+      return !!(window.klaviyo && typeof window.klaviyo.identify === 'function');
     },
     bindEmailListener: function () {
-      // jquery overrides this, so let's create an instance of the parent
+      // Prevent binding multiple times
+      if (this._listenerBound) {
+        return;
+      }
+      this._listenerBound = true;
+
       var self = this;
       console.log('Klaviyo_Reclaim - Binding to #customer-email');
-      jQuery('#maincontent').delegate('#customer-email', 'change', function (event) {
-        if (!self.isKlaviyoActive()) {
-          return;
-        }
 
-        self._email = jQuery(this).val();
+      // Use 'on' with event delegation instead of deprecated 'delegate'
+      // Bind to document.body as fallback if #maincontent doesn't exist yet
+      var $container = jQuery('#maincontent');
+      if ($container.length === 0) {
+        $container = jQuery(document.body);
+      }
 
-        window.klaviyo.isIdentified().then((identified)=> {
-          if (self._email && !identified) {
-            window.klaviyo.identify({
-              '$email': self._email
-            });
+      $container.on('change', '#customer-email', function () {
+        try {
+          if (!self.isKlaviyoActive()) {
+            return;
           }
-        })
-        self.postUserEmail(self._email);
+
+          self._email = jQuery(this).val();
+
+          // Handle isIdentified() which returns a Promise
+          if (window.klaviyo && typeof window.klaviyo.isIdentified === 'function') {
+            var identifiedResult = window.klaviyo.isIdentified();
+
+            // Check if it's a Promise (has .then method)
+            if (identifiedResult && typeof identifiedResult.then === 'function') {
+              identifiedResult.then(function (identified) {
+                if (self._email && !identified) {
+                  window.klaviyo.identify({
+                    '$email': self._email
+                  });
+                }
+              }).catch(function (err) {
+                console.error('Klaviyo_Reclaim - Error checking identification:', err);
+              });
+            } else {
+              // Fallback for older Klaviyo versions where isIdentified returns boolean
+              if (self._email && !identifiedResult) {
+                window.klaviyo.identify({
+                  '$email': self._email
+                });
+              }
+            }
+          }
+
+          self.postUserEmail(self._email);
+        } catch (e) {
+          console.error('Klaviyo_Reclaim - Error in email change handler:', e);
+        }
       });
     },
     postUserEmail: function (customer_email) {
+      if (!customer_email) {
+        return;
+      }
+
       $.ajax({
         url: url.build('reclaim/checkout/email'),
         method: 'POST',
         data: {
           'email': customer_email
         },
-        success: function (data) {
+        success: function () {
           console.log('Klaviyo_Reclaim - Quote updated with customer email: ' + customer_email);
+        },
+        error: function (xhr, status, error) {
+          console.error('Klaviyo_Reclaim - Failed to update quote:', error);
         }
       });
     }
