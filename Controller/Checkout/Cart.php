@@ -6,21 +6,15 @@ use Magento\Framework\Exception\NoSuchEntityException;
 
 class Cart extends \Magento\Framework\App\Action\Action
 {
-    protected $quoteRepository;
     protected $resultRedirectFactory;
-    protected $cart;
     protected $request;
 
-    /**
-     * @var quoteIdMaskFactory
-     */
-    private $quoteIdMaskFactory;
-
     public function __construct(
-        \Magento\Checkout\Model\Cart $cart,
-        \Magento\Framework\App\Action\Context $context,
-        \Magento\Quote\Model\QuoteRepository $quoteRepository,
-        \Magento\Quote\Model\QuoteIdMaskFactory $quoteIdMaskFactory
+        protected \Magento\Checkout\Model\Cart $cart,
+        protected \Magento\Framework\App\Action\Context $context,
+        protected \Magento\Quote\Model\QuoteRepository $quoteRepository,
+        protected \Magento\Quote\Model\QuoteIdMaskFactory $quoteIdMaskFactory,
+        protected \Magento\Customer\Model\Session $customerSession
     ) {
         $this->quoteRepository = $quoteRepository;
         $this->resultRedirectFactory = $context->getResultRedirectFactory();
@@ -44,6 +38,7 @@ class Cart extends \Magento\Framework\App\Action\Action
         $quoteId = isset($params['quote_id']) ? $params['quote_id'] : "";
 
         unset($params['quote_id']);
+        $redirect = $this->resultRedirectFactory->create();
 
         // Check if the quote_id has kx_identifier.
         // if yes, retrieve active quote for customer, otherwise
@@ -65,13 +60,23 @@ class Cart extends \Magento\Framework\App\Action\Action
                     $quoteId = $quoteIdMask->getQuoteId();
                 }
                 $quote = $this->quoteRepository->get($quoteId);
+                // Ensure the customer owns the quote
+                if (
+                    (int)$quote->getCustomerId() != 0 &&
+                    (int)$quote->getCustomerId() != (int)$this->customerSession->getCustomerId()
+                ) {
+                    if ($this->customerSession->isLoggedIn()) {
+                        $redirect->setPath('/');
+                    } else {
+                        $redirect->setPath('/customer/account/login');
+                    }
+                    return $redirect;
+                }
                 $this->cart->setQuote($quote);
                 $this->cart->save();
             } catch (NoSuchEntityException $ex) {
             }
         }
-
-        $redirect = $this->resultRedirectFactory->create();
         $redirect->setPath('checkout/cart', ['_query' => $params]);
         return $redirect;
     }
