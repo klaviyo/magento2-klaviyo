@@ -45,7 +45,9 @@ class Cart extends \Magento\Framework\App\Action\Action
 
         unset($params['quote_id']);
 
-        // Check if the quote_id has kx_identifier, if yes, retrieve active quote for customer, if not get QuoteId from masked QuoteId
+        // Check if the quote_id has kx_identifier.
+        // if yes, retrieve active quote for customer, otherwise
+        // Check if the quote_id is masked or not, then pull it from the database
         if (strpos($quoteId, "kx_identifier_") !== false) {
             $customerId = base64_decode(str_replace("kx_identifier_", "", $quoteId));
             try {
@@ -56,8 +58,13 @@ class Cart extends \Magento\Framework\App\Action\Action
             }
         } else {
             try {
-                $quoteIdMask = $this->quoteIdMaskFactory->create()->load($quoteId, 'masked_id');
-                $quote = $this->quoteRepository->get($quoteIdMask->getQuoteId());
+                if (!is_numeric($quoteId)) {
+                    $quoteIdMask = $this->quoteIdMaskFactory
+                        ->create()
+                        ->load($quoteId, 'masked_id');
+                    $quoteId = $quoteIdMask->getQuoteId();
+                }
+                $quote = $this->quoteRepository->get($quoteId);
                 $this->cart->setQuote($quote);
                 $this->cart->save();
             } catch (NoSuchEntityException $ex) {
