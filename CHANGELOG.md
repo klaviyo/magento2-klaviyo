@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+#### Fixed
+- Fix logged-in customer carts not reloading when quote_id is unmasked. Added secure fallback for numeric quote IDs with ownership verification to prevent enumeration attacks.
+
 ### [4.4.2] - 2025-11-04
 
 #### Changed
