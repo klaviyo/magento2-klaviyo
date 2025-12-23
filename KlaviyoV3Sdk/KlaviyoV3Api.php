@@ -253,7 +253,7 @@ class KlaviyoV3Api
             self::DATA_KEY_PAYLOAD => array(
                 self::TYPE_KEY_PAYLOAD => self::EVENT_VALUE_PAYLOAD,
                 self::ATTRIBUTE_KEY_PAYLOAD =>
-                    $this->buildEventProperties($config['properties'], $event_time->format('Y-m-d\TH:i:s'), $config['event']) +
+                    $this->buildEventProperties($config['properties'], $event_time->format('Y-m-d\TH:i:sP'), $config['event']) +
                     $this->buildCustomerProperties($config['customer_properties'])
             )
         );
