@@ -5,6 +5,7 @@ namespace Klaviyo\Reclaim\Observer;
 use Klaviyo\Reclaim\Helper\Data;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Catalog\Helper\Image;
 use Magento\Catalog\Model\CategoryFactory;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Catalog\Api\ProductRepositoryInterface;
@@ -30,17 +31,24 @@ class SalesQuoteProductAddAfter implements ObserverInterface
     private $productRepository;
 
     /**
+     * Magento Image Helper
+     */
+    private Image $imageHelper;
+
+    /**
      * @param Data $dataHelper
      * @param CategoryFactory $categoryFactory
      */
     public function __construct(
         Data $dataHelper,
         CategoryFactory $categoryFactory,
-        ProductRepositoryInterface $productRepository
+        ProductRepositoryInterface $productRepository,
+        ImageHelper $imageHelper
     ) {
         $this->_dataHelper = $dataHelper;
         $this->_categoryFactory = $categoryFactory;
         $this->productRepository = $productRepository;
+        $this->imageHelper = $imageHelper;
     }
 
     public function execute(Observer $observer)
@@ -224,10 +232,10 @@ class SalesQuoteProductAddAfter implements ObserverInterface
     public function getImagePreferringVariant($addedItem, $addedSimpleProduct): string
     {
         $productToTest = $addedSimpleProduct;
-        if (is_null($addedSimpleProduct) || is_null($addedSimpleProduct->getData('small_image'))) {
+        if (is_null($addedSimpleProduct)) {
             $productToTest = $addedItem;
         }
 
-        return is_null($productToTest->getData('small_image')) ? "" : stripslashes($productToTest->getData('small_image'));
+        return $this->imageHelper->init($productToTest, 'product_base_image')->getUrl();
     }
 }
