@@ -228,7 +228,7 @@ class SalesQuoteProductAddAfter implements ObserverInterface
     private function getProductByExistingImage($addedItem, $addedSimpleProduct)
     {
         $productToReturn = $addedSimpleProduct;
-        if (is_null($addedSimpleProduct) || is_null($addedSimpleProduct->getData('small_image'))) {
+        if (is_null($addedSimpleProduct) || is_null($addedSimpleProduct->getData('small_image')) || $addedSimpleProduct->getData('small_image') === 'no_selection') {
             $productToReturn = $addedItem;
         }
 
