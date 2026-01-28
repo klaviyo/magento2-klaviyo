@@ -43,7 +43,7 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         Data $dataHelper,
         CategoryFactory $categoryFactory,
         ProductRepositoryInterface $productRepository,
-        ImageHelper $imageHelper
+        Image $imageHelper
     ) {
         $this->_dataHelper = $dataHelper;
         $this->_categoryFactory = $categoryFactory;
