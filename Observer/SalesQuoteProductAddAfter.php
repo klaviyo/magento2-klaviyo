@@ -92,6 +92,7 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         $addedItemData = [
             'AddedItemCategories' => (array) $addedProduct->getCategoryIds(),
             'AddedItemImageUrlKey' => $this->getImagePreferringVariant($addedProduct, $simpleProduct),
+            'AddedItemImageUrl' => $this->getImagePreferringVariantUrl($addedProduct, $simpleProduct),
             'AddedItemPrice' => (float) $addedProduct->getFinalPrice(),
             'AddedItemQuantity' => (int) $addedItem->getQty(),
             'AddedItemProductID' => (int) $addedProduct->getId(),
@@ -230,6 +231,21 @@ class SalesQuoteProductAddAfter implements ObserverInterface
      * @return string
      */
     public function getImagePreferringVariant($addedItem, $addedSimpleProduct): string
+    {
+        $productToTest = $addedSimpleProduct;
+        if (is_null($addedSimpleProduct) || is_null($addedSimpleProduct->getData('small_image'))) {
+            $productToTest = $addedItem;
+        }
+
+        return is_null($productToTest->getData('small_image')) ? "" : stripslashes($productToTest->getData('small_image'));
+    }
+
+    /**
+     * Helper function to get the correct image url
+     * @param $addedItem
+     * @return string
+     */
+    public function getImagePreferringVariantUrl($addedItem, $addedSimpleProduct): string
     {
         $productToTest = $addedSimpleProduct;
         if (is_null($addedSimpleProduct)) {
