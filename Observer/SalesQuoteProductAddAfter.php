@@ -225,33 +225,39 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         return $simpleProduct;
     }
 
+    private function getProductByExistingImage($addedItem, $addedSimpleProduct)
+    {
+        $productToReturn = $addedSimpleProduct;
+        if (is_null($addedSimpleProduct) || is_null($addedSimpleProduct->getData('small_image'))) {
+            $productToReturn = $addedItem;
+        }
+
+        return $productToReturn;
+    }
+
     /**
      * Helper function to get the correct image path
      * @param $addedItem
+     * @param $addedSimpleProduct
      * @return string
      */
     public function getImagePreferringVariant($addedItem, $addedSimpleProduct): string
     {
-        $productToTest = $addedSimpleProduct;
-        if (is_null($addedSimpleProduct) || is_null($addedSimpleProduct->getData('small_image'))) {
-            $productToTest = $addedItem;
-        }
+        $product = $this->getProductByExistingImage($addedItem, $addedSimpleProduct);
 
-        return is_null($productToTest->getData('small_image')) ? "" : stripslashes($productToTest->getData('small_image'));
+        return is_null($product->getData('small_image')) ? "" : stripslashes($product->getData('small_image'));
     }
 
     /**
      * Helper function to get the correct image url
      * @param $addedItem
+     * @param $addedSimpleProduct
      * @return string
      */
     public function getImagePreferringVariantUrl($addedItem, $addedSimpleProduct): string
     {
-        $productToTest = $addedSimpleProduct;
-        if (is_null($addedSimpleProduct) || is_null($addedSimpleProduct->getData('small_image'))) {
-            $productToTest = $addedItem;
-        }
+        $product = $this->getProductByExistingImage($addedItem, $addedSimpleProduct);
 
-        return $this->imageHelper->init($productToTest, 'product_base_image')->getUrl();
+        return $this->imageHelper->init($product, 'product_base_image')->getUrl();
     }
 }
