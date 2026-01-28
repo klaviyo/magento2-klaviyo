@@ -245,7 +245,9 @@ class SalesQuoteProductAddAfter implements ObserverInterface
     {
         $product = $this->getProductByExistingImage($addedItem, $addedSimpleProduct);
 
-        return is_null($product->getData('small_image')) ? "" : stripslashes($product->getData('small_image'));
+        $smallImageAvailable = !is_null($product->getData('small_image')) && $product->getData('small_image') !== 'no_selection';
+
+        return $smallImageAvailable ?  stripslashes($product->getData('small_image')) : "";
     }
 
     /**
