@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+#### Added
+- Adds AddedItemImageUrl to Added To Cart event payload
+
 ### [4.4.2] - 2025-11-04
 
 #### Changed
