@@ -32,8 +32,9 @@ class SalesQuoteProductAddAfter implements ObserverInterface
 
     /**
      * Magento Image Helper
+     * @var Image
      */
-    private Image $imageHelper;
+    private $imageHelper;
 
     /**
      * @param Data $dataHelper
@@ -91,8 +92,8 @@ class SalesQuoteProductAddAfter implements ObserverInterface
 
         $addedItemData = [
             'AddedItemCategories' => (array) $addedProduct->getCategoryIds(),
-            'AddedItemImageUrlKey' => $this->getImagePreferringVariant($addedProduct, $simpleProduct),
-            'AddedItemImageUrl' => $this->getImagePreferringVariantUrl($addedProduct, $simpleProduct),
+            'AddedItemImageUrlKey' => $this->getImageKeyPreferringVariant($addedProduct, $simpleProduct),
+            'AddedItemImageUrl' => $this->getImageUrlPreferringVariant($addedProduct, $simpleProduct),
             'AddedItemPrice' => (float) $addedProduct->getFinalPrice(),
             'AddedItemQuantity' => (int) $addedItem->getQty(),
             'AddedItemProductID' => (int) $addedProduct->getId(),
@@ -142,7 +143,7 @@ class SalesQuoteProductAddAfter implements ObserverInterface
             $itemName = $item->getName();
             $currentProduct = [
                 'Categories' => (array) $itemCategories,
-                'ImageUrlKey' => $this->getImagePreferringVariant($product, $simpleProduct),
+                'ImageUrlKey' => $this->getImageKeyPreferringVariant($product, $simpleProduct),
                 'ProductId' => (int) $cartItemId,
                 'SimpleProductId' => (int) is_null($simpleProduct) ? null : $simpleProduct->getId(),
                 'Price' => (float) $product->getFinalPrice(),
@@ -241,7 +242,7 @@ class SalesQuoteProductAddAfter implements ObserverInterface
      * @param $addedSimpleProduct
      * @return string
      */
-    public function getImagePreferringVariant($addedItem, $addedSimpleProduct): string
+    public function getImageKeyPreferringVariant($addedItem, $addedSimpleProduct): string
     {
         $product = $this->getProductByExistingImage($addedItem, $addedSimpleProduct);
 
