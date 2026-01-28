@@ -256,7 +256,7 @@ class SalesQuoteProductAddAfter implements ObserverInterface
      * @param $addedSimpleProduct
      * @return string
      */
-    public function getImagePreferringVariantUrl($addedItem, $addedSimpleProduct): string
+    public function getImageUrlPreferringVariant($addedItem, $addedSimpleProduct): string
     {
         $product = $this->getProductByExistingImage($addedItem, $addedSimpleProduct);
 
