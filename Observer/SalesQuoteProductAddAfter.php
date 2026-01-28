@@ -248,7 +248,7 @@ class SalesQuoteProductAddAfter implements ObserverInterface
     public function getImagePreferringVariantUrl($addedItem, $addedSimpleProduct): string
     {
         $productToTest = $addedSimpleProduct;
-        if (is_null($addedSimpleProduct)) {
+        if (is_null($addedSimpleProduct) || is_null($addedSimpleProduct->getData('small_image'))) {
             $productToTest = $addedItem;
         }
 
