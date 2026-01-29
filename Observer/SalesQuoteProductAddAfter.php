@@ -3,6 +3,7 @@
 namespace Klaviyo\Reclaim\Observer;
 
 use Klaviyo\Reclaim\Helper\Data;
+use Klaviyo\Reclaim\Helper\Logger;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Catalog\Helper\Image;
@@ -36,6 +37,14 @@ class SalesQuoteProductAddAfter implements ObserverInterface
      */
     private $imageHelper;
 
+    private $logger;
+
+    private const IMAGE_PRIORITY = [
+        'small_image',
+        'image',
+        'thumbnail',
+    ];
+
     /**
      * @param Data $dataHelper
      * @param CategoryFactory $categoryFactory
@@ -44,12 +53,14 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         Data $dataHelper,
         CategoryFactory $categoryFactory,
         ProductRepositoryInterface $productRepository,
-        Image $imageHelper
+        Image $imageHelper,
+        Logger $logger
     ) {
         $this->_dataHelper = $dataHelper;
         $this->_categoryFactory = $categoryFactory;
         $this->productRepository = $productRepository;
         $this->imageHelper = $imageHelper;
+        $this->logger = $logger;
     }
 
     public function execute(Observer $observer)
@@ -87,13 +98,29 @@ class SalesQuoteProductAddAfter implements ObserverInterface
     public function klAddedToCartItemData($quote, $addedItem)
     {
         $addedProduct = $addedItem->getProduct();
+
+        // load the product fully, the product from the quote item may not have all the image attributes
+        $storeId = $addedItem->getStoreId();
+        if (!$storeId) {
+            $storeId = $quote->getStoreId();
+        }
+        if (!$storeId) {
+            $storeId = 0;
+        }
+        $fullyLoadedCartItem = $this->productRepository->getById(
+            (int) $addedItem->getProductId(),
+            false,
+            (int) $storeId,
+            true
+        );
+
         # try to grab the simple product
         $simpleProduct = $this->getSimpleProductForEvent($addedItem);
 
         $addedItemData = [
             'AddedItemCategories' => (array) $addedProduct->getCategoryIds(),
-            'AddedItemImageUrlKey' => $this->getImageKeyPreferringVariant($addedProduct, $simpleProduct),
-            'AddedItemImageUrl' => $this->getImageUrlPreferringVariant($addedProduct, $simpleProduct),
+            'AddedItemImageUrlKey' => $this->getImageKeyPreferringVariant($fullyLoadedCartItem, $simpleProduct),
+            'AddedItemImageUrl' => $this->getImageUrlPreferringVariant($fullyLoadedCartItem, $simpleProduct),
             'AddedItemPrice' => (float) $addedProduct->getFinalPrice(),
             'AddedItemQuantity' => (int) $addedItem->getQty(),
             'AddedItemProductID' => (int) $addedProduct->getId(),
@@ -216,24 +243,36 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         # try to grab the simple product
         $simpleProduct = null;
         try {
-            if ($addedItem->getProductType() == "configurable") {
+            if ($addedItem->getProductType() == "configurable" || $addedItem->getProductType() == "simple") {
+                // if $addedItem is configurable, the 'sku' on the item will point to the simple item that was ordered
+                // for simple products, we want to fetch the full catalog item object anyways
                 $simpleProduct = $this->productRepository->get($addedItem->getSku());
-            } elseif ($addedItem->getProductType() == "simple") {
-                $simpleProduct = $addedItem->getProduct();
             }
         } catch (NoSuchEntityException $ex) {
         }
         return $simpleProduct;
     }
 
+    private function doesImageExist($image)
+    {
+        return (!is_null($image) && $image !== 'no_selection');
+    }
+
     private function getProductByExistingImage($addedItem, $addedSimpleProduct)
     {
-        $productToReturn = $addedSimpleProduct;
-        if (is_null($addedSimpleProduct) || is_null($addedSimpleProduct->getData('small_image')) || $addedSimpleProduct->getData('small_image') === 'no_selection') {
-            $productToReturn = $addedItem;
+        if (is_null($addedSimpleProduct)) {
+            return $addedItem;
         }
 
-        return $productToReturn;
+        foreach (self::IMAGE_PRIORITY as $attributeCode) {
+            $imageValue = $addedSimpleProduct->getData($attributeCode);
+            if ($this->doesImageExist($imageValue)) {
+                return $addedSimpleProduct;
+            }
+        }
+
+        # if none of the images exist on the simple product, return the addedItem
+        return $addedItem;
     }
 
     /**
@@ -246,9 +285,14 @@ class SalesQuoteProductAddAfter implements ObserverInterface
     {
         $product = $this->getProductByExistingImage($addedItem, $addedSimpleProduct);
 
-        $smallImageAvailable = !is_null($product->getData('small_image')) && $product->getData('small_image') !== 'no_selection';
+        foreach (self::IMAGE_PRIORITY as $attributeCode) {
+            $imageValue = $product->getData($attributeCode);
+            if ($this->doesImageExist($imageValue)) {
+                return stripslashes($imageValue);
+            }
+        }
 
-        return $smallImageAvailable ?  stripslashes($product->getData('small_image')) : "";
+        return "";
     }
 
     /**
