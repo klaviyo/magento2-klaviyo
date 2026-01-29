@@ -257,7 +257,7 @@ class SalesQuoteProductAddAfter implements ObserverInterface
 
     private function doesImageExist($image)
     {
-        return (!is_null($image) && $image !== 'no_selection');
+        return ($image !== null && $image !== 'no_selection' && $image !== '');
     }
 
     private function getProductByExistingImage($addedItem, $addedSimpleProduct)
