@@ -243,12 +243,10 @@ class SalesQuoteProductAddAfter implements ObserverInterface
         # try to grab the simple product
         $simpleProduct = null;
         try {
-            if ($addedItem->getProductType() == "configurable") {
+            if ($addedItem->getProductType() == "configurable" || $addedItem->getProductType() == "simple") {
                 // if $addedItem is configurable, the 'sku' on the item will point to the simple item that was ordered
+                // if $addedItem is simple, return the product object so we can still populate the simple product related fields on the payload
                 $simpleProduct = $this->productRepository->get($addedItem->getSku());
-            } elseif ($addedItem->getProductType() == "simple") {
-                // return the addedItem so that we can still populate the simple product related fields on the payload
-                return $addedItem;
             }
         } catch (NoSuchEntityException $ex) {
         }
