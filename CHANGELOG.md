@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Added
 - Adds AddedItemImageUrl to Added To Cart event payload
 
+#### Fixed
+- Added fallback image selection for Added To Cart events to fix cases where there is no "small_image" set on the product. This greatly reduces the possibility that "AddedItemImageUrlKey" will be set to null or "no_selection"
+
 ### [4.4.2] - 2025-11-04
 
 #### Changed
