@@ -9,7 +9,7 @@
         }
     },
     "require-dev": {
-        "magento/magento-coding-standard": "38"
+        "magento/magento-coding-standard": "39"
     },
     "scripts": {
         "post-install-cmd": [
