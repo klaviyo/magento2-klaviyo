@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+### [4.4.3] - 2026-02-17
+
 #### Added
 - Adds AddedItemImageUrl to Added To Cart event payload
 
@@ -347,7 +349,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- END RELEASE NOTES -->
 <!-- BEGIN LINKS -->
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.4.2...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.4.3...HEAD
+[4.4.3]: https://github.com/klaviyo/magento2-klaviyo/compare/4.4.2...4.4.3
 [4.4.2]: https://github.com/klaviyo/magento2-klaviyo/compare/4.4.1...4.4.2
 [4.4.1]: https://github.com/klaviyo/magento2-klaviyo/compare/4.4.0...4.4.1
 [4.4.0]: https://github.com/klaviyo/magento2-klaviyo/compare/4.3.1...4.4.0
