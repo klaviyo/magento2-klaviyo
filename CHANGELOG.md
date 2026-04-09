@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+#### Fixed
+- Fixed race condition for adding profiles to a list, retries subscription if we attempt to create a profile that already exists.
+
 ### [4.4.3] - 2026-02-17
 
 #### Added
