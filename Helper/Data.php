@@ -2,6 +2,8 @@
 
 namespace Klaviyo\Reclaim\Helper;
 
+use Klaviyo\Reclaim\KlaviyoV3Sdk\Exception\KlaviyoApiException;
+use Klaviyo\Reclaim\KlaviyoV3Sdk\Exception\KlaviyoResourceConflictException;
 use Klaviyo\Reclaim\KlaviyoV3Sdk\KlaviyoV3Api;
 use Magento\Framework\App\Helper\Context;
 
@@ -61,10 +63,25 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->observerAtcPayload = null;
     }
 
+    /**
+     * Creates the KlaviyoV3Api client. Extracted to allow test subclasses to inject a mock.
+     *
+     * @return KlaviyoV3Api
+     */
+    protected function buildKlaviyoV3Api(): KlaviyoV3Api
+    {
+        return new KlaviyoV3Api(
+            $this->_klaviyoScopeSetting->getPublicApiKey(),
+            $this->_klaviyoScopeSetting->getPrivateApiKey(),
+            $this->_klaviyoScopeSetting,
+            $this->_klaviyoLogger
+        );
+    }
+
     public function getKlaviyoLists()
     {
         try {
-            $api = new KlaviyoV3Api($this->_klaviyoScopeSetting->getPublicApiKey(), $this->_klaviyoScopeSetting->getPrivateApiKey(), $this->_klaviyoScopeSetting, $this->_klaviyoLogger);
+            $api = $this->buildKlaviyoV3Api();
             $lists_response = $api->getLists();
             $lists = array();
 
@@ -109,7 +126,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $properties['last_name'] = $lastName;
         }
 
-        $api = new KlaviyoV3Api($this->_klaviyoScopeSetting->getPublicApiKey(), $this->_klaviyoScopeSetting->getPrivateApiKey(), $this->_klaviyoScopeSetting, $this->_klaviyoLogger);
+        $api = $this->buildKlaviyoV3Api();
 
         try {
             if ($optInSetting == ScopeSetting::API_SUBSCRIBE) {
@@ -130,14 +147,38 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
                 $api->subscribeMembersToList($listId, array($consent_profile_object));
             } else {
-                // Search for profile by email using the api/profiles endpoint
                 $existing_profile = $api->searchProfileByEmail($email);
                 if (!$existing_profile) {
-                    // If the profile exists, use the ID to add to a list
-                    // If the profile does not exist, create
-                    $new_profile = $api->createProfile($properties);
-                    $api->addProfileToList($listId, $new_profile["profile_id"]);
+                    // Profile does not yet exist — create it, then add to list.
+                    // if the profile gets created in the meantime, use the duplicate profile id on the 409 response
+                    try {
+                        $new_profile = $api->createProfile($properties);
+                        $api->addProfileToList($listId, $new_profile["profile_id"]);
+                    } catch (KlaviyoResourceConflictException $e) {
+                        $duplicate_profile_id = $e->getDuplicateProfileId();
+                        if ($duplicate_profile_id) {
+                            $this->_klaviyoLogger->log(sprintf(
+                                '[newsletter_race_condition_handled] Profile already existed for %s (duplicate_profile_id: %s). Proceeding with list subscription.',
+                                $email,
+                                $duplicate_profile_id
+                            ));
+                            $api->addProfileToList($listId, $duplicate_profile_id);
+                        } else {
+                            // 409 without a duplicate_profile_id is unexpected — fall back to search.
+                            $this->_klaviyoLogger->log(sprintf(
+                                '[newsletter_race_condition_handled] Profile already existed for %s but response lacked duplicate_profile_id. Falling back to profile search.',
+                                $email
+                            ));
+                            $fallback_profile = $api->searchProfileByEmail($email);
+                            if ($fallback_profile) {
+                                $api->addProfileToList($listId, $fallback_profile["profile_id"]);
+                            } else {
+                                throw $e;
+                            }
+                        }
+                    }
                 } else {
+                    // Profile already exists — use its ID to add to list.
                     $profile_id = $existing_profile["profile_id"];
                     $api->addProfileToList($listId, $profile_id);
                 }
@@ -153,7 +194,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function unsubscribeEmailFromKlaviyoList($email)
     {
-        $api = new KlaviyoV3Api($this->_klaviyoScopeSetting->getPublicApiKey(), $this->_klaviyoScopeSetting->getPrivateApiKey(), $this->_klaviyoScopeSetting, $this->_klaviyoLogger);
+        $api = $this->buildKlaviyoV3Api();
         $listId = $this->_klaviyoScopeSetting->getNewsletter();
         try {
             $response = $api->unsubscribeEmailFromKlaviyoList($email, $listId);
@@ -184,7 +225,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $params['time'] = $timestamp;
         }
 
-        $api = new KlaviyoV3Api($this->_klaviyoScopeSetting->getPublicApiKey($storeId), $this->_klaviyoScopeSetting->getPrivateApiKey($storeId), $this->_klaviyoScopeSetting, $this->_klaviyoLogger);
+        $api = $this->buildKlaviyoV3Api();
         return $api->track($params);
     }
 
