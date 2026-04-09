@@ -68,11 +68,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return KlaviyoV3Api
      */
-    protected function buildKlaviyoV3Api(): KlaviyoV3Api
+    protected function buildKlaviyoV3Api(int $storeId = null): KlaviyoV3Api
     {
         return new KlaviyoV3Api(
-            $this->_klaviyoScopeSetting->getPublicApiKey(),
-            $this->_klaviyoScopeSetting->getPrivateApiKey(),
+            $this->_klaviyoScopeSetting->getPublicApiKey($storeId),
+            $this->_klaviyoScopeSetting->getPrivateApiKey($storeId),
             $this->_klaviyoScopeSetting,
             $this->_klaviyoLogger
         );
@@ -225,7 +225,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $params['time'] = $timestamp;
         }
 
-        $api = $this->buildKlaviyoV3Api();
+        $api = $this->buildKlaviyoV3Api($storeId);
         return $api->track($params);
     }
 
