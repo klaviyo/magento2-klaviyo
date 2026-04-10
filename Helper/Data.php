@@ -68,7 +68,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return KlaviyoV3Api
      */
-    protected function buildKlaviyoV3Api(int $storeId = null): KlaviyoV3Api
+    protected function buildKlaviyoV3Api($storeId = null): KlaviyoV3Api
     {
         return new KlaviyoV3Api(
             $this->_klaviyoScopeSetting->getPublicApiKey($storeId),
