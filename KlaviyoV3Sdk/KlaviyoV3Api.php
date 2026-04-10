@@ -7,6 +7,7 @@ use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Klaviyo\Reclaim\KlaviyoV3Sdk\Exception\KlaviyoApiException;
 use Klaviyo\Reclaim\KlaviyoV3Sdk\Exception\KlaviyoAuthenticationException;
 use Klaviyo\Reclaim\KlaviyoV3Sdk\Exception\KlaviyoRateLimitException;
+use Klaviyo\Reclaim\KlaviyoV3Sdk\Exception\KlaviyoResourceConflictException;
 
 class KlaviyoV3Api
 {
@@ -89,11 +90,13 @@ class KlaviyoV3Api
      * @param $public_key
      * @param $private_key
      * @param ScopeSetting $klaviyoScopeSetting
+     * @param mixed $logger Optional logger (accepted for forward compatibility but unused internally)
      */
     public function __construct(
         $public_key,
         $private_key,
-        ScopeSetting $klaviyoScopeSetting
+        ScopeSetting $klaviyoScopeSetting,
+        $logger = null
     ) {
         $this->public_key = $public_key;
         $this->private_key = $private_key;
@@ -372,7 +375,7 @@ class KlaviyoV3Api
         $statusCode = curl_getinfo($curl, $phpVersionHttpCode);
         // In the event that the curl_exec fails for whatever reason, it responds with `false`,
         // Implementing a timeout and retry mechanism which will attempt the API call 3 times at 5 second intervals
-        if ($statusCode < 200 || $statusCode >= 300 || $response === false) {
+        if (($statusCode < 200 || $statusCode >= 300 || $response === false) && $statusCode !== 409) {
             if ($attempt < 3) {
                 sleep(1);
                 $this->requestV3($path, $method, $body, $attempt + 1);
@@ -453,7 +456,6 @@ class KlaviyoV3Api
      *
      * @return array
      */
-    #[\ReturnTypeWillChange]
     protected function getDefaultCurlOptions($method)
     {
         return array(
@@ -482,12 +484,22 @@ class KlaviyoV3Api
             throw new KlaviyoAuthenticationException(self::ERROR_NOT_AUTHORIZED, $statusCode);
         } elseif ($statusCode == 403) {
             throw new KlaviyoAuthenticationException(self::ERROR_FORBIDDEN, $statusCode);
+        } elseif ($statusCode == 409) {
+            throw new KlaviyoResourceConflictException(
+                isset($decoded_response['errors']) ? $decoded_response['errors'][0]['detail'] : sprintf(self::ERROR_NON_200_STATUS, $statusCode),
+                $statusCode,
+                null,
+                $decoded_response ?: []
+            );
         } elseif ($statusCode == 429) {
             throw new KlaviyoRateLimitException(
                 self::ERROR_RATE_LIMIT_EXCEEDED
             );
         } elseif ($statusCode < 200 || $statusCode >= 300) {
-            throw new KlaviyoApiException(isset($decoded_response['errors']) ? $decoded_response['errors'][0]['detail'] : sprintf(self::ERROR_NON_200_STATUS, $statusCode), $statusCode);
+            throw new KlaviyoApiException(
+                isset($decoded_response['errors']) ? $decoded_response['errors'][0]['detail'] : sprintf(self::ERROR_NON_200_STATUS, $statusCode),
+                $statusCode
+            );
         }
 
         return $decoded_response;
