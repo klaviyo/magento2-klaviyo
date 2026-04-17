@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
+* Added ability to load quote_id parameters that are unmasked. This adds support for logged in sessions where a masked quote_id was not created
 
 #### Fixed
 - Fixed race condition for adding profiles to a list, retries subscription if we attempt to create a profile that already exists.
