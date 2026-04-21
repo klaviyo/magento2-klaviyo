@@ -1,3 +1,4 @@
+const { test } = require('@playwright/test');
 const { generateEmail } = require('../utils/email');
 
 class Storefront {
@@ -15,15 +16,41 @@ class Storefront {
     }
 
     async goToProductPageAndGetProductName() {
-        // Navigate to a product page (using the first product from the homepage)
-        await Promise.all([
-            this.page.waitForResponse(resp => resp.url().includes(`/client/profiles/?company_id=`) && resp.status() === 202 && resp.request().method() === 'POST'),
-            this.page.goto(`${process.env.M2_BASE_URL}/radiant-tee.html?utm_email=${this.email}`),
-        ])
-        await this.page.locator('.page-title').waitFor();
-        // Get product details before adding to cart
-        const productName = await this.page.locator('.page-title').textContent();
-        return productName;
+        return await test.step('Navigate to product page and wait for Klaviyo identify call', async () => {
+            // Navigate to a product page (using the first product from the homepage)
+            const klaviyoUrl = `/client/profiles/?company_id=`;
+
+            let onRequestFailed;
+            const failedRequest = new Promise((_, reject) => {
+                onRequestFailed = request => {
+                    if (request.url().includes(klaviyoUrl)) {
+                        reject(new Error(
+                            `Klaviyo API request failed: ${request.failure()?.errorText ?? 'unknown error'}\n` +
+                            `URL: ${request.url()}\n` +
+                            `This is often caused by a VPN or proxy interfering with cross-origin requests.\n` +
+                            `Try disconnecting from your VPN and running the tests again.`
+                        ));
+                    }
+                };
+                this.page.on('requestfailed', onRequestFailed);
+            });
+
+            const successfulResponse = Promise.all([
+                this.page.waitForResponse(resp => resp.url().includes(klaviyoUrl) && resp.status() === 202 && resp.request().method() === 'POST'),
+                this.page.goto(`${process.env.M2_BASE_URL}/radiant-tee.html?utm_email=${this.email}`),
+            ]);
+
+            try {
+                await Promise.race([successfulResponse, failedRequest]);
+            } finally {
+                this.page.off('requestfailed', onRequestFailed);
+            }
+
+            await this.page.locator('.page-title').waitFor();
+            // Get product details before adding to cart
+            const productName = await this.page.locator('.page-title').textContent();
+            return productName;
+        });
     }
 
     async fillOutNewsletterFooterForm() {
@@ -68,13 +95,15 @@ class Storefront {
     }
 
     async addProductToCart() {
-        // Select size small and orange color
-        await this.page.locator('#option-label-size-144-item-167').click(); // Small size
-        await this.page.locator('#option-label-color-93-item-56').click(); // Orange color
+        await test.step('Select product options and add to cart', async () => {
+            // Select size small and orange color
+            await this.page.locator('#option-label-size-144-item-167').click(); // Small size
+            await this.page.locator('#option-label-color-93-item-56').click(); // Orange color
 
-        // Add product to cart
-        await this.page.click('button[title="Add to Cart"]');
-        await this.page.locator('.message-success').waitFor({ state: 'visible', timeout: 5000 });
+            // Add product to cart
+            await this.page.click('button[title="Add to Cart"]');
+            await this.page.locator('.message-success').waitFor({ state: 'visible', timeout: 5000 });
+        });
     }
 }
 
