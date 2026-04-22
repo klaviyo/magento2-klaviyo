@@ -18,16 +18,19 @@ class Storefront {
     async goToProductPageAndGetProductName() {
         return await test.step('Navigate to product page and wait for Klaviyo identify call', async () => {
             // Navigate to a product page (using the first product from the homepage)
-            const klaviyoUrl = `/client/profiles/?company_id=`;
+            const klaviyoIdentifyUrl = `/client/profiles/?company_id=`;
 
             let onRequestFailed;
             const failedRequest = new Promise((_, reject) => {
                 onRequestFailed = request => {
-                    if (request.url().includes(klaviyoUrl)) {
+                    const url = request.url();
+                    // Match any klaviyo.com request — klaviyo.js loads from static.klaviyo.com
+                    // and the identify POST goes to a.klaviyo.com. VPN can block either.
+                    if (url.includes('klaviyo.com')) {
                         reject(new Error(
-                            `Klaviyo API request failed: ${request.failure()?.errorText ?? 'unknown error'}\n` +
-                            `URL: ${request.url()}\n` +
-                            `This is often caused by a VPN or proxy interfering with cross-origin requests.\n` +
+                            `Klaviyo request failed: ${request.failure()?.errorText ?? 'unknown error'}\n` +
+                            `URL: ${url}\n` +
+                            `This is often caused by a VPN or proxy blocking requests to klaviyo.com.\n` +
                             `Try disconnecting from your VPN and running the tests again.`
                         ));
                     }
@@ -36,7 +39,7 @@ class Storefront {
             });
 
             const successfulResponse = Promise.all([
-                this.page.waitForResponse(resp => resp.url().includes(klaviyoUrl) && resp.status() === 202 && resp.request().method() === 'POST'),
+                this.page.waitForResponse(resp => resp.url().includes(klaviyoIdentifyUrl) && resp.status() === 202 && resp.request().method() === 'POST'),
                 this.page.goto(`${process.env.M2_BASE_URL}/radiant-tee.html?utm_email=${this.email}`),
             ]);
 
