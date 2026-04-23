@@ -1,0 +1,23 @@
+KlaviyoV3Sdk/KlaviyoV3Api.php
+  16c49b5e5262cf50 18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.1",
+  "base_commit_sha": "35c076ab742ef13b7f02a158fc67b6a355f9eb2f",
+  "prompts": {
+    "16c49b5e5262cf50": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d6a0dffc-02a3-4a8f-9144-72f9a702ffa9",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "scott.moucka",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 1,
+      "accepted_lines": 1,
+      "overriden_lines": 0
+    }
+  }
+}
