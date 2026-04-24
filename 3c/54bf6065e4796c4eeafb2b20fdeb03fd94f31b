@@ -1,0 +1,36 @@
+Test/e2e/locators/storefront.js
+  50322e6f2246fe86 62-70,72-75
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.1",
+  "base_commit_sha": "3c54bf6065e4796c4eeafb2b20fdeb03fd94f31b",
+  "prompts": {
+    "50322e6f2246fe86": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "97a90758-12cd-4dbd-86a0-dbff92098ab7",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "scott.moucka",
+      "messages": [],
+      "total_additions": 254,
+      "total_deletions": 185,
+      "accepted_lines": 130,
+      "overriden_lines": 0
+    },
+    "deb4b3da44f7941b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f9b0a2d8-ddd1-4c27-b4f6-48c36010131e",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "scott.moucka",
+      "messages": [],
+      "total_additions": 4,
+      "total_deletions": 1,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    }
+  }
+}
