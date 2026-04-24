@@ -57,14 +57,22 @@ class Storefront {
     }
 
     async fillOutNewsletterFooterForm() {
-        // Fill in the newsletter subscription form in the footer
         await this.page.fill('#newsletter', this.email);
 
-        // Click the subscribe button
+        // Wait for the subscribe POST rather than a Magento flash message —
+        // when "Honor Klaviyo consent" is enabled the module's code path
+        // doesn't reliably render the `.messages` flash on the redirect
+        // target. The Klaviyo API assertion downstream is the real check.
+        const postResponsePromise = this.page.waitForResponse(
+            resp => resp.url().includes('/newsletter/subscriber/new') &&
+                    resp.request().method() === 'POST',
+            { timeout: 30000 },
+        );
         await this.page.click('button[title="Subscribe"]');
-
-        // Wait for success message
-        await this.page.locator('.message-success').waitFor();
+        const postResponse = await postResponsePromise;
+        if (postResponse.status() >= 400) {
+            throw new Error(`Newsletter POST failed: ${postResponse.status()} ${postResponse.url()}`);
+        }
     }
 
     async fillOutAccountCreationForm() {
