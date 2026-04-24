@@ -1,0 +1,47 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.1",
+  "base_commit_sha": "03bec1de95ca218a44a016b6a874184561ea1ad0",
+  "prompts": {
+    "3203b387b1be2f47": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "511e7d93-5d07-48f1-b993-e9b9686a9b0b",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "scott.moucka",
+      "messages": [],
+      "total_additions": 405,
+      "total_deletions": 0,
+      "accepted_lines": 405,
+      "overriden_lines": 0
+    },
+    "50322e6f2246fe86": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "97a90758-12cd-4dbd-86a0-dbff92098ab7",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "scott.moucka",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 102,
+      "overriden_lines": 2
+    },
+    "deb4b3da44f7941b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f9b0a2d8-ddd1-4c27-b4f6-48c36010131e",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "scott.moucka",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 1,
+      "overriden_lines": 0
+    }
+  }
+}
