@@ -15,7 +15,7 @@ class KlaviyoV3Api
      * Host and versions
      */
     const KLAVIYO_HOST = 'https://a.klaviyo.com/';
-    const KLAVIYO_V3_REVISION = '2025-10-15';
+    const KLAVIYO_V3_REVISION = '2026-04-15';
 
     /**
      * Request methods
