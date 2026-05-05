@@ -116,6 +116,90 @@ class Storefront {
             await this.page.locator('.message-success').waitFor({ state: 'visible', timeout: 5000 });
         });
     }
+
+    /**
+     * Navigates to the Magento 2 checkout page and waits for it to be ready.
+     */
+    async goToCheckout() {
+        await this.page.goto(`${process.env.M2_BASE_URL}/checkout/`);
+        await this.page.locator('#checkout').waitFor({ timeout: 30000 });
+    }
+
+    /**
+     * Fills the guest email field shown at the top of the checkout shipping step.
+     */
+    async fillGuestCheckoutEmail() {
+        const emailField = this.page.locator('[name="username"]');
+        await emailField.waitFor({ timeout: 15000 });
+        await emailField.fill(this.email);
+    }
+
+    /**
+     * Fills the shipping address form in the checkout shipping step.
+     * @param {{ firstName: string, lastName: string, phone: string, street: string, city: string, regionCode: string, zip: string, countryId?: string }} info
+     */
+    async fillGuestShippingInfo(info) {
+        const { firstName, lastName, phone, street, city, regionCode, zip, countryId = 'US' } = info;
+        await this.page.fill('[name="firstname"]', firstName);
+        await this.page.fill('[name="lastname"]', lastName);
+        await this.page.fill('[name="street[0]"]', street);
+        await this.page.fill('[name="city"]', city);
+        await this.page.selectOption('[name="country_id"]', countryId);
+        // State/region may be a select or text input depending on country
+        const regionSelect = this.page.locator('[name="region_id"]');
+        if (await regionSelect.count() > 0) {
+            await regionSelect.selectOption({ label: regionCode });
+        } else {
+            await this.page.fill('[name="region"]', regionCode);
+        }
+        await this.page.fill('[name="postcode"]', zip);
+        await this.page.fill('[name="telephone"]', phone);
+    }
+
+    /**
+     * Selects the flat rate shipping method and waits for it to be checked.
+     */
+    async selectFlatRateShipping() {
+        const shippingMethod = this.page.locator('[value="flatrate_flatrate"]');
+        await shippingMethod.waitFor({ timeout: 15000 });
+        await shippingMethod.check();
+    }
+
+    /**
+     * Checks the mobile consent checkbox in the shipping form.
+     */
+    async checkMobileConsentAtCheckout() {
+        const checkbox = this.page.locator('[name="custom_attributes[kl_mobile_consent]"]');
+        await checkbox.waitFor({ timeout: 10000 });
+        await checkbox.check();
+    }
+
+    /**
+     * Checks the email consent checkbox in the shipping form.
+     */
+    async checkEmailConsentAtCheckout() {
+        const checkbox = this.page.locator('[name="custom_attributes[kl_email_consent]"]');
+        await checkbox.waitFor({ timeout: 10000 });
+        await checkbox.check();
+    }
+
+    /**
+     * Clicks "Next" to proceed from the shipping step to the payment step.
+     */
+    async proceedToPayment() {
+        await this.page.locator('button.continue').click();
+        await this.page.locator('.payment-method').waitFor({ timeout: 20000 });
+    }
+
+    /**
+     * Clicks "Place Order" and waits for the order success page.
+     */
+    async placeOrder() {
+        const placeOrderBtn = this.page.locator('button.action.primary.checkout');
+        await placeOrderBtn.waitFor({ timeout: 15000 });
+        await placeOrderBtn.click();
+        await this.page.locator('.checkout-success').waitFor({ timeout: 30000 });
+    }
 }
 
 module.exports = Storefront;

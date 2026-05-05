@@ -116,9 +116,54 @@ class Admin {
     await this.klaviyoConfigLink.scrollIntoViewIfNeeded();
     await this.klaviyoConfigLink.click();
     await this.klaviyoConsentAtCheckoutLink.scrollIntoViewIfNeeded();
-    await this.klaviyoConsentAtCheckoutLink.click();
-    await this.page.waitForLoadState();
+    await Promise.all([
+      this.page.waitForResponse(
+        resp => resp.request().url().includes('/admin/admin/system_config/edit/section/klaviyo_reclaim_consent_at_checkout') && resp.status() === 200,
+        { timeout: 15000 }
+      ),
+      this.klaviyoConsentAtCheckoutLink.click()
+    ]);
+  }
+
+  /**
+   * Enables or disables the mobile consent "is_active" field.
+   * Unchecks the "Use Default" checkbox before setting the value.
+   * @param {boolean} isActive
+   */
+  async setMobileConsentIsActive(isActive) {
+    const inheritId = '#klaviyo_reclaim_consent_at_checkout_mobile_consent_is_active_inherit';
+    const fieldId = '#klaviyo_reclaim_consent_at_checkout_mobile_consent_is_active';
+    const inherit = this.page.locator(inheritId);
+    if (await inherit.isChecked()) {
+      await inherit.uncheck();
+    }
+    await this.page.selectOption(fieldId, isActive ? '1' : '0');
+  }
+
+  /**
+   * Sets the mobile consent channels multiselect.
+   * Unchecks the "Use Default" checkbox before setting values.
+   * @param {string[]} channels - e.g. ['sms'], ['whatsapp'], or ['sms', 'whatsapp']
+   */
+  async setMobileConsentChannels(channels) {
+    const inheritId = '#klaviyo_reclaim_consent_at_checkout_mobile_consent_channels_inherit';
+    const fieldId = '#klaviyo_reclaim_consent_at_checkout_mobile_consent_channels';
+    const inherit = this.page.locator(inheritId);
+    if (await inherit.isChecked()) {
+      await inherit.uncheck();
+    }
+    await this.page.selectOption(fieldId, channels);
+  }
+
+  /**
+   * Saves the config form and waits for the success message.
+   */
+  async saveConsentAtCheckoutConfig() {
+    const saveButton = this.page.getByRole('button', { name: 'Save Config' });
+    await saveButton.click();
+    await this.page.locator('.message-success').waitFor({ timeout: 15000 });
   }
 }
+
 
 module.exports = Admin;
