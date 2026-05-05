@@ -1,0 +1,127 @@
+<?php
+
+declare(strict_types=1);
+
+// Stub Magento framework interfaces so MigrateSmsToMobileConsent can load without the full Magento stack.
+namespace Magento\Framework\Setup\Patch {
+    if (!interface_exists(\Magento\Framework\Setup\Patch\DataPatchInterface::class)) {
+        interface DataPatchInterface
+        {
+            public function apply();
+            public function getAliases();
+            public static function getDependencies();
+        }
+    }
+    if (!interface_exists(\Magento\Framework\Setup\Patch\PatchVersionInterface::class)) {
+        interface PatchVersionInterface
+        {
+            public static function getVersion();
+        }
+    }
+}
+
+namespace Magento\Framework\Setup {
+    if (!interface_exists(\Magento\Framework\Setup\ModuleDataSetupInterface::class)) {
+        interface ModuleDataSetupInterface
+        {
+            public function getConnection();
+            public function getTable($tableName);
+            public function startSetup();
+            public function endSetup();
+        }
+    }
+}
+
+namespace Magento\Framework\DB {
+    if (!class_exists(\Magento\Framework\DB\Select::class)) {
+        class Select
+        {
+            public function from($table, $cols = '*')
+            {
+                return $this;
+            }
+            public function where($condition, $value = null)
+            {
+                return $this;
+            }
+        }
+    }
+}
+
+namespace Magento\Framework\DB\Adapter {
+    if (!interface_exists(\Magento\Framework\DB\Adapter\AdapterInterface::class)) {
+        interface AdapterInterface
+        {
+            public function startSetup();
+            public function endSetup();
+            public function select();
+            public function fetchAll($select);
+            public function fetchOne($select);
+            public function insert($table, array $data);
+        }
+    }
+}
+
+namespace Klaviyo\Reclaim\Test\Unit\Setup\Patch\Data {
+
+    use Klaviyo\Reclaim\Setup\Patch\Data\MigrateSmsToMobileConsent;
+    use Magento\Framework\DB\Adapter\AdapterInterface;
+    use Magento\Framework\DB\Select;
+    use Magento\Framework\Setup\ModuleDataSetupInterface;
+    use PHPUnit\Framework\TestCase;
+
+    class MigrateSmsToMobileConsentTest extends TestCase
+    {
+        private function buildConnection(array $smsRows, bool $mobileRowExists): AdapterInterface
+        {
+            $selectStub = new Select();
+            $connection = $this->createMock(AdapterInterface::class);
+            $connection->method('select')->willReturn($selectStub);
+            $connection->method('fetchAll')->willReturn($smsRows);
+            $connection->method('fetchOne')->willReturn($mobileRowExists ? '1' : false);
+            return $connection;
+        }
+
+        private function buildPatch(AdapterInterface $connection): MigrateSmsToMobileConsent
+        {
+            $setup = $this->createMock(ModuleDataSetupInterface::class);
+            $setup->method('getConnection')->willReturn($connection);
+            $setup->method('getTable')->willReturn('core_config_data');
+            return new MigrateSmsToMobileConsent($setup);
+        }
+
+        public function test_apply_writes_nothing_when_no_sms_rows_exist()
+        {
+            $connection = $this->buildConnection([], false);
+            $connection->expects($this->never())->method('insert');
+            $this->buildPatch($connection)->apply();
+        }
+
+        public function test_apply_inserts_mobile_consent_rows_including_channels_when_sms_is_active_1()
+        {
+            $smsRows = [[
+                'scope' => 'default',
+                'scope_id' => '0',
+                'path' => 'klaviyo_reclaim_consent_at_checkout/sms_consent/is_active',
+                'value' => '1',
+            ]];
+            $connection = $this->buildConnection($smsRows, false);
+            // Expect 2 inserts: mobile_consent/is_active and mobile_consent/channels
+            $connection->expects($this->exactly(2))->method('insert');
+            $this->buildPatch($connection)->apply();
+        }
+
+        public function test_apply_does_not_insert_when_mobile_rows_already_exist()
+        {
+            $smsRows = [[
+                'scope' => 'default',
+                'scope_id' => '0',
+                'path' => 'klaviyo_reclaim_consent_at_checkout/sms_consent/is_active',
+                'value' => '1',
+            ]];
+            $connection = $this->buildConnection($smsRows, true);
+            $connection->expects($this->never())->method('insert');
+            $this->buildPatch($connection)->apply();
+        }
+    }
+}
