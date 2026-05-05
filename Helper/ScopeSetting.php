@@ -21,11 +21,12 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     const CONSENT_AT_CHECKOUT_EMAIL_CONSENT_TEXT = 'klaviyo_reclaim_consent_at_checkout/email_consent/consent_text';
     const CONSENT_AT_CHECKOUT_EMAIL_SORT_ORDER = 'klaviyo_reclaim_consent_at_checkout/email_consent/sort_order';
 
-    const CONSENT_AT_CHECKOUT_SMS_IS_ACTIVE = 'klaviyo_reclaim_consent_at_checkout/sms_consent/is_active';
-    const CONSENT_AT_CHECKOUT_SMS_LIST_ID = 'klaviyo_reclaim_consent_at_checkout/sms_consent/list_id';
-    const CONSENT_AT_CHECKOUT_SMS_CONSENT_TEXT = 'klaviyo_reclaim_consent_at_checkout/sms_consent/consent_text';
-    const CONSENT_AT_CHECKOUT_SMS_SORT_ORDER = 'klaviyo_reclaim_consent_at_checkout/sms_consent/sort_order';
-    const CONSENT_AT_CHECKOUT_SMS_LABEL_TEXT = 'klaviyo_reclaim_consent_at_checkout/sms_consent/label_text';
+    const CONSENT_AT_CHECKOUT_MOBILE_IS_ACTIVE = 'klaviyo_reclaim_consent_at_checkout/mobile_consent/is_active';
+    const CONSENT_AT_CHECKOUT_MOBILE_LIST_ID = 'klaviyo_reclaim_consent_at_checkout/mobile_consent/list_id';
+    const CONSENT_AT_CHECKOUT_MOBILE_CONSENT_TEXT = 'klaviyo_reclaim_consent_at_checkout/mobile_consent/consent_text';
+    const CONSENT_AT_CHECKOUT_MOBILE_SORT_ORDER = 'klaviyo_reclaim_consent_at_checkout/mobile_consent/sort_order';
+    const CONSENT_AT_CHECKOUT_MOBILE_LABEL_TEXT = 'klaviyo_reclaim_consent_at_checkout/mobile_consent/label_text';
+    const CONSENT_AT_CHECKOUT_MOBILE_CHANNELS = 'klaviyo_reclaim_consent_at_checkout/mobile_consent/channels';
 
     const KLAVIYO_NAME_DEFAULT = 'klaviyo';
 
@@ -236,29 +237,43 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_EMAIL_SORT_ORDER);
     }
 
-    public function getConsentAtCheckoutSMSIsActive($storeId = null)
+    public function getMobileConsentIsActive($storeId = null)
     {
-        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_IS_ACTIVE, $storeId);
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_MOBILE_IS_ACTIVE, $storeId);
     }
 
-    public function getConsentAtCheckoutSMSListId($storeId = null)
+    public function getMobileConsentListId($storeId = null)
     {
-        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_LIST_ID, $storeId);
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_MOBILE_LIST_ID, $storeId);
     }
 
-    public function getConsentAtCheckoutSMSConsentText($storeId = null)
+    public function getMobileConsentText($storeId = null)
     {
-        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_CONSENT_TEXT, $storeId);
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_MOBILE_CONSENT_TEXT, $storeId);
     }
 
-    public function getConsentAtCheckoutSMSConsentSortOrder($storeId = null)
+    public function getMobileConsentSortOrder($storeId = null)
     {
-        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_SORT_ORDER, $storeId);
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_MOBILE_SORT_ORDER, $storeId);
     }
 
-    public function getConsentAtCheckoutSMSConsentLabelText($storeId = null)
+    public function getMobileConsentLabelText($storeId = null)
     {
-        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_SMS_LABEL_TEXT, $storeId);
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_MOBILE_LABEL_TEXT, $storeId);
+    }
+
+    public function getMobileConsentChannels($storeId = null)
+    {
+        $value = $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_MOBILE_CHANNELS, $storeId);
+        if (empty($value)) {
+            return [];
+        }
+        return explode(',', $value);
+    }
+
+    public function isMobileChannelEnabled($storeId, $channel)
+    {
+        return in_array($channel, $this->getMobileConsentChannels($storeId));
     }
 
 
