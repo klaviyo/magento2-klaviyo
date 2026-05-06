@@ -20,27 +20,13 @@
         <klaviyo_reclaim_consent_at_checkout>
             <email_consent>
                 <consent_text>Subscribe for email updates</consent_text>
-            </email_consent>
-        </klaviyo_reclaim_consent_at_checkout>
-        <klaviyo_reclaim_consent_at_checkout>
-            <sms_consent>
-                <consent_text>*By checking this box and entering your phone number above, you consent to receive marketing text messages (e.g. [promos], [cart reminders]) from [company name] at the number provided, including messages sent by autodialer. Consent is not a condition of purchase. Msg &amp; data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy [link] &amp; Terms of Service [link].</consent_text>
-            </sms_consent>
-        </klaviyo_reclaim_consent_at_checkout>
-        <klaviyo_reclaim_consent_at_checkout>
-            <sms_consent>
-                <sort_order>200</sort_order>
-            </sms_consent>
-        </klaviyo_reclaim_consent_at_checkout>
-        <klaviyo_reclaim_consent_at_checkout>
-            <email_consent>
                 <sort_order>0</sort_order>
             </email_consent>
-        </klaviyo_reclaim_consent_at_checkout>
-        <klaviyo_reclaim_consent_at_checkout>
-            <sms_consent>
+            <mobile_consent>
                 <label_text>Subscribe for SMS updates*</label_text>
-            </sms_consent>
+                <consent_text>*By checking this box and entering your phone number above, you consent to receive marketing text messages (e.g. [promos], [cart reminders]) from [company name] at the number provided, including messages sent by autodialer. Consent is not a condition of purchase. Msg &amp; data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy [link] &amp; Terms of Service [link].</consent_text>
+                <sort_order>200</sort_order>
+            </mobile_consent>
         </klaviyo_reclaim_consent_at_checkout>
     </default>
 </config>
