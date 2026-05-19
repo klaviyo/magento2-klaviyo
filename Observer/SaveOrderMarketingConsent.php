@@ -59,7 +59,7 @@ class SaveOrderMarketingConsent implements ObserverInterface
         $order = $observer->getEvent()->getOrder();
         $quote = $observer->getEvent()->getQuote();
 
-        $order->setData('kl_mobile_consent', json_encode($quote->getKlMobileConsent()));
+        $order->setData('kl_sms_consent', json_encode($quote->getKlSmsConsent()));
         $order->setData('kl_email_consent', json_encode($quote->getKlEmailConsent()));
 
         $storeId = $quote->getStoreId();
@@ -90,7 +90,7 @@ class SaveOrderMarketingConsent implements ObserverInterface
             }
         }
 
-        if ($quote->getKlMobileConsent() && $this->_klaviyoScopeSetting->getMobileConsentIsActive($storeId)) {
+        if ($quote->getKlSmsConsent() && $this->_klaviyoScopeSetting->getMobileConsentIsActive($storeId)) {
             $mobileListId = $this->_klaviyoScopeSetting->getMobileConsentListId($storeId);
             $mobileSubscriptions = [];
 

@@ -60,10 +60,10 @@ namespace Klaviyo\Reclaim\Test\Unit\Model\Checkout {
             return $info;
         }
 
-        public function test_beforeSaveAddressInformation_mobile_consent_sets_kl_mobile_consent_on_quote()
+        public function test_beforeSaveAddressInformation_mobile_consent_sets_kl_sms_consent_on_quote()
         {
             $extAttributes = new class {
-                public function getKlMobileConsent(): string
+                public function getKlSmsConsent(): string
                 {
                     return '1';
                 }
@@ -74,10 +74,10 @@ namespace Klaviyo\Reclaim\Test\Unit\Model\Checkout {
             };
 
             $quote = $this->getMockBuilder(\stdClass::class)
-                ->addMethods(['setKlMobileConsent', 'setKlEmailConsent'])
+                ->addMethods(['setKlSmsConsent', 'setKlEmailConsent'])
                 ->getMock();
             $quote->expects($this->once())
-                ->method('setKlMobileConsent')
+                ->method('setKlSmsConsent')
                 ->with('1');
             $quote->expects($this->once())
                 ->method('setKlEmailConsent')
@@ -94,7 +94,7 @@ namespace Klaviyo\Reclaim\Test\Unit\Model\Checkout {
         public function test_beforeSaveAddressInformation_email_consent_sets_kl_email_consent_on_quote()
         {
             $extAttributes = new class {
-                public function getKlMobileConsent(): ?string
+                public function getKlSmsConsent(): ?string
                 {
                     return null;
                 }
@@ -105,10 +105,10 @@ namespace Klaviyo\Reclaim\Test\Unit\Model\Checkout {
             };
 
             $quote = $this->getMockBuilder(\stdClass::class)
-                ->addMethods(['setKlMobileConsent', 'setKlEmailConsent'])
+                ->addMethods(['setKlSmsConsent', 'setKlEmailConsent'])
                 ->getMock();
             $quote->expects($this->once())
-                ->method('setKlMobileConsent')
+                ->method('setKlSmsConsent')
                 ->with(null);
             $quote->expects($this->once())
                 ->method('setKlEmailConsent')

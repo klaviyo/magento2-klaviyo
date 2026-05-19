@@ -169,7 +169,7 @@ class Storefront {
      * Checks the mobile consent checkbox in the shipping form.
      */
     async checkMobileConsentAtCheckout() {
-        const checkbox = this.page.locator('[name="custom_attributes[kl_mobile_consent]"]');
+        const checkbox = this.page.locator('[name="custom_attributes[kl_sms_consent]"]');
         await checkbox.waitFor({ timeout: 10000 });
         await checkbox.check();
     }

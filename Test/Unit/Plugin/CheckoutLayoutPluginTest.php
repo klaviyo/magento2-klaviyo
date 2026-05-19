@@ -136,11 +136,10 @@ namespace Klaviyo\Reclaim\Test\Unit\Plugin {
             $fieldset = $result['components']['checkout']['children']['steps']['children']
                 ['shipping-step']['children']['shippingAddress']['children']
                 ['shipping-address-fieldset']['children'];
-            $this->assertArrayNotHasKey('kl_mobile_consent', $fieldset);
             $this->assertArrayNotHasKey('kl_sms_consent', $fieldset);
         }
 
-        public function test_afterProcess_mobile_active_no_default_address_adds_kl_mobile_consent_to_fieldset()
+        public function test_afterProcess_mobile_active_no_default_address_adds_kl_sms_consent_to_fieldset()
         {
             $scope = $this->makeScopeMock(true);
             $session = $this->getMockBuilder(Session::class)->disableOriginalConstructor()->getMock();
@@ -153,10 +152,9 @@ namespace Klaviyo\Reclaim\Test\Unit\Plugin {
             $fieldset = $result['components']['checkout']['children']['steps']['children']
                 ['shipping-step']['children']['shippingAddress']['children']
                 ['shipping-address-fieldset']['children'];
-            $this->assertArrayHasKey('kl_mobile_consent', $fieldset);
-            $this->assertArrayNotHasKey('kl_sms_consent', $fieldset);
-            $this->assertSame('kl_mobile_consent', $fieldset['kl_mobile_consent']['config']['id']);
-            $this->assertStringContainsString('kl_mobile_consent', $fieldset['kl_mobile_consent']['dataScope']);
+            $this->assertArrayHasKey('kl_sms_consent', $fieldset);
+            $this->assertSame('kl_sms_consent', $fieldset['kl_sms_consent']['config']['id']);
+            $this->assertStringContainsString('kl_sms_consent', $fieldset['kl_sms_consent']['dataScope']);
         }
 
         public function test_afterProcess_mobile_active_with_default_address_adds_mobile_consent_and_phone_to_before_form()
@@ -188,10 +186,8 @@ namespace Klaviyo\Reclaim\Test\Unit\Plugin {
             $beforeForm = $result['components']['checkout']['children']['steps']['children']
                 ['shipping-step']['children']['shippingAddress']['children']
                 ['before-form']['children'];
-            $this->assertArrayHasKey('kl_mobile_consent', $beforeForm);
-            $this->assertArrayHasKey('kl_mobile_phone_number', $beforeForm);
-            $this->assertArrayNotHasKey('kl_sms_consent', $beforeForm);
-            $this->assertArrayNotHasKey('kl_sms_phone_number', $beforeForm);
+            $this->assertArrayHasKey('kl_sms_consent', $beforeForm);
+            $this->assertArrayHasKey('kl_sms_phone_number', $beforeForm);
         }
     }
 }

@@ -130,7 +130,7 @@ namespace Klaviyo\Reclaim\Test\Unit\Observer {
             $this->address = $address;
         }
 
-        public function getKlMobileConsent()
+        public function getKlSmsConsent()
         {
             return $this->mobileConsent;
         }

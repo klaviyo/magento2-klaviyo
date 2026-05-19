@@ -60,9 +60,9 @@ class CheckoutLayoutPlugin
                     'template' => 'ui/form/field',
                     'elementTmpl' => 'ui/form/element/checkbox',
                     'options' => [],
-                    'id' => 'kl_mobile_consent',
+                    'id' => 'kl_sms_consent',
                 ],
-                'dataScope' => 'shippingAddress.custom_attributes.kl_mobile_consent',
+                'dataScope' => 'shippingAddress.custom_attributes.kl_sms_consent',
                 'label' => $this->_klaviyoScopeSetting->getMobileConsentLabelText(),
                 'description' => $this->_klaviyoScopeSetting->getMobileConsentText(),
                 'provider' => 'checkoutProvider',
@@ -70,13 +70,13 @@ class CheckoutLayoutPlugin
                 'checked' => false,
                 'validation' => [],
                 'sortOrder' => $this->_klaviyoScopeSetting->getMobileConsentSortOrder(),
-                'id' => 'kl_mobile_consent',
+                'id' => 'kl_sms_consent',
             ];
 
             $address = $this->_getDefaultAddressIfSetForCustomer();
 
             if (!$address) {
-                $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['shipping-address-fieldset']['children']['kl_mobile_consent'] = $mobileConsentCheckbox;
+                $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['shipping-address-fieldset']['children']['kl_sms_consent'] = $mobileConsentCheckbox;
             } else {
                 // extra un-editable field with saved phone number to display to logged in users with default address set
                 $mobileConsentTelephone = [
@@ -95,8 +95,8 @@ class CheckoutLayoutPlugin
                     'value' => $address->getTelephone()
                 ];
 
-                $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['before-form']['children']['kl_mobile_phone_number'] = $mobileConsentTelephone;
-                $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['before-form']['children']['kl_mobile_consent'] = $mobileConsentCheckbox;
+                $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['before-form']['children']['kl_sms_phone_number'] = $mobileConsentTelephone;
+                $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['before-form']['children']['kl_sms_consent'] = $mobileConsentCheckbox;
             }
         }
 
