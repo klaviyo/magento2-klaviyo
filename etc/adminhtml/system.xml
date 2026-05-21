@@ -96,7 +96,7 @@
                 <field id="channels" translate="label comment" type="multiselect" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Select channels for consent collection</label>
                     <source_model>Klaviyo\Reclaim\Model\Config\Source\MobileChannels</source_model>
-                    <comment><![CDATA[Text message must be set up to collect consent. <a target="_blank" href="https://help.klaviyo.com/hc/en-us/articles/360039190611-On-Demand-Training-Getting-Started-with-Klaviyo-SMS">Set up text message</a>]]></comment>
+                    <comment><![CDATA[Text message must be set up to collect consent.<br><a target="_blank" href="https://help.klaviyo.com/hc/en-us/articles/360039190611-On-Demand-Training-Getting-Started-with-Klaviyo-SMS">Set up text message</a>]]></comment>
                     <depends>
                         <field id="is_active">1</field>
                     </depends>
