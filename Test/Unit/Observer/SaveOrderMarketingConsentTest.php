@@ -58,6 +58,7 @@ namespace Klaviyo\Reclaim\Test\Unit\Observer {
     use Klaviyo\Reclaim\KlaviyoV3Sdk\KlaviyoV3Api;
     use Klaviyo\Reclaim\KlaviyoV3Sdk\Exception\KlaviyoApiException;
     use Klaviyo\Reclaim\Observer\SaveOrderMarketingConsent;
+    use Klaviyo\Reclaim\Util\PhoneFormatter;
     use Magento\Framework\Event\Observer;
 
     /**
@@ -67,9 +68,9 @@ namespace Klaviyo\Reclaim\Test\Unit\Observer {
     {
         private $apiMock;
 
-        public function __construct(Logger $logger, ScopeSetting $scopeSetting, KlaviyoV3Api $apiMock)
+        public function __construct(Logger $logger, ScopeSetting $scopeSetting, PhoneFormatter $phoneFormatter, KlaviyoV3Api $apiMock)
         {
-            parent::__construct($logger, $scopeSetting);
+            parent::__construct($logger, $scopeSetting, $phoneFormatter);
             $this->apiMock = $apiMock;
         }
 
@@ -98,15 +99,22 @@ namespace Klaviyo\Reclaim\Test\Unit\Observer {
     class StubAddress
     {
         private $phone;
+        private $countryId;
 
-        public function __construct($phone)
+        public function __construct($phone, $countryId = 'US')
         {
             $this->phone = $phone;
+            $this->countryId = $countryId;
         }
 
         public function getTelephone()
         {
             return $this->phone;
+        }
+
+        public function getCountryId()
+        {
+            return $this->countryId;
         }
     }
 
@@ -201,10 +209,10 @@ namespace Klaviyo\Reclaim\Test\Unit\Observer {
 
     class SaveOrderMarketingConsentTest extends TestCase
     {
-        private function makeMagentoObserver($mobileConsent, $emailConsent, $storeId = 1)
+        private function makeMagentoObserver($mobileConsent, $emailConsent, $storeId = 1, $phone = '(202) 555-0100', $country = 'US')
         {
             $order = new StubOrder();
-            $address = new StubAddress('555-0100');
+            $address = new StubAddress($phone, $country);
             $quote = new StubQuote($mobileConsent, $emailConsent, $storeId, 'buyer@example.com', $address);
             $event = new StubEvent($order, $quote);
             return new StubObserver($event);
@@ -262,7 +270,7 @@ namespace Klaviyo\Reclaim\Test\Unit\Observer {
                     })
                 );
 
-            $observer = new TestableSaveOrderMarketingConsent($this->makeLoggerMock(), $scope, $api);
+            $observer = new TestableSaveOrderMarketingConsent($this->makeLoggerMock(), $scope, new PhoneFormatter(), $api);
             $observer->execute($magentoObserver);
 
             $subscriptions = $capturedProfiles[0]['attributes']['subscriptions'];
@@ -287,7 +295,7 @@ namespace Klaviyo\Reclaim\Test\Unit\Observer {
                     })
                 );
 
-            $observer = new TestableSaveOrderMarketingConsent($this->makeLoggerMock(), $scope, $api);
+            $observer = new TestableSaveOrderMarketingConsent($this->makeLoggerMock(), $scope, new PhoneFormatter(), $api);
             $observer->execute($magentoObserver);
 
             $subscriptions = $capturedProfiles[0]['attributes']['subscriptions'];
@@ -312,7 +320,7 @@ namespace Klaviyo\Reclaim\Test\Unit\Observer {
                     })
                 );
 
-            $observer = new TestableSaveOrderMarketingConsent($this->makeLoggerMock(), $scope, $api);
+            $observer = new TestableSaveOrderMarketingConsent($this->makeLoggerMock(), $scope, new PhoneFormatter(), $api);
             $observer->execute($magentoObserver);
 
             $subscriptions = $capturedProfiles[0]['attributes']['subscriptions'];
@@ -343,7 +351,7 @@ namespace Klaviyo\Reclaim\Test\Unit\Observer {
                     })
                 );
 
-            $observer = new TestableSaveOrderMarketingConsent($this->makeLoggerMock(), $scope, $api);
+            $observer = new TestableSaveOrderMarketingConsent($this->makeLoggerMock(), $scope, new PhoneFormatter(), $api);
             $observer->execute($magentoObserver);
 
             $this->assertSame('email-list-id', $capturedListId);
@@ -366,7 +374,7 @@ namespace Klaviyo\Reclaim\Test\Unit\Observer {
                     $calls[] = ['listId' => $listId, 'profiles' => $profiles];
                 });
 
-            $observer = new TestableSaveOrderMarketingConsent($this->makeLoggerMock(), $scope, $api);
+            $observer = new TestableSaveOrderMarketingConsent($this->makeLoggerMock(), $scope, new PhoneFormatter(), $api);
             $observer->execute($magentoObserver);
 
             $this->assertCount(2, $calls);
@@ -402,7 +410,7 @@ namespace Klaviyo\Reclaim\Test\Unit\Observer {
                 $paramTypes[] = $type ? $type->getName() : '';
             }
             $this->assertNotContains('Klaviyo\Reclaim\Helper\Webhook', $paramTypes);
-            $this->assertCount(2, $constructor->getParameters());
+            $this->assertCount(3, $constructor->getParameters());
         }
 
         public function test_v3_error_does_not_fail_order_execute_returns_observer()
@@ -414,9 +422,45 @@ namespace Klaviyo\Reclaim\Test\Unit\Observer {
             $api->method('subscribeMembersToList')
                 ->willThrowException(new KlaviyoApiException('V3 error'));
 
-            $observer = new TestableSaveOrderMarketingConsent($this->makeLoggerMock(), $scope, $api);
+            $observer = new TestableSaveOrderMarketingConsent($this->makeLoggerMock(), $scope, new PhoneFormatter(), $api);
             $result = $observer->execute($magentoObserver);
             $this->assertSame($observer, $result);
+        }
+
+        public function test_mobile_consent_phone_unparseable_skips_mobile_subscribe_call()
+        {
+            $scope = $this->makeScopeMock(true, false, ['sms']);
+            $api = $this->makeApiMock();
+            $magentoObserver = $this->makeMagentoObserver('1', null, 1, 'not-a-number', 'US');
+
+            $api->expects($this->never())->method('subscribeMembersToList');
+
+            $logger = $this->makeLoggerMock();
+            $logger->expects($this->atLeastOnce())
+                ->method('log')
+                ->with($this->stringContains('Mobile subscribe skipped'));
+
+            $observer = new TestableSaveOrderMarketingConsent($logger, $scope, new PhoneFormatter(), $api);
+            $observer->execute($magentoObserver);
+        }
+
+        public function test_email_consent_unaffected_by_mobile_phone_failure()
+        {
+            $scope = $this->makeScopeMock(true, true, ['sms']);
+            $api = $this->makeApiMock();
+            $magentoObserver = $this->makeMagentoObserver('1', '1', 1, 'not-a-number', 'US');
+
+            $calls = [];
+            $api->method('subscribeMembersToList')
+                ->willReturnCallback(function ($listId, $profiles) use (&$calls) {
+                    $calls[] = ['listId' => $listId, 'profiles' => $profiles];
+                });
+
+            $observer = new TestableSaveOrderMarketingConsent($this->makeLoggerMock(), $scope, new PhoneFormatter(), $api);
+            $observer->execute($magentoObserver);
+
+            $this->assertCount(1, $calls, 'Only the email subscribe should fire when mobile phone is unparseable');
+            $this->assertSame('email-list-id', $calls[0]['listId']);
         }
     }
 }

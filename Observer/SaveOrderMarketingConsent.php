@@ -7,6 +7,7 @@ use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Klaviyo\Reclaim\KlaviyoV3Sdk\Exception\KlaviyoApiException;
 use Klaviyo\Reclaim\KlaviyoV3Sdk\Exception\KlaviyoResourceConflictException;
 use Klaviyo\Reclaim\KlaviyoV3Sdk\KlaviyoV3Api;
+use Klaviyo\Reclaim\Util\PhoneFormatter;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 
@@ -23,15 +24,23 @@ class SaveOrderMarketingConsent implements ObserverInterface
     protected $_klaviyoLogger;
 
     /**
+     * @var PhoneFormatter
+     */
+    protected $_phoneFormatter;
+
+    /**
      * @param Logger $klaviyoLogger
      * @param ScopeSetting $klaviyoScopeSetting
+     * @param PhoneFormatter $phoneFormatter
      */
     public function __construct(
         Logger $klaviyoLogger,
-        ScopeSetting $klaviyoScopeSetting
+        ScopeSetting $klaviyoScopeSetting,
+        PhoneFormatter $phoneFormatter
     ) {
         $this->_klaviyoLogger = $klaviyoLogger;
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
+        $this->_phoneFormatter = $phoneFormatter;
     }
 
     /**
@@ -112,21 +121,32 @@ class SaveOrderMarketingConsent implements ObserverInterface
 
             if (!empty($mobileSubscriptions)) {
                 $shippingInfo = $quote->getShippingAddress();
-                $mobileProfileObject = [
-                    'type' => 'profile',
-                    'attributes' => [
-                        'email' => $email,
-                        'phone_number' => $shippingInfo ? $shippingInfo->getTelephone() : null,
-                        'subscriptions' => $mobileSubscriptions,
-                    ],
-                ];
-                try {
-                    $api = $this->buildKlaviyoV3Api($storeId);
-                    $api->subscribeMembersToList($mobileListId, [$mobileProfileObject]);
-                } catch (KlaviyoApiException $e) {
-                    $this->_klaviyoLogger->log(sprintf('[SaveOrderMarketingConsent] Mobile subscribe failed: %s', $e->getMessage()));
-                } catch (KlaviyoResourceConflictException $e) {
-                    $this->_klaviyoLogger->log(sprintf('[SaveOrderMarketingConsent] Mobile subscribe conflict: %s', $e->getMessage()));
+                $rawPhone = $shippingInfo ? $shippingInfo->getTelephone() : null;
+                $isoCountry = $shippingInfo ? $shippingInfo->getCountryId() : null;
+                $e164Phone = $this->_phoneFormatter->formatE164($rawPhone, $isoCountry);
+
+                if ($e164Phone === null) {
+                    $this->_klaviyoLogger->log(sprintf(
+                        '[SaveOrderMarketingConsent] Mobile subscribe skipped: phone could not be normalized to E.164 for store %s',
+                        $storeId
+                    ));
+                } else {
+                    $mobileProfileObject = [
+                        'type' => 'profile',
+                        'attributes' => [
+                            'email' => $email,
+                            'phone_number' => $e164Phone,
+                            'subscriptions' => $mobileSubscriptions,
+                        ],
+                    ];
+                    try {
+                        $api = $this->buildKlaviyoV3Api($storeId);
+                        $api->subscribeMembersToList($mobileListId, [$mobileProfileObject]);
+                    } catch (KlaviyoApiException $e) {
+                        $this->_klaviyoLogger->log(sprintf('[SaveOrderMarketingConsent] Mobile subscribe failed: %s', $e->getMessage()));
+                    } catch (KlaviyoResourceConflictException $e) {
+                        $this->_klaviyoLogger->log(sprintf('[SaveOrderMarketingConsent] Mobile subscribe conflict: %s', $e->getMessage()));
+                    }
                 }
             }
         }
