@@ -3,25 +3,25 @@ define(['jquery'], function ($) {
 
     var PREFIX = 'klaviyo_reclaim_consent_at_checkout_mobile_consent_';
 
-    // Centralized per-channel content: helper texts and field defaults
+    // Per-channel copy. Strings are verbatim from Figma design 12257:10184.
     var CONTENT = {
         sms: {
-            channelsNote: 'Text message must be set up in Klaviyo. US merchants must comply with TCPA requirements for SMS marketing.',
-            labelDefault: 'Subscribe for SMS updates*',
-            consentDefault: '*By checking this box and entering your phone number above, you consent to receive marketing text messages (e.g. promos, cart reminders) from [company name] at the number provided, including messages sent by autodialer. Consent is not a condition of purchase. Msg &amp; data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy [link] &amp; Terms of Service [link].',
-            consentNote: 'You must include disclosure language for TCPA compliance for SMS marketing.'
+            channelsNote: 'Text message must be set up to collect consent. <a target="_blank" href="https://help.klaviyo.com/hc/en-us/articles/360039190611-On-Demand-Training-Getting-Started-with-Klaviyo-SMS">Set up text message</a>',
+            labelDefault: 'Check this box to receive promotional marketing texts (Exclusive text messaging-only deals, offers, and coupons)*',
+            consentDefault: '*By checking this box and entering your phone number, you consent to receive informational (e.g., order updates) and/or marketing texts (e.g., cart reminders) from [company name] including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy [link] & Terms [link].',
+            consentNote: 'Add disclosure language to adhere to compliance laws when collecting consent for text messaging. Update your Terms of Service and Privacy Policy for mobile messaging. <a target="_blank" href="https://help.klaviyo.com/hc/en-us/articles/360035055312-About-US-SMS-Compliance-Laws">Learn about text message compliance</a>'
         },
         whatsapp: {
-            channelsNote: 'WhatsApp must be set up in Klaviyo. Subscribers will receive messages via WhatsApp.',
-            labelDefault: 'Subscribe for WhatsApp updates',
-            consentDefault: 'By checking this box, you consent to receive marketing messages via WhatsApp from [company name]. You can unsubscribe at any time by using the unsubscribe link in any message.',
-            consentNote: 'Include disclosure language for WhatsApp consent compliance.'
+            channelsNote: 'WhatsApp must be set up to collect consent. <a target="_blank" href="https://help.klaviyo.com/hc/en-us/articles/whatsapp">Set up WhatsApp</a>',
+            labelDefault: 'Check this box to receive promotional marketing messages (Exclusive WhatsApp-only deals, offers, and coupons)*',
+            consentDefault: '*By checking this box and entering your phone number, you consent to receive informational (e.g., order updates) and/or marketing messages (e.g., cart reminders) from [company name] including messages sent by autodialer. Consent is not a condition of purchase. Unsubscribe at any time by replying STOP.',
+            consentNote: 'As a best practice, add disclosure language when collecting consent for WhatsApp. Update your Terms of Service and Privacy Policy for mobile messaging.'
         },
         both: {
-            channelsNote: 'Both SMS and WhatsApp must be set up in Klaviyo. US merchants must comply with TCPA requirements for SMS.',
-            labelDefault: 'Subscribe for SMS and WhatsApp updates*',
-            consentDefault: '*By checking this box and entering your phone number above, you consent to receive marketing text messages and WhatsApp messages from [company name]. Msg &amp; data rates may apply for SMS. Unsubscribe at any time by replying STOP (SMS) or using the unsubscribe link in WhatsApp. Privacy Policy [link] &amp; Terms of Service [link].',
-            consentNote: 'You must include disclosure language for TCPA compliance (SMS) and WhatsApp consent compliance.'
+            channelsNote: 'Text message and WhatsApp must be set up to collect consent. <a target="_blank" href="https://help.klaviyo.com/hc/en-us/articles/360039190611-On-Demand-Training-Getting-Started-with-Klaviyo-SMS">Set up text message</a> <a target="_blank" href="https://help.klaviyo.com/hc/en-us/articles/whatsapp">Set up WhatsApp</a>',
+            labelDefault: 'Check this box to receive promotional marketing messages (WhatsApp and text messaging-only deals, offers, and coupons)*',
+            consentDefault: '*By checking this box and entering your phone number, you consent to receive informational (e.g., order updates) and/or marketing texts and/or messages (e.g., cart reminders) from [company name] including messages sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP. Privacy Policy & Terms. Privacy Policy [link] & Terms [link].',
+            consentNote: 'Add disclosure language to adhere to compliance laws when collecting consent for text messaging and WhatsApp. Update your Terms of Service and Privacy Policy for mobile messaging. <a target="_blank" href="https://help.klaviyo.com/hc/en-us/articles/360035055312-About-US-SMS-Compliance-Laws">Learn about text message compliance</a>'
         }
     };
 

@@ -23,8 +23,8 @@
                 <sort_order>0</sort_order>
             </email_consent>
             <mobile_consent>
-                <label_text>Subscribe for SMS updates*</label_text>
-                <consent_text>*By checking this box and entering your phone number above, you consent to receive marketing text messages (e.g. [promos], [cart reminders]) from [company name] at the number provided, including messages sent by autodialer. Consent is not a condition of purchase. Msg &amp; data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy [link] &amp; Terms of Service [link].</consent_text>
+                <label_text>Check this box to receive promotional marketing texts (Exclusive text messaging-only deals, offers, and coupons)*</label_text>
+                <consent_text>*By checking this box and entering your phone number, you consent to receive informational (e.g., order updates) and/or marketing texts (e.g., cart reminders) from [company name] including texts sent by autodialer. Consent is not a condition of purchase. Msg &amp; data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy [link] &amp; Terms [link].</consent_text>
                 <sort_order>200</sort_order>
             </mobile_consent>
         </klaviyo_reclaim_consent_at_checkout>
