@@ -35,13 +35,20 @@ define(['jquery'], function ($) {
         return 'sms';
     }
 
-    function handleChange() {
+    function currentConfig() {
         var values = $('#' + PREFIX + 'channels').val() || [];
-        var cfg = CONTENT[resolveKey(values)];
+        return CONTENT[resolveKey(values)];
+    }
 
+    function applyHelperText(cfg) {
         $('#row_' + PREFIX + 'channels .note span').html(cfg.channelsNote);
         $('#row_' + PREFIX + 'consent_text .note span').html(cfg.consentNote);
+    }
 
+    function handleChange() {
+        var cfg = currentConfig();
+        applyHelperText(cfg);
+        // Field values are only overwritten on merchant interaction, not on load.
         $('#' + PREFIX + 'label_text').val(cfg.labelDefault);
         $('#' + PREFIX + 'consent_text').val(cfg.consentDefault);
     }
@@ -52,6 +59,7 @@ define(['jquery'], function ($) {
             if (!$channels.length) {
                 return;
             }
+            applyHelperText(currentConfig());
             $channels.on('change', handleChange);
         }
     };
