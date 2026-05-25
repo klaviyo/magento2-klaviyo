@@ -7,7 +7,7 @@ class MobileChannels implements \Magento\Framework\Option\ArrayInterface
     public function toOptionArray()
     {
         return [
-            ['value' => 'sms', 'label' => __('SMS')],
+            ['value' => 'sms', 'label' => __('Text message')],
             ['value' => 'whatsapp', 'label' => __('WhatsApp')],
         ];
     }
