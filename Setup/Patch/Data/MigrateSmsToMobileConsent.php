@@ -45,22 +45,19 @@ class MigrateSmsToMobileConsent implements DataPatchInterface, PatchVersionInter
             ->where('path LIKE ?', self::SMS_CONSENT_PREFIX . '%');
         $smsRows = $connection->fetchAll($select);
 
+        // Two-pass migration. Pass 1 copies every existing sms_consent row to
+        // its mobile_consent equivalent. Pass 2 backfills SMS defaults for
+        // active-SMS merchants who never customized label/disclosure copy.
+        // Pass 1 must complete before pass 2 so merchant customizations are
+        // never shadowed by a seed-default (which would happen if iteration
+        // hit /is_active before /label_text in config_id order).
+
         foreach ($smsRows as $row) {
             $mobilePath = str_replace('sms_consent/', 'mobile_consent/', $row['path']);
+            $this->seedIfMissing($connection, $table, $row['scope'], (int)$row['scope_id'], $mobilePath, $row['value']);
+        }
 
-            if (!$this->rowExists($connection, $table, $row['scope'], (int)$row['scope_id'], $mobilePath)) {
-                $connection->insert($table, [
-                    'scope'    => $row['scope'],
-                    'scope_id' => $row['scope_id'],
-                    'path'     => $mobilePath,
-                    'value'    => $row['value'],
-                ]);
-            }
-
-            // When SMS is_active was enabled, seed the channels field with 'sms'
-            // and backfill SMS-specific label/disclosure copy for merchants who
-            // never customized those fields (so they don't inherit the new
-            // "both" default in config.xml that mentions WhatsApp).
+        foreach ($smsRows as $row) {
             if (strpos($row['path'], '/is_active') !== false && $row['value'] == '1') {
                 $this->seedIfMissing($connection, $table, $row['scope'], (int)$row['scope_id'], self::MOBILE_CHANNELS_PATH, 'sms');
                 $this->seedIfMissing($connection, $table, $row['scope'], (int)$row['scope_id'], self::MOBILE_LABEL_TEXT_PATH, self::SMS_LABEL_DEFAULT);

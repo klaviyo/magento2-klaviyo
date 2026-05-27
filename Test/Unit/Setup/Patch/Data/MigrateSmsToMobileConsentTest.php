@@ -173,5 +173,44 @@ namespace Klaviyo\Reclaim\Test\Unit\Setup\Patch\Data {
             $connection->expects($this->never())->method('insert');
             $this->buildPatch($connection)->apply();
         }
+
+        public function test_apply_preserves_custom_label_text_when_is_active_iterated_before_label_text()
+        {
+            // Regression test for two-pass migration ordering.
+            // Merchant set is_active=1 first (lower config_id) and later
+            // customized label_text. Single-pass logic would have seeded the
+            // SMS default label_text during the is_active iteration before
+            // reaching the merchant's customized row, silently dropping the
+            // customization. Two-pass logic copies all source rows first, then
+            // backfills only what's still missing.
+            $smsRows = [
+                [
+                    'scope' => 'default',
+                    'scope_id' => '0',
+                    'path' => 'klaviyo_reclaim_consent_at_checkout/sms_consent/is_active',
+                    'value' => '1',
+                ],
+                [
+                    'scope' => 'default',
+                    'scope_id' => '0',
+                    'path' => 'klaviyo_reclaim_consent_at_checkout/sms_consent/label_text',
+                    'value' => 'My Custom SMS Copy',
+                ],
+            ];
+            $connection = $this->buildConnection($smsRows, false);
+            $firstValueByPath = [];
+            $connection->method('insert')->willReturnCallback(function ($table, array $data) use (&$firstValueByPath) {
+                if (!isset($firstValueByPath[$data['path']])) {
+                    $firstValueByPath[$data['path']] = $data['value'];
+                }
+            });
+            $this->buildPatch($connection)->apply();
+
+            $this->assertSame(
+                'My Custom SMS Copy',
+                $firstValueByPath['klaviyo_reclaim_consent_at_checkout/mobile_consent/label_text'] ?? null,
+                'Custom merchant label_text must be copied before the SMS default backfill runs'
+            );
+        }
     }
 }
