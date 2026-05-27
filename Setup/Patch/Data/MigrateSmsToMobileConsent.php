@@ -12,6 +12,16 @@ class MigrateSmsToMobileConsent implements DataPatchInterface, PatchVersionInter
 {
     private const SMS_CONSENT_PREFIX = 'klaviyo_reclaim_consent_at_checkout/sms_consent/';
     private const MOBILE_CHANNELS_PATH = 'klaviyo_reclaim_consent_at_checkout/mobile_consent/channels';
+    private const MOBILE_LABEL_TEXT_PATH = 'klaviyo_reclaim_consent_at_checkout/mobile_consent/label_text';
+    private const MOBILE_CONSENT_TEXT_PATH = 'klaviyo_reclaim_consent_at_checkout/mobile_consent/consent_text';
+
+    // SMS-specific Figma defaults — backfilled for merchants upgrading from
+    // SMS-only consent who never customized these fields. Without this
+    // backfill they'd fall through to the new mobile_consent defaults in
+    // config.xml (which are "both"-channel copy mentioning WhatsApp).
+    // Canonical source: view/adminhtml/web/js/mobile-consent-form.js (CONTENT.sms).
+    private const SMS_LABEL_DEFAULT = 'Check this box to receive promotional marketing texts (Exclusive text messaging-only deals, offers, and coupons)';
+    private const SMS_CONSENT_DEFAULT = 'By checking this box and entering your phone number, you consent to receive informational (e.g., order updates) and/or marketing texts (e.g., cart reminders) from [company name] including texts sent by autodialer. Consent is not a condition of purchase. Msg & data rates may apply. Msg frequency varies. Unsubscribe at any time by replying STOP or clicking the unsubscribe link (where available). Privacy Policy [link] & Terms [link].';
 
     /**
      * @var ModuleDataSetupInterface
@@ -48,15 +58,13 @@ class MigrateSmsToMobileConsent implements DataPatchInterface, PatchVersionInter
             }
 
             // When SMS is_active was enabled, seed the channels field with 'sms'
+            // and backfill SMS-specific label/disclosure copy for merchants who
+            // never customized those fields (so they don't inherit the new
+            // "both" default in config.xml that mentions WhatsApp).
             if (strpos($row['path'], '/is_active') !== false && $row['value'] == '1') {
-                if (!$this->rowExists($connection, $table, $row['scope'], (int)$row['scope_id'], self::MOBILE_CHANNELS_PATH)) {
-                    $connection->insert($table, [
-                        'scope'    => $row['scope'],
-                        'scope_id' => $row['scope_id'],
-                        'path'     => self::MOBILE_CHANNELS_PATH,
-                        'value'    => 'sms',
-                    ]);
-                }
+                $this->seedIfMissing($connection, $table, $row['scope'], (int)$row['scope_id'], self::MOBILE_CHANNELS_PATH, 'sms');
+                $this->seedIfMissing($connection, $table, $row['scope'], (int)$row['scope_id'], self::MOBILE_LABEL_TEXT_PATH, self::SMS_LABEL_DEFAULT);
+                $this->seedIfMissing($connection, $table, $row['scope'], (int)$row['scope_id'], self::MOBILE_CONSENT_TEXT_PATH, self::SMS_CONSENT_DEFAULT);
             }
         }
 
@@ -87,5 +95,18 @@ class MigrateSmsToMobileConsent implements DataPatchInterface, PatchVersionInter
             ->where('scope_id = ?', $scopeId)
             ->where('path = ?', $path);
         return (bool) $connection->fetchOne($select);
+    }
+
+    private function seedIfMissing($connection, string $table, string $scope, int $scopeId, string $path, string $value): void
+    {
+        if ($this->rowExists($connection, $table, $scope, $scopeId, $path)) {
+            return;
+        }
+        $connection->insert($table, [
+            'scope'    => $scope,
+            'scope_id' => $scopeId,
+            'path'     => $path,
+            'value'    => $value,
+        ]);
     }
 }

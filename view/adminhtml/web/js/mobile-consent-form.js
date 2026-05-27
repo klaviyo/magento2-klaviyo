@@ -45,6 +45,18 @@ define(['jquery'], function ($) {
         $('#row_' + PREFIX + 'consent_text .note span').html(cfg.consentNote);
     }
 
+    // At store/website scope each field has a "Use Default" / "Use Website"
+    // checkbox (`#{fieldId}_inherit`). When checked, the field is disabled and
+    // Magento excludes it from the POST. Auto-population has to clear that
+    // first so the new value persists on Save Config.
+    function setInheritableFieldValue(fieldId, value) {
+        var $inherit = $('#' + fieldId + '_inherit');
+        if ($inherit.length && $inherit.is(':checked')) {
+            $inherit.prop('checked', false);
+        }
+        $('#' + fieldId).prop('disabled', false).val(value);
+    }
+
     function handleChange() {
         var cfg = currentConfig();
         if (cfg === null) {
@@ -52,8 +64,8 @@ define(['jquery'], function ($) {
         }
         applyHelperText(cfg);
         // Field values are only overwritten on merchant interaction, not on load.
-        $('#' + PREFIX + 'label_text').val(cfg.labelDefault);
-        $('#' + PREFIX + 'consent_text').val(cfg.consentDefault);
+        setInheritableFieldValue(PREFIX + 'label_text', cfg.labelDefault);
+        setInheritableFieldValue(PREFIX + 'consent_text', cfg.consentDefault);
     }
 
     return {

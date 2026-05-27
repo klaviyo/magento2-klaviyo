@@ -48,6 +48,26 @@ namespace Magento\Framework\DB {
     }
 }
 
+namespace Klaviyo\Reclaim\Test\Unit\Setup\Patch\Data\Stubs {
+    /**
+     * Query-builder shim used by the test mock. Cannot reuse
+     * Magento\Framework\DB\Select directly because the real Magento class
+     * (when autoloaded in a full Magento test environment) requires
+     * constructor args, which breaks the test stub instantiation.
+     */
+    class SelectStub
+    {
+        public function from($table, $cols = '*')
+        {
+            return $this;
+        }
+        public function where($condition, $value = null)
+        {
+            return $this;
+        }
+    }
+}
+
 namespace Magento\Framework\DB\Adapter {
     if (!interface_exists(\Magento\Framework\DB\Adapter\AdapterInterface::class)) {
         interface AdapterInterface
@@ -65,8 +85,8 @@ namespace Magento\Framework\DB\Adapter {
 namespace Klaviyo\Reclaim\Test\Unit\Setup\Patch\Data {
 
     use Klaviyo\Reclaim\Setup\Patch\Data\MigrateSmsToMobileConsent;
+    use Klaviyo\Reclaim\Test\Unit\Setup\Patch\Data\Stubs\SelectStub;
     use Magento\Framework\DB\Adapter\AdapterInterface;
-    use Magento\Framework\DB\Select;
     use Magento\Framework\Setup\ModuleDataSetupInterface;
     use PHPUnit\Framework\TestCase;
 
@@ -74,7 +94,7 @@ namespace Klaviyo\Reclaim\Test\Unit\Setup\Patch\Data {
     {
         private function buildConnection(array $smsRows, bool $mobileRowExists): AdapterInterface
         {
-            $selectStub = new Select();
+            $selectStub = new SelectStub();
             $connection = $this->createMock(AdapterInterface::class);
             $connection->method('select')->willReturn($selectStub);
             $connection->method('fetchAll')->willReturn($smsRows);
@@ -97,7 +117,7 @@ namespace Klaviyo\Reclaim\Test\Unit\Setup\Patch\Data {
             $this->buildPatch($connection)->apply();
         }
 
-        public function test_apply_inserts_mobile_consent_rows_including_channels_when_sms_is_active_1()
+        public function test_apply_inserts_mobile_consent_rows_including_channels_and_sms_backfill_when_sms_is_active_1()
         {
             $smsRows = [[
                 'scope' => 'default',
@@ -106,9 +126,39 @@ namespace Klaviyo\Reclaim\Test\Unit\Setup\Patch\Data {
                 'value' => '1',
             ]];
             $connection = $this->buildConnection($smsRows, false);
-            // Expect 2 inserts: mobile_consent/is_active and mobile_consent/channels
-            $connection->expects($this->exactly(2))->method('insert');
+            // Expect 4 inserts: mobile_consent/is_active, /channels, /label_text, /consent_text
+            $connection->expects($this->exactly(4))->method('insert');
             $this->buildPatch($connection)->apply();
+        }
+
+        public function test_apply_seeds_sms_specific_label_and_consent_text_when_no_source_rows_exist()
+        {
+            $smsRows = [[
+                'scope' => 'default',
+                'scope_id' => '0',
+                'path' => 'klaviyo_reclaim_consent_at_checkout/sms_consent/is_active',
+                'value' => '1',
+            ]];
+            $connection = $this->buildConnection($smsRows, false);
+            $insertedPaths = [];
+            $insertedValues = [];
+            $connection->method('insert')->willReturnCallback(function ($table, array $data) use (&$insertedPaths, &$insertedValues) {
+                $insertedPaths[] = $data['path'];
+                $insertedValues[$data['path']] = $data['value'];
+            });
+            $this->buildPatch($connection)->apply();
+
+            $this->assertContains('klaviyo_reclaim_consent_at_checkout/mobile_consent/label_text', $insertedPaths);
+            $this->assertContains('klaviyo_reclaim_consent_at_checkout/mobile_consent/consent_text', $insertedPaths);
+
+            $this->assertStringContainsString(
+                'Exclusive text messaging-only',
+                $insertedValues['klaviyo_reclaim_consent_at_checkout/mobile_consent/label_text']
+            );
+            $this->assertStringContainsString(
+                'marketing texts (e.g., cart reminders)',
+                $insertedValues['klaviyo_reclaim_consent_at_checkout/mobile_consent/consent_text']
+            );
         }
 
         public function test_apply_does_not_insert_when_mobile_rows_already_exist()

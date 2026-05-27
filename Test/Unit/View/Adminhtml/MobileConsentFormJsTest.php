@@ -117,4 +117,13 @@ class MobileConsentFormJsTest extends TestCase
             'JS must have consentDefault per-channel for auto-populate'
         );
     }
+
+    public function test_mobile_consent_form_js_handles_inherit_checkbox_for_field_writes(): void
+    {
+        $this->assertStringContainsString(
+            '_inherit',
+            $this->jsContent,
+            'JS must reference the Use Default _inherit checkbox so store/website-scope writes persist on Save Config'
+        );
+    }
 }
