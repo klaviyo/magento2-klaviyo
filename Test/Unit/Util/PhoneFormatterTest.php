@@ -9,7 +9,8 @@ use PHPUnit\Framework\TestCase;
 
 class PhoneFormatterTest extends TestCase
 {
-    private PhoneFormatter $formatter;
+    /** @var PhoneFormatter */
+    private $formatter;
 
     protected function setUp(): void
     {
