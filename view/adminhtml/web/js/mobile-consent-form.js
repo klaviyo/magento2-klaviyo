@@ -27,17 +27,17 @@ define(['jquery'], function ($) {
         }
     };
 
-    function resolveKey(values) {
-        var hasSms = values.indexOf('sms') !== -1;
-        var hasWa = values.indexOf('whatsapp') !== -1;
-        if (hasSms && hasWa) { return 'both'; }
-        if (hasWa) { return 'whatsapp'; }
-        return 'sms';
-    }
-
+    // Returns the CONTENT entry for the current selection, or null if the
+    // multiselect is empty. An empty selection has no meaningful default —
+    // callers should leave existing helper text and field values untouched.
     function currentConfig() {
         var values = $('#' + PREFIX + 'channels').val() || [];
-        return CONTENT[resolveKey(values)];
+        var hasSms = values.indexOf('sms') !== -1;
+        var hasWa = values.indexOf('whatsapp') !== -1;
+        if (hasSms && hasWa) { return CONTENT.both; }
+        if (hasWa) { return CONTENT.whatsapp; }
+        if (hasSms) { return CONTENT.sms; }
+        return null;
     }
 
     function applyHelperText(cfg) {
@@ -47,6 +47,9 @@ define(['jquery'], function ($) {
 
     function handleChange() {
         var cfg = currentConfig();
+        if (cfg === null) {
+            return;
+        }
         applyHelperText(cfg);
         // Field values are only overwritten on merchant interaction, not on load.
         $('#' + PREFIX + 'label_text').val(cfg.labelDefault);
@@ -59,7 +62,10 @@ define(['jquery'], function ($) {
             if (!$channels.length) {
                 return;
             }
-            applyHelperText(currentConfig());
+            var cfg = currentConfig();
+            if (cfg !== null) {
+                applyHelperText(cfg);
+            }
             $channels.on('change', handleChange);
         }
     };
