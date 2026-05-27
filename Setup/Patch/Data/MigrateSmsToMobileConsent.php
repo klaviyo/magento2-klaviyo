@@ -94,7 +94,7 @@ class MigrateSmsToMobileConsent implements DataPatchInterface, PatchVersionInter
         return (bool) $connection->fetchOne($select);
     }
 
-    private function seedIfMissing($connection, string $table, string $scope, int $scopeId, string $path, string $value): void
+    private function seedIfMissing($connection, string $table, string $scope, int $scopeId, string $path, ?string $value): void
     {
         if ($this->rowExists($connection, $table, $scope, $scopeId, $path)) {
             return;

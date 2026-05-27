@@ -174,6 +174,31 @@ namespace Klaviyo\Reclaim\Test\Unit\Setup\Patch\Data {
             $this->buildPatch($connection)->apply();
         }
 
+        public function test_apply_handles_null_source_row_value_without_typeerror()
+        {
+            // core_config_data.value is nullable; strict_types=1 in the patch
+            // would crash setup:upgrade if seedIfMissing rejected null values.
+            $smsRows = [[
+                'scope' => 'default',
+                'scope_id' => '0',
+                'path' => 'klaviyo_reclaim_consent_at_checkout/sms_consent/label_text',
+                'value' => null,
+            ]];
+            $connection = $this->buildConnection($smsRows, false);
+            $insertedValues = [];
+            $connection->method('insert')->willReturnCallback(function ($table, array $data) use (&$insertedValues) {
+                $insertedValues[$data['path']] = $data['value'];
+            });
+            $this->buildPatch($connection)->apply();
+
+            $this->assertArrayHasKey(
+                'klaviyo_reclaim_consent_at_checkout/mobile_consent/label_text',
+                $insertedValues,
+                'Null-valued source rows must still be copied (with null preserved)'
+            );
+            $this->assertNull($insertedValues['klaviyo_reclaim_consent_at_checkout/mobile_consent/label_text']);
+        }
+
         public function test_apply_preserves_custom_label_text_when_is_active_iterated_before_label_text()
         {
             // Regression test for two-pass migration ordering.
