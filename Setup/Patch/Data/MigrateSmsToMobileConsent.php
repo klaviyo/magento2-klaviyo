@@ -59,9 +59,22 @@ class MigrateSmsToMobileConsent implements DataPatchInterface, PatchVersionInter
 
         foreach ($smsRows as $row) {
             if (strpos($row['path'], '/is_active') !== false && $row['value'] == '1') {
+                // channels is a new field with no pre-migration value at any
+                // scope, so seed it at the same scope where is_active=1 was
+                // set — matching the ticket spec ("channels = ['sms'] where
+                // SMS was active") and respecting any per-scope intent.
                 $this->seedIfMissing($connection, $table, $row['scope'], (int)$row['scope_id'], self::MOBILE_CHANNELS_PATH, 'sms');
-                $this->seedIfMissing($connection, $table, $row['scope'], (int)$row['scope_id'], self::MOBILE_LABEL_TEXT_PATH, self::SMS_LABEL_DEFAULT);
-                $this->seedIfMissing($connection, $table, $row['scope'], (int)$row['scope_id'], self::MOBILE_CONSENT_TEXT_PATH, self::SMS_CONSENT_DEFAULT);
+
+                // label_text and consent_text already had pre-migration values
+                // that could be inherited down the scope chain. Seeding at a
+                // non-default scope would override that inherited value with
+                // SMS boilerplate, silently regressing the merchant's content.
+                // Seed at the default scope only; Magento's scope-resolution
+                // chain delivers the value to child scopes that have no
+                // override. If pass 1 already copied a default-scope
+                // customization, seedIfMissing is a no-op here.
+                $this->seedIfMissing($connection, $table, 'default', 0, self::MOBILE_LABEL_TEXT_PATH, self::SMS_LABEL_DEFAULT);
+                $this->seedIfMissing($connection, $table, 'default', 0, self::MOBILE_CONSENT_TEXT_PATH, self::SMS_CONSENT_DEFAULT);
             }
         }
 

@@ -199,6 +199,57 @@ namespace Klaviyo\Reclaim\Test\Unit\Setup\Patch\Data {
             $this->assertNull($insertedValues['klaviyo_reclaim_consent_at_checkout/mobile_consent/label_text']);
         }
 
+        public function test_apply_only_seeds_label_and_consent_defaults_at_default_scope_to_preserve_inheritance()
+        {
+            // Regression test for scope-inheritance breakage.
+            // Merchant had is_active=1 at a store scope and label_text customized
+            // at the default scope (inherited by the store). Previously pass 2
+            // seeded SMS_LABEL_DEFAULT at the store scope, explicitly overriding
+            // the inherited customization. Seeding only at the default scope
+            // lets Magento's scope-resolution chain deliver whatever value
+            // (custom or default) the parent scopes already provide.
+            $smsRows = [[
+                'scope' => 'stores',
+                'scope_id' => '1',
+                'path' => 'klaviyo_reclaim_consent_at_checkout/sms_consent/is_active',
+                'value' => '1',
+            ]];
+            $connection = $this->buildConnection($smsRows, false);
+            $insertedRows = [];
+            $connection->method('insert')->willReturnCallback(function ($table, array $data) use (&$insertedRows) {
+                $insertedRows[] = $data;
+            });
+            $this->buildPatch($connection)->apply();
+
+            $textPaths = [
+                'klaviyo_reclaim_consent_at_checkout/mobile_consent/label_text',
+                'klaviyo_reclaim_consent_at_checkout/mobile_consent/consent_text',
+            ];
+            foreach ($insertedRows as $row) {
+                if (!in_array($row['path'], $textPaths, true)) {
+                    continue;
+                }
+                $this->assertSame(
+                    'default',
+                    $row['scope'],
+                    'label_text/consent_text defaults must only be seeded at default scope, not ' . $row['scope']
+                );
+                $this->assertSame(
+                    '0',
+                    (string) $row['scope_id'],
+                    'label_text/consent_text defaults must only be seeded at scope_id=0'
+                );
+            }
+
+            // Channels still seeded at the active scope (its own pre-migration semantics)
+            $channelsRows = array_values(array_filter($insertedRows, function ($r) {
+                return $r['path'] === 'klaviyo_reclaim_consent_at_checkout/mobile_consent/channels';
+            }));
+            $this->assertCount(1, $channelsRows);
+            $this->assertSame('stores', $channelsRows[0]['scope']);
+            $this->assertSame('1', (string) $channelsRows[0]['scope_id']);
+        }
+
         public function test_apply_preserves_custom_label_text_when_is_active_iterated_before_label_text()
         {
             // Regression test for two-pass migration ordering.
