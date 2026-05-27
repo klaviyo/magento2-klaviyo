@@ -92,10 +92,10 @@ class SaveOrderMarketingConsent implements ObserverInterface
             try {
                 $api = $this->buildKlaviyoV3Api($storeId);
                 $api->subscribeMembersToList($listId, [$emailProfileObject]);
-            } catch (KlaviyoApiException $e) {
-                $this->_klaviyoLogger->log(sprintf('[SaveOrderMarketingConsent] Email subscribe failed: %s', $e->getMessage()));
             } catch (KlaviyoResourceConflictException $e) {
                 $this->_klaviyoLogger->log(sprintf('[SaveOrderMarketingConsent] Email subscribe conflict: %s', $e->getMessage()));
+            } catch (KlaviyoApiException $e) {
+                $this->_klaviyoLogger->log(sprintf('[SaveOrderMarketingConsent] Email subscribe failed: %s', $e->getMessage()));
             }
         }
 
@@ -142,10 +142,10 @@ class SaveOrderMarketingConsent implements ObserverInterface
                     try {
                         $api = $this->buildKlaviyoV3Api($storeId);
                         $api->subscribeMembersToList($mobileListId, [$mobileProfileObject]);
-                    } catch (KlaviyoApiException $e) {
-                        $this->_klaviyoLogger->log(sprintf('[SaveOrderMarketingConsent] Mobile subscribe failed: %s', $e->getMessage()));
                     } catch (KlaviyoResourceConflictException $e) {
                         $this->_klaviyoLogger->log(sprintf('[SaveOrderMarketingConsent] Mobile subscribe conflict: %s', $e->getMessage()));
+                    } catch (KlaviyoApiException $e) {
+                        $this->_klaviyoLogger->log(sprintf('[SaveOrderMarketingConsent] Mobile subscribe failed: %s', $e->getMessage()));
                     }
                 }
             }

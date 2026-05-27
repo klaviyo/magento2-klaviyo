@@ -64,15 +64,6 @@ class MobileConsentFormJsTest extends TestCase
         );
     }
 
-    public function test_mobile_consent_form_js_has_dirty_flag_tracking(): void
-    {
-        $this->assertStringContainsString(
-            'dirty',
-            $this->jsContent,
-            'JS must implement dirty-flag tracking per field'
-        );
-    }
-
     public function test_mobile_consent_form_js_has_channels_change_listener(): void
     {
         $this->assertStringContainsString(

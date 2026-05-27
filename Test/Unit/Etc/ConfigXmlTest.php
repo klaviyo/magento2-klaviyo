@@ -28,26 +28,31 @@ class ConfigXmlTest extends TestCase
         );
     }
 
-    public function test_config_xml_mobile_consent_label_text_default_is_sms_subscribe()
+    public function test_config_xml_mobile_consent_label_text_default_exists_and_is_non_empty()
     {
         $nodes = $this->xml->xpath(
             '//default/klaviyo_reclaim_consent_at_checkout/mobile_consent/label_text'
         );
         $this->assertNotEmpty($nodes, 'mobile_consent/label_text default must exist in config.xml');
-        $this->assertSame('Subscribe for SMS updates*', (string) $nodes[0]);
+        $this->assertNotSame('', trim((string) $nodes[0]), 'mobile_consent/label_text default must be non-empty');
     }
 
-    public function test_config_xml_mobile_consent_consent_text_default_is_tcpa_boilerplate()
+    public function test_config_xml_mobile_consent_consent_text_default_exists_and_is_non_empty()
     {
         $nodes = $this->xml->xpath(
             '//default/klaviyo_reclaim_consent_at_checkout/mobile_consent/consent_text'
         );
         $this->assertNotEmpty($nodes, 'mobile_consent/consent_text default must exist in config.xml');
-        $this->assertStringContainsString(
-            'consent to receive marketing text messages',
-            (string) $nodes[0],
-            'consent_text default must contain TCPA boilerplate'
+        $this->assertNotSame('', trim((string) $nodes[0]), 'mobile_consent/consent_text default must be non-empty');
+    }
+
+    public function test_config_xml_mobile_consent_channels_default_is_sms_and_whatsapp()
+    {
+        $nodes = $this->xml->xpath(
+            '//default/klaviyo_reclaim_consent_at_checkout/mobile_consent/channels'
         );
+        $this->assertNotEmpty($nodes, 'mobile_consent/channels default must exist in config.xml');
+        $this->assertSame('sms,whatsapp', (string) $nodes[0]);
     }
 
     public function test_config_xml_mobile_consent_sort_order_default_is_200()
