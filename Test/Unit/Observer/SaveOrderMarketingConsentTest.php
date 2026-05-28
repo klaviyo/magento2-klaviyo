@@ -303,31 +303,36 @@ namespace Klaviyo\Reclaim\Test\Unit\Observer {
             $this->assertArrayNotHasKey('sms', $subscriptions);
         }
 
-        public function test_both_channels_enabled_mobile_consent_true_subscribe_has_sms_and_whatsapp_keys()
+        public function test_both_channels_enabled_mobile_consent_true_two_separate_subscribe_calls()
         {
             $scope = $this->makeScopeMock(true, false, ['sms', 'whatsapp']);
             $api = $this->makeApiMock();
             $magentoObserver = $this->makeMagentoObserver('1', null);
 
-            $capturedProfiles = null;
-            $api->expects($this->once())
+            $calls = [];
+            $api->expects($this->exactly(2))
                 ->method('subscribeMembersToList')
-                ->with(
-                    'mobile-list-id',
-                    $this->callback(function ($profiles) use (&$capturedProfiles) {
-                        $capturedProfiles = $profiles;
-                        return true;
-                    })
-                );
+                ->willReturnCallback(function ($listId, $profiles) use (&$calls) {
+                    $calls[] = ['listId' => $listId, 'profiles' => $profiles];
+                });
 
             $observer = new TestableSaveOrderMarketingConsent($this->makeLoggerMock(), $scope, new PhoneFormatter(), $api);
             $observer->execute($magentoObserver);
 
-            $subscriptions = $capturedProfiles[0]['attributes']['subscriptions'];
-            $this->assertArrayHasKey('sms', $subscriptions);
-            $this->assertArrayHasKey('whatsapp', $subscriptions);
-            $this->assertSame('SUBSCRIBED', $subscriptions['sms']['marketing']['consent']);
-            $this->assertSame('SUBSCRIBED', $subscriptions['whatsapp']['marketing']['consent']);
+            $this->assertCount(2, $calls);
+            // Both calls go to the same mobile list.
+            $this->assertSame('mobile-list-id', $calls[0]['listId']);
+            $this->assertSame('mobile-list-id', $calls[1]['listId']);
+
+            // Each call carries exactly one channel in its subscriptions payload.
+            $sub0 = $calls[0]['profiles'][0]['attributes']['subscriptions'];
+            $sub1 = $calls[1]['profiles'][0]['attributes']['subscriptions'];
+            $this->assertArrayHasKey('sms', $sub0);
+            $this->assertArrayNotHasKey('whatsapp', $sub0);
+            $this->assertSame('SUBSCRIBED', $sub0['sms']['marketing']['consent']);
+            $this->assertArrayHasKey('whatsapp', $sub1);
+            $this->assertArrayNotHasKey('sms', $sub1);
+            $this->assertSame('SUBSCRIBED', $sub1['whatsapp']['marketing']['consent']);
         }
 
         public function test_email_only_mobile_consent_false_subscribe_called_once_with_email_key_no_mobile()
@@ -361,14 +366,14 @@ namespace Klaviyo\Reclaim\Test\Unit\Observer {
             $this->assertArrayNotHasKey('whatsapp', $subscriptions);
         }
 
-        public function test_email_and_mobile_both_consents_true_two_subscribe_calls_with_correct_keys()
+        public function test_email_and_mobile_both_consents_true_three_subscribe_calls_one_per_channel()
         {
             $scope = $this->makeScopeMock(true, true, ['sms', 'whatsapp']);
             $api = $this->makeApiMock();
             $magentoObserver = $this->makeMagentoObserver('1', '1');
 
             $calls = [];
-            $api->expects($this->exactly(2))
+            $api->expects($this->exactly(3))
                 ->method('subscribeMembersToList')
                 ->willReturnCallback(function ($listId, $profiles) use (&$calls) {
                     $calls[] = ['listId' => $listId, 'profiles' => $profiles];
@@ -377,27 +382,30 @@ namespace Klaviyo\Reclaim\Test\Unit\Observer {
             $observer = new TestableSaveOrderMarketingConsent($this->makeLoggerMock(), $scope, new PhoneFormatter(), $api);
             $observer->execute($magentoObserver);
 
-            $this->assertCount(2, $calls);
+            $this->assertCount(3, $calls);
 
-            $emailCall = null;
-            $mobileCall = null;
+            // Partition calls by what they target.
+            $emailCalls = [];
+            $smsCalls = [];
+            $whatsappCalls = [];
             foreach ($calls as $call) {
-                if ($call['listId'] === 'email-list-id') {
-                    $emailCall = $call;
-                } elseif ($call['listId'] === 'mobile-list-id') {
-                    $mobileCall = $call;
+                $subs = $call['profiles'][0]['attributes']['subscriptions'];
+                if (array_key_exists('email', $subs)) {
+                    $emailCalls[] = $call;
+                } elseif (array_key_exists('sms', $subs)) {
+                    $smsCalls[] = $call;
+                } elseif (array_key_exists('whatsapp', $subs)) {
+                    $whatsappCalls[] = $call;
                 }
             }
 
-            $this->assertNotNull($emailCall, 'Expected an email subscribe call');
-            $this->assertNotNull($mobileCall, 'Expected a mobile subscribe call');
+            $this->assertCount(1, $emailCalls, 'Expected exactly one email subscribe call');
+            $this->assertCount(1, $smsCalls, 'Expected exactly one sms subscribe call');
+            $this->assertCount(1, $whatsappCalls, 'Expected exactly one whatsapp subscribe call');
 
-            $emailSubs = $emailCall['profiles'][0]['attributes']['subscriptions'];
-            $this->assertArrayHasKey('email', $emailSubs);
-
-            $mobileSubs = $mobileCall['profiles'][0]['attributes']['subscriptions'];
-            $this->assertArrayHasKey('sms', $mobileSubs);
-            $this->assertArrayHasKey('whatsapp', $mobileSubs);
+            $this->assertSame('email-list-id', $emailCalls[0]['listId']);
+            $this->assertSame('mobile-list-id', $smsCalls[0]['listId']);
+            $this->assertSame('mobile-list-id', $whatsappCalls[0]['listId']);
         }
 
         public function test_no_webhook_call_constructor_does_not_accept_webhook_parameter()
@@ -461,6 +469,35 @@ namespace Klaviyo\Reclaim\Test\Unit\Observer {
 
             $this->assertCount(1, $calls, 'Only the email subscribe should fire when mobile phone is unparseable');
             $this->assertSame('email-list-id', $calls[0]['listId']);
+        }
+
+        public function test_both_channels_enabled_one_channel_failure_does_not_block_other_channel()
+        {
+            // Per-channel subscribe semantics: if the first call (sms) throws,
+            // the second call (whatsapp) must still fire.
+            $scope = $this->makeScopeMock(true, false, ['sms', 'whatsapp']);
+            $api = $this->makeApiMock();
+            $magentoObserver = $this->makeMagentoObserver('1', null);
+
+            $calls = [];
+            $callCount = 0;
+            $api->method('subscribeMembersToList')
+                ->willReturnCallback(function ($listId, $profiles) use (&$calls, &$callCount) {
+                    $callCount++;
+                    $calls[] = ['listId' => $listId, 'profiles' => $profiles];
+                    if ($callCount === 1) {
+                        throw new KlaviyoApiException('Simulated SMS subscribe failure');
+                    }
+                });
+
+            $observer = new TestableSaveOrderMarketingConsent($this->makeLoggerMock(), $scope, new PhoneFormatter(), $api);
+            $observer->execute($magentoObserver);
+
+            $this->assertCount(2, $calls, 'Second channel subscribe must still fire after first throws');
+            $subs1 = $calls[0]['profiles'][0]['attributes']['subscriptions'];
+            $subs2 = $calls[1]['profiles'][0]['attributes']['subscriptions'];
+            $this->assertArrayHasKey('sms', $subs1, 'First call should target sms (the one that throws)');
+            $this->assertArrayHasKey('whatsapp', $subs2, 'Second call should still target whatsapp despite first failure');
         }
     }
 }

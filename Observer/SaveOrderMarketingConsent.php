@@ -101,25 +101,16 @@ class SaveOrderMarketingConsent implements ObserverInterface
 
         if ($quote->getKlSmsConsent() && $this->_klaviyoScopeSetting->getMobileConsentIsActive($storeId)) {
             $mobileListId = $this->_klaviyoScopeSetting->getMobileConsentListId($storeId);
-            $mobileSubscriptions = [];
 
-            if ($this->_klaviyoScopeSetting->isMobileChannelEnabled($storeId, 'sms')) {
-                $mobileSubscriptions['sms'] = [
-                    'marketing' => [
-                        'consent' => 'SUBSCRIBED',
-                    ],
-                ];
+            // Stable order so tests and log lines stay deterministic.
+            $enabledChannels = [];
+            foreach (['sms', 'whatsapp'] as $channel) {
+                if ($this->_klaviyoScopeSetting->isMobileChannelEnabled($storeId, $channel)) {
+                    $enabledChannels[] = $channel;
+                }
             }
 
-            if ($this->_klaviyoScopeSetting->isMobileChannelEnabled($storeId, 'whatsapp')) {
-                $mobileSubscriptions['whatsapp'] = [
-                    'marketing' => [
-                        'consent' => 'SUBSCRIBED',
-                    ],
-                ];
-            }
-
-            if (!empty($mobileSubscriptions)) {
+            if (!empty($enabledChannels)) {
                 $shippingInfo = $quote->getShippingAddress();
                 $rawPhone = $shippingInfo ? $shippingInfo->getTelephone() : null;
                 $isoCountry = $shippingInfo ? $shippingInfo->getCountryId() : null;
@@ -131,21 +122,32 @@ class SaveOrderMarketingConsent implements ObserverInterface
                         $storeId
                     ));
                 } else {
-                    $mobileProfileObject = [
-                        'type' => 'profile',
-                        'attributes' => [
-                            'email' => $email,
-                            'phone_number' => $e164Phone,
-                            'subscriptions' => $mobileSubscriptions,
-                        ],
-                    ];
-                    try {
-                        $api = $this->buildKlaviyoV3Api($storeId);
-                        $api->subscribeMembersToList($mobileListId, [$mobileProfileObject]);
-                    } catch (KlaviyoResourceConflictException $e) {
-                        $this->_klaviyoLogger->log(sprintf('[SaveOrderMarketingConsent] Mobile subscribe conflict: %s', $e->getMessage()));
-                    } catch (KlaviyoApiException $e) {
-                        $this->_klaviyoLogger->log(sprintf('[SaveOrderMarketingConsent] Mobile subscribe failed: %s', $e->getMessage()));
+                    // One subscribe call per enabled channel. Each call has its
+                    // own try/catch so a failure in one channel doesn't suppress
+                    // the other — partial success is intentional.
+                    $api = $this->buildKlaviyoV3Api($storeId);
+                    foreach ($enabledChannels as $channel) {
+                        $profileObject = [
+                            'type' => 'profile',
+                            'attributes' => [
+                                'email' => $email,
+                                'phone_number' => $e164Phone,
+                                'subscriptions' => [
+                                    $channel => [
+                                        'marketing' => [
+                                            'consent' => 'SUBSCRIBED',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ];
+                        try {
+                            $api->subscribeMembersToList($mobileListId, [$profileObject]);
+                        } catch (KlaviyoResourceConflictException $e) {
+                            $this->_klaviyoLogger->log(sprintf('[SaveOrderMarketingConsent] %s subscribe conflict: %s', $channel, $e->getMessage()));
+                        } catch (KlaviyoApiException $e) {
+                            $this->_klaviyoLogger->log(sprintf('[SaveOrderMarketingConsent] %s subscribe failed: %s', $channel, $e->getMessage()));
+                        }
                     }
                 }
             }
