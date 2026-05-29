@@ -51,4 +51,4 @@ jobs:
         with:
           dev: yes
       - name: Run Magento Coding Standard via PHPCS
-        run: vendor/bin/phpcs --standard=Magento2 --ignore="*/vendor/*,*/Test/*" --severity=10 .
+        run: vendor/bin/phpcs --standard=Magento2 --ignore="*/vendor/*" --severity=10 .
