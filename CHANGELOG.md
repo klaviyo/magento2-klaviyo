@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+### [5.0.0] - 2026-05-29
+
+#### Added
+- WhatsApp consent collection at checkout via a new unified Mobile consent group. Merchants choose to collect consent for SMS, WhatsApp, or both, and a single mobile checkbox at checkout drives per-channel subscriptions in Klaviyo.
+
+#### Changed
+- Replaced the SMS consent admin group with a unified Mobile group. Existing SMS settings are migrated to the new paths on upgrade; custom label and disclosure copy is preserved.
+- Consent submission at order placement now uses the V3 /api/profile-subscription-bulk-create-jobs/ endpoint instead of the legacy custom webhook.
+- Phone numbers collected at checkout are now normalized to E.164 before being sent to Klaviyo.
+
+#### Removed
+- Support for PHP versions below 8.1. The plugin now requires PHP 8.1 or later, aligning with Magento 2.4.5+. Merchants on PHP 7.x must upgrade their PHP runtime before installing this release.
+
 ### [4.4.4] - 2026-04-30
 
 #### Changed
@@ -357,7 +370,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- END RELEASE NOTES -->
 <!-- BEGIN LINKS -->
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/4.4.4...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/5.0.0...HEAD
+[5.0.0]: https://github.com/klaviyo/magento2-klaviyo/compare/4.4.4...5.0.0
 [4.4.4]: https://github.com/klaviyo/magento2-klaviyo/compare/4.4.3...4.4.4
 [4.4.3]: https://github.com/klaviyo/magento2-klaviyo/compare/4.4.2...4.4.3
 [4.4.2]: https://github.com/klaviyo/magento2-klaviyo/compare/4.4.1...4.4.2

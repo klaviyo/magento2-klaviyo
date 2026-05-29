@@ -52,8 +52,8 @@ class CheckoutLayoutPlugin
 
     public function afterProcess(\Magento\Checkout\Block\Checkout\LayoutProcessor $processor, $jsLayout)
     {
-        if ($this->_klaviyoScopeSetting->getConsentAtCheckoutSMSIsActive()) {
-            $smsConsentCheckbox = [
+        if ($this->_klaviyoScopeSetting->getMobileConsentIsActive()) {
+            $mobileConsentCheckbox = [
                 'component' => 'Magento_Ui/js/form/element/abstract',
                 'config' => [
                     'customScope' => 'shippingAddress.custom_attributes',
@@ -63,23 +63,23 @@ class CheckoutLayoutPlugin
                     'id' => 'kl_sms_consent',
                 ],
                 'dataScope' => 'shippingAddress.custom_attributes.kl_sms_consent',
-                'label' => $this->_klaviyoScopeSetting->getConsentAtCheckoutSMSConsentLabelText(),
-                'description' => $this->_klaviyoScopeSetting->getConsentAtCheckoutSMSConsentText(),
+                'label' => $this->_klaviyoScopeSetting->getMobileConsentLabelText(),
+                'description' => $this->_klaviyoScopeSetting->getMobileConsentText(),
                 'provider' => 'checkoutProvider',
                 'visible' => true,
                 'checked' => false,
                 'validation' => [],
-                'sortOrder' => $this->_klaviyoScopeSetting->getConsentAtCheckoutSMSConsentSortOrder(),
+                'sortOrder' => $this->_klaviyoScopeSetting->getMobileConsentSortOrder(),
                 'id' => 'kl_sms_consent',
             ];
 
             $address = $this->_getDefaultAddressIfSetForCustomer();
 
             if (!$address) {
-                $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['shipping-address-fieldset']['children']['kl_sms_consent'] = $smsConsentCheckbox;
+                $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['shipping-address-fieldset']['children']['kl_sms_consent'] = $mobileConsentCheckbox;
             } else {
                 // extra un-editable field with saved phone number to display to logged in users with default address set
-                $smsConsentTelephone = [
+                $mobileConsentTelephone = [
                     'component' => 'Magento_Ui/js/form/element/abstract',
                     'config' =>
                         [
@@ -95,8 +95,8 @@ class CheckoutLayoutPlugin
                     'value' => $address->getTelephone()
                 ];
 
-                $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['before-form']['children']['kl_sms_phone_number'] = $smsConsentTelephone;
-                $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['before-form']['children']['kl_sms_consent'] = $smsConsentCheckbox;
+                $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['before-form']['children']['kl_sms_phone_number'] = $mobileConsentTelephone;
+                $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']['children']['shippingAddress']['children']['before-form']['children']['kl_sms_consent'] = $mobileConsentCheckbox;
             }
         }
 

@@ -79,9 +79,29 @@ async function checkProfileListRelationships(profileId) {
     return response.data.data;
 }
 
+/**
+ * Fetches all subscription channels for a profile by email.
+ * Returns the `subscriptions` object from the profile attributes, or null if not found.
+ * @param {string} email - Email address to look up
+ * @returns {Promise<object|null>} Subscriptions object or null
+ */
+async function checkProfileSubscriptions(email) {
+    const response = await axios.get(`https://${klaviyoV3Url}/profiles/`, {
+        headers: getHeaders(),
+        params: {
+            filter: `equals(email,"${email}")`,
+            'additional-fields[profile]': 'subscriptions'
+        }
+    });
+    const profiles = response.data.data;
+    if (profiles.length === 0) return null;
+    return profiles[0].attributes.subscriptions;
+}
+
 module.exports = {
     createProfileInKlaviyo,
     checkEvent,
     checkProfileInKlaviyo,
-    checkProfileListRelationships
+    checkProfileListRelationships,
+    checkProfileSubscriptions
 };
