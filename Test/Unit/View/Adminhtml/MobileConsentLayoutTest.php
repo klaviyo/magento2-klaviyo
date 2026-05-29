@@ -88,11 +88,15 @@ class MobileConsentLayoutTest extends TestCase
     public function test_template_has_no_php_syntax_errors(): void
     {
         $this->assertFileExists($this->templatePath);
-        $output = shell_exec('php -l ' . escapeshellarg($this->templatePath) . ' 2>&1');
-        $this->assertStringContainsString(
-            'No syntax errors',
-            (string) $output,
-            'Template phtml must have no PHP syntax errors'
-        );
+        $source = file_get_contents($this->templatePath);
+        try {
+            // TOKEN_PARSE flag (PHP 7+) makes token_get_all throw on syntax
+            // errors. Mixed PHP/HTML phtml source is supported as input.
+            // Avoids shell_exec; safer for SAST scanners.
+            token_get_all((string) $source, TOKEN_PARSE);
+            $this->assertTrue(true);
+        } catch (\ParseError $e) {
+            $this->fail('Template phtml has a PHP syntax error: ' . $e->getMessage());
+        }
     }
 }
