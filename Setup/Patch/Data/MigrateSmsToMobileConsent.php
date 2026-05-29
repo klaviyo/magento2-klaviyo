@@ -94,7 +94,7 @@ class MigrateSmsToMobileConsent implements DataPatchInterface, PatchVersionInter
 
     public static function getVersion()
     {
-        return '4.5.0';
+        return '5.0.0';
     }
 
     private function rowExists($connection, string $table, string $scope, int $scopeId, string $path): bool
