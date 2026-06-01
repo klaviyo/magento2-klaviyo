@@ -383,7 +383,6 @@ class KlaviyoV3Api
                 $this->handleAPIResponse($response, $statusCode);
             }
         }
-        curl_close($curl);
 
         return $this->handleAPIResponse($response, $statusCode);
     }

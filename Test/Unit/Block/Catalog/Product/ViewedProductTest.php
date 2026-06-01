@@ -79,19 +79,19 @@ class ViewedProductTest extends TestCase
         $categoryCollectionMock->method('load')->will($this->returnCallback(
             function ($id) {
                 switch ($id) {
-                    case SampleProduct::PRODUCT_CATEGORY_IDS[0];
+                    case SampleProduct::PRODUCT_CATEGORY_IDS[0]:
                         return $this->categoryMocks[0];
                         break;
-                    case SampleProduct::PRODUCT_CATEGORY_IDS[1];
+                    case SampleProduct::PRODUCT_CATEGORY_IDS[1]:
                         return $this->categoryMocks[1];
                         break;
-                    case SampleProduct::PRODUCT_CATEGORY_IDS[2];
+                    case SampleProduct::PRODUCT_CATEGORY_IDS[2]:
                         return $this->categoryMocks[2];
                         break;
-                    case SampleProduct::PRODUCT_CATEGORY_IDS[3];
+                    case SampleProduct::PRODUCT_CATEGORY_IDS[3]:
                         return $this->categoryMocks[3];
                         break;
-                    case SampleProduct::PRODUCT_CATEGORY_IDS[4];
+                    case SampleProduct::PRODUCT_CATEGORY_IDS[4]:
                         return $this->categoryMocks[4];
                         break;
                 }
