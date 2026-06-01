@@ -69,8 +69,6 @@ class Webhook extends \Magento\Framework\App\Helper\AbstractHelper
             $this->_klaviyoLogger->log(sprintf('Unable to send webhook to %s with data: %s', $url, json_encode($data)));
         }
 
-        // Close cURL session handle
-        curl_close($curl);
         return $response;
     }
 
