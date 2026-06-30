@@ -35,6 +35,23 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
 
     const KLAVIYO_OAUTH_NAME = 'klaviyo_reclaim_oauth/klaviyo_oauth/integration_name';
 
+    // Magento-side API user password. Stored with the Encrypted backend model in
+    // config.xml; declared here so it is treated as sensitive even though no getter
+    // currently reads it.
+    const KLAVIYO_USER_PASSWORD = 'klaviyo_reclaim_user/klaviyo_user/password';
+
+    /**
+     * Config paths that hold secrets and must never be returned verbatim (e.g. by
+     * getPluginSettings). This MUST stay in sync with the fields declared with the
+     * Encrypted backend model in config.xml -- ScopeSettingTest enforces that, so a
+     * newly added encrypted field can't be silently exposed.
+     */
+    const SENSITIVE_SETTINGS = [
+        self::PRIVATE_API_KEY,
+        self::WEBHOOK_SECRET,
+        self::KLAVIYO_USER_PASSWORD,
+    ];
+
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */

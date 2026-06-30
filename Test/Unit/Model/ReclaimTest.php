@@ -17,6 +17,14 @@ use Magento\CatalogInventory\Model\Stock\StockItemRepository;
 use Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory as SubscriberCollectionFactory;
 use Magento\Framework\Filesystem\DriverInterface;
 use Magento\Framework\Filesystem\DirectoryList;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\Config\Storage\WriterInterface;
+use Magento\Framework\App\Helper\Context;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\App\State;
+use Magento\Framework\Module\ModuleListInterface;
+use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\StoreManagerInterface;
 
 class ReclaimTest extends TestCase
 {
@@ -235,5 +243,69 @@ class ReclaimTest extends TestCase
         // Sensitive values are never returned verbatim.
         $this->assertSame('PRESENT', $settings['Private Klaviyo API Key']);
         $this->assertSame('NULL', $settings['Webhook Secret']);
+    }
+
+    public function testGetPluginSettingsRedactsEverySensitiveSetting()
+    {
+        // Guard against fail-open redaction: drive getPluginSettings with a REAL
+        // ScopeSetting whose backing config returns a unique sentinel for every
+        // path, then assert no SENSITIVE_SETTINGS value reaches the output. A future
+        // sensitive field returned verbatim would surface its sentinel and fail here.
+        $sentinel = function ($path) {
+            return 'LEAKED::' . $path;
+        };
+
+        $scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
+        $scopeConfigMock->method('getValue')->willReturnCallback(
+            function ($path, $scope = null, $code = null) use ($sentinel) {
+                return $sentinel($path);
+            }
+        );
+
+        $contextMock = $this->createMock(Context::class);
+        $contextMock->method('getScopeConfig')->willReturn($scopeConfigMock);
+        $contextMock->method('getRequest')->willReturn($this->createMock(RequestInterface::class));
+
+        $stateMock = $this->createMock(State::class);
+        $stateMock->method('getAreaCode')
+            ->willReturn(\Magento\Framework\App\Area::AREA_ADMINHTML);
+
+        $storeMock = $this->createMock(StoreInterface::class);
+        $storeMock->method('getId')->willReturn(1);
+        $storeManagerMock = $this->createMock(StoreManagerInterface::class);
+        $storeManagerMock->method('getStore')->willReturn($storeMock);
+
+        $scopeSetting = new ScopeSetting(
+            $contextMock,
+            $stateMock,
+            $storeManagerMock,
+            $this->createMock(ModuleListInterface::class),
+            $this->createMock(WriterInterface::class)
+        );
+
+        $reclaim = new Reclaim(
+            $this->createMock(ObjectManagerInterface::class),
+            $this->getMockBuilder(QuoteFactory::class)
+                ->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ProductFactory::class)
+                ->disableOriginalConstructor()->getMock(),
+            $this->createMock(StockStateInterface::class),
+            $this->createMock(StockItemRepository::class),
+            $this->createMock(Subscriber::class),
+            $this->getMockBuilder(SubscriberCollectionFactory::class)
+                ->disableOriginalConstructor()->getMock(),
+            $scopeSetting,
+            $this->createMock(LoggerHelper::class)
+        );
+
+        $serialized = json_encode($reclaim->getPluginSettings(1));
+
+        foreach (ScopeSetting::SENSITIVE_SETTINGS as $path) {
+            $this->assertStringNotContainsString(
+                $sentinel($path),
+                $serialized,
+                "Sensitive setting '$path' leaked its raw value in getPluginSettings output"
+            );
+        }
     }
 }

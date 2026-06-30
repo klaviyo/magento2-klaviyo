@@ -207,4 +207,36 @@ class ScopeSettingTest extends TestCase
 
         $this->assertSame(7, $scopeSetting->getConsentAtCheckoutEmailSortOrder($storeId));
     }
+
+    public function testSensitiveSettingsCoversEveryEncryptedConfigField()
+    {
+        // ScopeSetting::SENSITIVE_SETTINGS must include every config field declared
+        // with the Encrypted backend model in config.xml. If a new encrypted field
+        // is added without classifying it here, this fails -- so getPluginSettings
+        // (and anything else relying on SENSITIVE_SETTINGS) can't silently leak it.
+        $dom = new \DOMDocument();
+        $dom->load(__DIR__ . '/../../../etc/config.xml');
+        $xpath = new \DOMXPath($dom);
+        $nodes = $xpath->query('//*[contains(@backend_model, "Encrypted")]');
+
+        $encryptedPaths = [];
+        foreach ($nodes as $node) {
+            $field = $node->nodeName;
+            $group = $node->parentNode->nodeName;
+            $section = $node->parentNode->parentNode->nodeName;
+            $encryptedPaths[] = "$section/$group/$field";
+        }
+
+        $this->assertNotEmpty(
+            $encryptedPaths,
+            'Expected to find Encrypted-backed fields in config.xml'
+        );
+        foreach ($encryptedPaths as $path) {
+            $this->assertContains(
+                $path,
+                ScopeSetting::SENSITIVE_SETTINGS,
+                "Encrypted config field '$path' is missing from ScopeSetting::SENSITIVE_SETTINGS"
+            );
+        }
+    }
 }
