@@ -114,4 +114,13 @@ interface ReclaimInterface
      * @return mixed[]
      */
     public function getSubscribersById($start_id, $end_id, $store_id = null);
+
+    /**
+     * Returns all plugin settings for a given store, with sensitive fields redacted
+     *
+     * @api
+     * @param int $store_id
+     * @return mixed[]
+     */
+    public function getPluginSettings($store_id);
 }

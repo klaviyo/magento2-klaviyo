@@ -447,4 +447,32 @@ class Reclaim implements ReclaimInterface
         $stock = $this->_stockItemRepository->get($productId);
         return $stock->getManageStock();
     }
+
+    public function getPluginSettings($store_id)
+    {
+        $s = $this->_klaviyoScopeSetting;
+
+        return [[
+            'Enable Klaviyo Extension' => (bool) $s->isEnabled($store_id),
+            'Public Klaviyo API Key' => (string) $s->getPublicApiKey($store_id),
+            'Private Klaviyo API Key' => $s->getPrivateApiKey($store_id) ? 'PRESENT' : 'NULL',
+            'Custom Media URL' => (string) $s->getCustomMediaURL($store_id),
+            'Enable Klaviyo Logger' => (bool) $s->isLoggerEnabled($store_id),
+            'List to Sync Subscribers' => (string) $s->getNewsletter($store_id),
+            'Use Klaviyo Opt-In Settings' => $s->getUsingKlaviyoListOptIn($store_id),
+            'Subscribe email at checkout' => (bool) $s->getConsentAtCheckoutEmailIsActive($store_id),
+            'Email list to sync' => (string) $s->getConsentAtCheckoutEmailListId($store_id),
+            'Email opt-in checkbox text' => (string) $s->getConsentAtCheckoutEmailText($store_id),
+            'Sort Order (Email)' => (int) $s->getConsentAtCheckoutEmailSortOrder($store_id),
+            'Subscribe SMS at checkout' => (bool) $s->getMobileConsentIsActive($store_id),
+            'SMS channels' => $s->getMobileConsentChannels($store_id),
+            'SMS list to sync' => (string) $s->getMobileConsentListId($store_id),
+            'SMS opt-in label text' => (string) $s->getMobileConsentLabelText($store_id),
+            'SMS disclosure text' => (string) $s->getMobileConsentText($store_id),
+            'Sort Order (SMS)' => (int) $s->getMobileConsentSortOrder($store_id),
+            'Integration Name' => (string) $s->getKlaviyoOauthName($store_id),
+            'Webhook Secret' => $s->getWebhookSecret($store_id) ? 'PRESENT' : 'NULL',
+            'Use Product Delete Webhook' => (bool) $s->getProductDeleteBeforeSetting($store_id),
+        ]];
+    }
 }

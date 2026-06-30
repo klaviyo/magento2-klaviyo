@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+#### Added
+- New `GET /V1/klaviyo/reclaim/plugin-settings` endpoint that returns the extension's configured plugin settings for a given store (passed as `store_id`), to speed up support troubleshooting. Sensitive values (Private Klaviyo API Key, Webhook Secret) are reported as `PRESENT`/`NULL` rather than exposed.
+
 #### Fixed
 - Resolved warnings for PHP 8.5
 

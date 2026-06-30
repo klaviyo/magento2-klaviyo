@@ -302,4 +302,9 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return $this->getScopeSetting(self::PRODUCT_DELETE_BEFORE, $storeId);
     }
+
+    public function getUsingKlaviyoListOptIn($storeId = null)
+    {
+        return (bool) $this->getScopeSetting(self::USING_KLAVIYO_LIST_OPT_IN, $storeId);
+    }
 }

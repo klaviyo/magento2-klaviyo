@@ -26,6 +26,11 @@ class ReclaimTest extends TestCase
     protected $reclaim;
 
     /**
+     * @var ScopeSetting
+     */
+    protected $scopeSettingMock;
+
+    /**
      * Path to our temporary test log file. Computed rather than a literal
      * constant so it resolves to a writable path regardless of environment
      * (CI runner, local host, or a Magento docker container).
@@ -69,6 +74,7 @@ class ReclaimTest extends TestCase
         $scopeSettingMock = $this->createMock(ScopeSetting::class);
         $scopeSettingMock->method('getVersion')->willReturn(SampleExtension::RECLAIM_VERSION);
         $scopeSettingMock->method('isLoggerEnabled')->willReturn(true);
+        $this->scopeSettingMock = $scopeSettingMock;
 
         /**
          * the logger and handler are linked and invoked using settings
@@ -199,5 +205,35 @@ class ReclaimTest extends TestCase
         //checking side effects
         $testLog = file(self::testLogPath());
         $this->assertSame($testLog, $this->reclaim->getLog());
+    }
+
+    public function testGetPluginSettings()
+    {
+        $this->scopeSettingMock->method('isEnabled')->willReturn(true);
+        $this->scopeSettingMock->method('getPublicApiKey')->willReturn('PUB123');
+        $this->scopeSettingMock->method('getUsingKlaviyoListOptIn')->willReturn(true);
+        $this->scopeSettingMock->method('getMobileConsentChannels')
+            ->willReturn(['sms', 'whatsapp']);
+        // A present private key and an absent webhook secret exercise both
+        // branches of the redaction logic.
+        $this->scopeSettingMock->method('getPrivateApiKey')->willReturn('super-secret');
+        $this->scopeSettingMock->method('getWebhookSecret')->willReturn('');
+
+        $result = $this->reclaim->getPluginSettings(1);
+
+        // Magento serializes a top-level associative array as a list, so the
+        // settings blob is wrapped in a single-element array.
+        $this->assertIsArray($result);
+        $this->assertCount(1, $result);
+        $settings = $result[0];
+
+        $this->assertTrue($settings['Enable Klaviyo Extension']);
+        $this->assertSame('PUB123', $settings['Public Klaviyo API Key']);
+        $this->assertTrue($settings['Use Klaviyo Opt-In Settings']);
+        $this->assertSame(['sms', 'whatsapp'], $settings['SMS channels']);
+
+        // Sensitive values are never returned verbatim.
+        $this->assertSame('PRESENT', $settings['Private Klaviyo API Key']);
+        $this->assertSame('NULL', $settings['Webhook Secret']);
     }
 }
