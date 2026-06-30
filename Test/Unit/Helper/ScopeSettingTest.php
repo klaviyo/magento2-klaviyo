@@ -163,4 +163,48 @@ class ScopeSettingTest extends TestCase
         $this->optinToggle = true;
         $this->assertSame(ScopeSetting::API_SUBSCRIBE, $this->scopeSetting->getOptInSetting());
     }
+
+    public function testGetConsentAtCheckoutEmailSortOrderForwardsStoreId()
+    {
+        /**
+         * Regression guard: the email sort-order getter must scope by the
+         * requested store id. It previously dropped $storeId and returned the
+         * default-scope value, which gave support misleading checkout settings
+         * for multi-store setups.
+         */
+        $storeId = 42;
+
+        $scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
+        $scopeConfigMock->expects($this->once())
+            ->method('getValue')
+            ->with(
+                ScopeSetting::CONSENT_AT_CHECKOUT_EMAIL_SORT_ORDER,
+                \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                $storeId
+            )
+            ->willReturn(7);
+
+        $contextMock = $this->createMock(Context::class);
+        $contextMock->method('getScopeConfig')->willReturn($scopeConfigMock);
+        $contextMock->method('getRequest')->willReturn($this->createMock(RequestInterface::class));
+
+        $stateMock = $this->createMock(State::class);
+        $stateMock->method('getAreaCode')
+            ->willReturn(\Magento\Framework\App\Area::AREA_ADMINHTML);
+
+        $storeMock = $this->createMock(StoreInterface::class);
+        $storeMock->method('getId')->willReturn(1);
+        $storeManagerMock = $this->createMock(StoreManagerInterface::class);
+        $storeManagerMock->method('getStore')->willReturn($storeMock);
+
+        $scopeSetting = new ScopeSetting(
+            $contextMock,
+            $stateMock,
+            $storeManagerMock,
+            $this->createMock(ModuleListInterface::class),
+            $this->createMock(WriterInterface::class)
+        );
+
+        $this->assertSame(7, $scopeSetting->getConsentAtCheckoutEmailSortOrder($storeId));
+    }
 }

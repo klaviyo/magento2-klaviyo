@@ -234,7 +234,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getConsentAtCheckoutEmailSortOrder($storeId = null)
     {
-        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_EMAIL_SORT_ORDER);
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_EMAIL_SORT_ORDER, $storeId);
     }
 
     public function getMobileConsentIsActive($storeId = null)
