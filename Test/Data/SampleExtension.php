@@ -12,9 +12,9 @@ class SampleExtension
     const PUBLIC_API_KEY = 'QWEasd';
     const PRIVATE_API_KEY = 'pk_aaaassssddddffff';
     const USING_KLAVIYO_LOGGER = false;
-    const KLAVIYO_USERNAME = 'Klaviyo';
-    const KLAVIYO_PASSWORD = 'password';
-    const KLAVIYO_EMAIL = 'test@example.com';
     const CUSTOM_MEDIA_URL = 'https://www.example.com/';
     const NEWSLETTER = 'aaAAaa';
+    const WEBSITE_ID = 1;
+    const STORE_ID = 1;
+    const EXTERNAL_CATALOG_ID = '1-1';
 }

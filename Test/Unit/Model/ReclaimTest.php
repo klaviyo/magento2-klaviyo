@@ -14,7 +14,6 @@ use Magento\Quote\Model\QuoteFactory;
 use Magento\Catalog\Model\ProductFactory;
 use Magento\CatalogInventory\Api\StockStateInterface;
 use Magento\CatalogInventory\Model\Stock\StockItemRepository;
-use Magento\Newsletter\Model\Subscriber;
 use Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory as SubscriberCollectionFactory;
 use Magento\Framework\Filesystem\DriverInterface;
 use Magento\Framework\Filesystem\DirectoryList;
@@ -26,8 +25,15 @@ class ReclaimTest extends TestCase
      */
     protected $reclaim;
 
-    //path to our temporary test log file
-    const TEST_LOG_PATH = '/var/www/html/var/log/klaviyo.test.log';
+    /**
+     * Path to our temporary test log file. Computed rather than a literal
+     * constant so it resolves to a writable path regardless of environment
+     * (CI runner, local host, or a Magento docker container).
+     */
+    private static function testLogPath(): string
+    {
+        return sys_get_temp_dir() . '/klaviyo.test.log';
+    }
 
     //array of test log entries
     const TEST_ENTRIES = [
@@ -56,8 +62,6 @@ class ReclaimTest extends TestCase
 
         $stockItemRepositoryMock = $this->createMock(StockItemRepository::class);
 
-        $subscriberMock = $this->createMock(Subscriber::class);
-
         $subscriberCollectionMock = $this->getMockBuilder(SubscriberCollectionFactory::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -76,7 +80,7 @@ class ReclaimTest extends TestCase
         $handlerMock = new Handler(
             $filesystemMock,
             $directoryListMock,
-            self::TEST_LOG_PATH
+            self::testLogPath()
         );
         $loggerMock = new Logger(
             'Klaviyo',
@@ -86,7 +90,7 @@ class ReclaimTest extends TestCase
             $directoryListMock,
             $loggerMock,
             $scopeSettingMock,
-            self::TEST_LOG_PATH
+            self::testLogPath()
         );
 
         /**
@@ -98,7 +102,6 @@ class ReclaimTest extends TestCase
             $productFactoryMock,
             $stockItemMock,
             $stockItemRepositoryMock,
-            $subscriberMock,
             $subscriberCollectionMock,
             $scopeSettingMock,
             $loggerHelperMock
@@ -107,7 +110,7 @@ class ReclaimTest extends TestCase
         /**
          * create test log file with dummy entries
          */
-        $testLogFile = fopen(self::TEST_LOG_PATH, 'wb');
+        $testLogFile = fopen(self::testLogPath(), 'wb');
         foreach (self::TEST_ENTRIES as $entry) {
             fwrite($testLogFile, $entry . "\r\n");
         }
@@ -116,7 +119,7 @@ class ReclaimTest extends TestCase
 
     protected function tearDown(): void
     {
-        unlink(self::TEST_LOG_PATH);
+        unlink(self::testLogPath());
     }
 
     public function testReclaimInstance()
@@ -134,19 +137,22 @@ class ReclaimTest extends TestCase
         /**
          * test successful retrieval
          */
-        $testLog = file(self::TEST_LOG_PATH);
+        $testLog = file(self::testLogPath());
         $this->assertSame($testLog, $this->reclaim->getLog());
 
         /**
          * test unsuccessful retrieval scenarios
+         *
+         * PHP's own "failed to open stream" wording capitalizes differently
+         * across versions, so compare case-insensitively rather than pinning
+         * to one PHP version's exact wording.
          */
-        $expectedResponse = array (
-            'message' => 'Unable to retrieve log file with error: file(' . self::TEST_LOG_PATH . '): failed to open stream: No such file or directory'
-        );
-        unlink(self::TEST_LOG_PATH);
-        $this->assertSame($expectedResponse, $this->reclaim->getLog());
+        $expectedMessage = 'Unable to retrieve log file with error: file(' . self::testLogPath() . '): failed to open stream: No such file or directory';
+        unlink(self::testLogPath());
+        $response = $this->reclaim->getLog();
+        $this->assertSame(strtolower($expectedMessage), strtolower($response['message']));
 
-        $testLogFile = fopen(self::TEST_LOG_PATH, 'wb');
+        $testLogFile = fopen(self::testLogPath(), 'wb');
         fclose($testLogFile);
         $expectedResponse = array (
             'message' => 'Log file is empty'
@@ -178,7 +184,7 @@ class ReclaimTest extends TestCase
         $this->assertSame($expectedResponse, $this->reclaim->cleanLog($validDateString));
 
         //checking side effects
-        $testLog = file(self::TEST_LOG_PATH);
+        $testLog = file(self::testLogPath());
         $this->assertSame($testLog, $this->reclaim->getLog());
     }
 
@@ -191,7 +197,7 @@ class ReclaimTest extends TestCase
         $this->assertSame($expectedResponse, $this->reclaim->appendLog($message));
 
         //checking side effects
-        $testLog = file(self::TEST_LOG_PATH);
+        $testLog = file(self::testLogPath());
         $this->assertSame($testLog, $this->reclaim->getLog());
     }
 }

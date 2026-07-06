@@ -58,15 +58,6 @@ class ScopeSettingTest extends TestCase
                         case ScopeSetting::USING_KLAVIYO_LOGGER:
                             return SampleExtension::USING_KLAVIYO_LOGGER;
                             break;
-                        case ScopeSetting::KLAVIYO_USERNAME:
-                            return SampleExtension::KLAVIYO_USERNAME;
-                            break;
-                        case ScopeSetting::KLAVIYO_PASSWORD:
-                            return SampleExtension::KLAVIYO_PASSWORD;
-                            break;
-                        case ScopeSetting::KLAVIYO_EMAIL:
-                            return SampleExtension::KLAVIYO_EMAIL;
-                            break;
                         case ScopeSetting::CUSTOM_MEDIA_URL:
                             return SampleExtension::CUSTOM_MEDIA_URL;
                             break;
@@ -98,32 +89,14 @@ class ScopeSettingTest extends TestCase
         $configWriterMock = $this->createMock(WriterInterface::class);
         $configWriterMock->method('save')
             ->with(
-                $this->logicalOr(
-                    ScopeSetting::PRIVATE_API_KEY,
-                    ScopeSetting::KLAVIYO_USERNAME,
-                    ScopeSetting::KLAVIYO_PASSWORD,
-                    ScopeSetting::KLAVIYO_EMAIL
-                ),
-                $this->logicalOr(
-                    self::NEW_API_KEY,
-                    ScopeSetting::KLAVIYO_NAME_DEFAULT,
-                    ''
-                )
+                ScopeSetting::PRIVATE_API_KEY,
+                self::NEW_API_KEY
             )
             ->will($this->returnCallback(
                 function ($path, $value, $scope, $code) {
                     switch ($path) {
                         case ScopeSetting::PRIVATE_API_KEY:
                             return ($value == self::NEW_API_KEY) ? $value : false;
-                            break;
-                        case ScopeSetting::KLAVIYO_USERNAME:
-                            return ($value == ScopeSetting::KLAVIYO_NAME_DEFAULT) ? $value : false;
-                            break;
-                        case ScopeSetting::KLAVIYO_PASSWORD:
-                            return ($value == '') ? $value : false;
-                            break;
-                        case ScopeSetting::KLAVIYO_EMAIL:
-                            return ($value == '') ? $value : false;
                             break;
                     }
                 }
@@ -171,36 +144,6 @@ class ScopeSettingTest extends TestCase
     public function testIsLoggerEnabled()
     {
         $this->assertSame(SampleExtension::USING_KLAVIYO_LOGGER, $this->scopeSetting->isLoggerEnabled());
-    }
-
-    public function testGetKlaviyoUsername()
-    {
-        $this->assertSame(SampleExtension::KLAVIYO_USERNAME, $this->scopeSetting->getKlaviyoUsername());
-    }
-
-    public function testUnsetKlaviyoUsername()
-    {
-        $this->assertSame(ScopeSetting::KLAVIYO_NAME_DEFAULT, $this->scopeSetting->unsetKlaviyoUsername());
-    }
-
-    public function testGetKlaviyoPassword()
-    {
-        $this->assertSame(SampleExtension::KLAVIYO_PASSWORD, $this->scopeSetting->getKlaviyoPassword());
-    }
-
-    public function testUnsetKlaviyoPassword()
-    {
-        $this->assertSame('', $this->scopeSetting->unsetKlaviyoPassword());
-    }
-
-    public function testGetKlaviyoEmail()
-    {
-        $this->assertSame(SampleExtension::KLAVIYO_EMAIL, $this->scopeSetting->getKlaviyoEmail());
-    }
-
-    public function testUnsetKlaviyoEmail()
-    {
-        $this->assertSame('', $this->scopeSetting->unsetKlaviyoEmail());
     }
 
     public function testGetCustomMediaURL()

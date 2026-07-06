@@ -9,5 +9,10 @@ if (!class_exists(\Magento\Framework\Event\Observer::class, false)) {
         {
             return new Event();
         }
+
+        public function getDataObject()
+        {
+            return null;
+        }
     }
 }
