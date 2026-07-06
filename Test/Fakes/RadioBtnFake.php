@@ -2,9 +2,9 @@
 
 namespace Klaviyo\Reclaim\Test\Fakes;
 
-use Klaviyo\Reclaim\Model\Config\Source\RadioBtn;
+use Klaviyo\Reclaim\Model\Config\Source\Radiobtn;
 
-class RadioBtnFake extends RadioBtn
+class RadioBtnFake extends Radiobtn
 {
     public function toOptionArray()
     {
