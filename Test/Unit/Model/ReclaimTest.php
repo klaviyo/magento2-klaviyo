@@ -308,4 +308,79 @@ class ReclaimTest extends TestCase
             );
         }
     }
+
+    public function testGetPluginSettingsCallsEveryScopeSettingGetter()
+    {
+        // Guard against fail-open omissions: getPluginSettings() is a hand-written
+        // array literal, so a new ScopeSetting getter can be added without ever
+        // being wired in there -- the setting just silently never appears in the
+        // endpoint response, with nothing failing. Reflect over ScopeSetting's
+        // public setting getters and assert getPluginSettings() calls each one.
+        //
+        // Two getters are intentionally excluded because they aren't plain setting
+        // readers:
+        // - getVersion(): module version, not a plugin setting.
+        // - getOptInSetting(): derives an API endpoint fragment from
+        //   USING_KLAVIYO_LIST_OPT_IN, which is already exposed verbatim via
+        //   getUsingKlaviyoListOptIn().
+        $excludedGetters = ['getVersion', 'getOptInSetting'];
+
+        $reflection = new \ReflectionClass(ScopeSetting::class);
+        $getterNames = [];
+        foreach ($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+            if ($method->getDeclaringClass()->getName() !== ScopeSetting::class) {
+                continue;
+            }
+            if (!preg_match('/^(get|is)/', $method->getName())) {
+                continue;
+            }
+            if (in_array($method->getName(), $excludedGetters, true)) {
+                continue;
+            }
+
+            $params = $method->getParameters();
+            // Keep only plain setting getters: no args, or a single optional
+            // (defaulted) $storeId. This drops setters, and helpers like
+            // isMobileChannelEnabled($storeId, $channel) or
+            // getStoreIdKlaviyoAccountSetMap($storeIds) that require real
+            // arguments and aren't single-setting readers.
+            if (count($params) > 1) {
+                continue;
+            }
+            if (count($params) === 1 && !$params[0]->isDefaultValueAvailable()) {
+                continue;
+            }
+
+            $getterNames[] = $method->getName();
+        }
+
+        $this->assertNotEmpty($getterNames, 'Expected to find setting getters on ScopeSetting');
+
+        $scopeSettingMock = $this->getMockBuilder(ScopeSetting::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods($getterNames)
+            ->getMock();
+
+        foreach ($getterNames as $name) {
+            $scopeSettingMock->expects($this->atLeastOnce())->method($name)->willReturn(null);
+        }
+
+        $reclaim = new Reclaim(
+            $this->createMock(ObjectManagerInterface::class),
+            $this->getMockBuilder(QuoteFactory::class)
+                ->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ProductFactory::class)
+                ->disableOriginalConstructor()->getMock(),
+            $this->createMock(StockStateInterface::class),
+            $this->createMock(StockItemRepository::class),
+            $this->getMockBuilder(SubscriberCollectionFactory::class)
+                ->disableOriginalConstructor()->getMock(),
+            $scopeSettingMock,
+            $this->createMock(LoggerHelper::class)
+        );
+
+        // PHPUnit verifies the "atLeastOnce" expectations above when the mock is
+        // torn down; a getter that getPluginSettings() never calls fails the test.
+        $reclaim->getPluginSettings(1);
+    }
 }

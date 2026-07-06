@@ -2,6 +2,19 @@
 
 namespace Klaviyo\Reclaim\Helper;
 
+/**
+ * Any new getter added here that exposes a plugin setting (public, named get... or
+ * is..., taking only an optional $storeId) must also be wired into
+ * Model\Reclaim::getPluginSettings() -- that method reads settings by calling
+ * specific getters one by one, so a setting left out of it is simply missing from
+ * the plugin-settings endpoint's response, with nothing failing.
+ * ReclaimTest::testGetPluginSettingsCallsEveryScopeSettingGetter enforces this by
+ * reflecting over these getters and asserting getPluginSettings() calls each one.
+ *
+ * If the new setting is also sensitive, it must additionally be added to
+ * SENSITIVE_SETTINGS below and redacted (not returned verbatim) in
+ * getPluginSettings().
+ */
 class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const MODULE_NAME = 'Klaviyo_Reclaim';
