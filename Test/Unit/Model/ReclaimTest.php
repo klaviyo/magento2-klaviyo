@@ -291,7 +291,6 @@ class ReclaimTest extends TestCase
                 ->disableOriginalConstructor()->getMock(),
             $this->createMock(StockStateInterface::class),
             $this->createMock(StockItemRepository::class),
-            $this->createMock(Subscriber::class),
             $this->getMockBuilder(SubscriberCollectionFactory::class)
                 ->disableOriginalConstructor()->getMock(),
             $scopeSetting,
