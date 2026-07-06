@@ -4,7 +4,6 @@ namespace Klaviyo\Reclaim\Test\Unit\Model\Config\Source;
 
 use PHPUnit\Framework\TestCase;
 use Klaviyo\Reclaim\Test\Data\SampleExtension;
-use Klaviyo\Reclaim\Test\Data\SampleListApiResponse;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Klaviyo\Reclaim\Helper\Data;
 use Klaviyo\Reclaim\Model\Config\Source\ListOptions;
@@ -32,10 +31,12 @@ class ListOptionsTest extends TestCase
         $scopeSettingMock->method('getPrivateApiKey')->willReturn(SampleExtension::PRIVATE_API_KEY);
 
         $dataMock = $this->createMock(Data::class);
+        // Matches the shape Helper\Data::getKlaviyoLists() actually returns:
+        // plain associative arrays, not objects.
         $listsMock = [
-            new SampleListApiResponse(self::LIST1_NAME, self::LIST1_ID),
-            new SampleListApiResponse(self::LIST2_NAME, self::LIST2_ID),
-            new SampleListApiResponse(self::LIST3_NAME, self::LIST3_ID)
+            ['name' => self::LIST1_NAME, 'id' => self::LIST1_ID],
+            ['name' => self::LIST2_NAME, 'id' => self::LIST2_ID],
+            ['name' => self::LIST3_NAME, 'id' => self::LIST3_ID]
         ];
         $resultMock = [
             'success' => 'true',

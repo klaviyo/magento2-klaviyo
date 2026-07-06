@@ -8,7 +8,7 @@ use Klaviyo\Reclaim\Test\Data\SampleCustomer;
 use Klaviyo\Reclaim\Observer\NewsletterSubscribeObserver;
 use Klaviyo\Reclaim\Helper\Data;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
-use Magento\Framework\App\RequestInterface;
+use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Framework\Event\Observer;
 
 class NewsletterSubscribeObserverTest extends TestCase
@@ -28,15 +28,12 @@ class NewsletterSubscribeObserverTest extends TestCase
         $scopeSettingMock = $this->createMock(ScopeSetting::class);
         $scopeSettingMock->method('isEnabled')->willReturn(SampleExtension::IS_ENABLED);
 
-        $requestMock = $this->createMock(RequestInterface::class);
-        $requestMock->method('getParam')
-            ->with($this->equalTo('email'))
-            ->willReturn(SampleCustomer::CUSTOMER_EMAIL);
+        $customerRepositoryMock = $this->createMock(CustomerRepositoryInterface::class);
 
         $this->object = new NewsletterSubscribeObserver(
             $dataMock,
             $scopeSettingMock,
-            $requestMock
+            $customerRepositoryMock
         );
     }
     public function testNewsletterSubscribeObserverInstance()

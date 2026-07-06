@@ -26,7 +26,8 @@ jobs:
         uses: php-actions/composer@v6
         with:
           dev: yes
-      - run: echo "Testing..."
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit
   changelog-validation:
     runs-on: ubuntu-latest
     steps:

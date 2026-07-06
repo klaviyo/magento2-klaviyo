@@ -13,6 +13,20 @@
  * Stubs live one-class-per-file in a directory tree mirroring their
  * namespace, so PSR1.Classes.ClassDeclaration.MultipleClasses doesn't
  * fire when phpcs scans Test/.
+ *
+ * IMPORTANT -- these are minimal test doubles, not verified reimplementations
+ * of Magento's real behavior. Most tests fully mock a stub's methods (via
+ * ->method()->willReturn()), so the stub's own body never runs and can't
+ * cause a false pass. But a few stubs (e.g. the Template/AbstractBlock/Context
+ * chain) are *extended* by real production code under test, so their bodies
+ * DO execute for real -- if a stub's behavior diverges from real Magento's
+ * (a validation, a thrown exception, a transformation this stub skips), a
+ * test can pass here while the same code fails against a real Magento
+ * instance. A green run of this suite means "this code is internally
+ * consistent," not "this code is verified against real Magento." Anything
+ * touching framework behavior nuances still needs manual verification
+ * against a real Magento install before merging -- don't let CI passing
+ * replace that.
  */
 
 // Locate the composer autoloader. Two valid layouts:

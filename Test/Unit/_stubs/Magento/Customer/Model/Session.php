@@ -13,5 +13,9 @@ if (!class_exists(\Magento\Customer\Model\Session::class, false)) {
         {
             return null;
         }
+        public function getCustomerData()
+        {
+            return null;
+        }
     }
 }
