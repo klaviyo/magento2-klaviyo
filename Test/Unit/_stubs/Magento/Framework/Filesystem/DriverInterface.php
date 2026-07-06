@@ -27,11 +27,11 @@ if (!interface_exists(\Magento\Framework\Filesystem\DriverInterface::class, fals
 
         public function search($pattern, $path);
 
-        public function rename($oldPath, $newPath, DriverInterface $targetDriver = null);
+        public function rename($oldPath, $newPath, ?DriverInterface $targetDriver = null);
 
-        public function copy($source, $destination, DriverInterface $targetDriver = null);
+        public function copy($source, $destination, ?DriverInterface $targetDriver = null);
 
-        public function symlink($source, $destination, DriverInterface $targetDriver = null);
+        public function symlink($source, $destination, ?DriverInterface $targetDriver = null);
 
         public function deleteFile($path);
 
