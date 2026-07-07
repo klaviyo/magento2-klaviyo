@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New `GET /V1/klaviyo/reclaim/plugin-settings` endpoint that returns the extension's configured plugin settings for a given store (passed as `store_id`), to speed up support troubleshooting. Sensitive values (Private Klaviyo API Key, Webhook Secret) are reported as `PRESENT`/`NULL` rather than exposed.
 
 #### Fixed
-- Consent at Checkout email "Sort Order" now respects the requested store scope. It previously ignored the store id and returned the default-scope value.
 - Resolved warnings for PHP 8.5
 
 ### [5.0.0] - 2026-05-29
