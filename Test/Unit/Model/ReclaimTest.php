@@ -17,6 +17,16 @@ use Magento\CatalogInventory\Model\Stock\StockItemRepository;
 use Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory as SubscriberCollectionFactory;
 use Magento\Framework\Filesystem\DriverInterface;
 use Magento\Framework\Filesystem\DirectoryList;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\Config\Storage\WriterInterface;
+use Magento\Framework\App\Helper\Context;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\App\State;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Exception\NotFoundException;
+use Magento\Framework\Module\ModuleListInterface;
+use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\StoreManagerInterface;
 
 class ReclaimTest extends TestCase
 {
@@ -24,6 +34,16 @@ class ReclaimTest extends TestCase
      * @var Reclaim
      */
     protected $reclaim;
+
+    /**
+     * @var ScopeSetting
+     */
+    protected $scopeSettingMock;
+
+    /**
+     * @var StoreManagerInterface
+     */
+    protected $storeManagerMock;
 
     /**
      * Path to our temporary test log file. Computed rather than a literal
@@ -69,6 +89,13 @@ class ReclaimTest extends TestCase
         $scopeSettingMock = $this->createMock(ScopeSetting::class);
         $scopeSettingMock->method('getVersion')->willReturn(SampleExtension::RECLAIM_VERSION);
         $scopeSettingMock->method('isLoggerEnabled')->willReturn(true);
+        $this->scopeSettingMock = $scopeSettingMock;
+
+        // Defaults to resolving any store id; individual tests override
+        // getStore() to throw for the invalid-store_id scenario.
+        $storeManagerMock = $this->createMock(StoreManagerInterface::class);
+        $storeManagerMock->method('getStore')->willReturn($this->createMock(StoreInterface::class));
+        $this->storeManagerMock = $storeManagerMock;
 
         /**
          * the logger and handler are linked and invoked using settings
@@ -104,7 +131,8 @@ class ReclaimTest extends TestCase
             $stockItemRepositoryMock,
             $subscriberCollectionMock,
             $scopeSettingMock,
-            $loggerHelperMock
+            $loggerHelperMock,
+            $storeManagerMock
         );
 
         /**
@@ -199,5 +227,206 @@ class ReclaimTest extends TestCase
         //checking side effects
         $testLog = file(self::testLogPath());
         $this->assertSame($testLog, $this->reclaim->getLog());
+    }
+
+    public function testGetPluginSettings()
+    {
+        $this->scopeSettingMock->method('isEnabled')->willReturn(true);
+        $this->scopeSettingMock->method('getPublicApiKey')->willReturn('PUB123');
+        $this->scopeSettingMock->method('getUsingKlaviyoListOptIn')->willReturn(true);
+        $this->scopeSettingMock->method('getMobileConsentChannels')
+            ->willReturn(['sms', 'whatsapp']);
+        // A present private key and an absent webhook secret exercise both
+        // branches of the redaction logic.
+        $this->scopeSettingMock->method('getPrivateApiKey')->willReturn('super-secret');
+        $this->scopeSettingMock->method('getWebhookSecret')->willReturn('');
+
+        $result = $this->reclaim->getPluginSettings(1);
+
+        // Magento serializes a top-level associative array as a list, so the
+        // settings blob is wrapped in a single-element array.
+        $this->assertIsArray($result);
+        $this->assertCount(1, $result);
+        $settings = $result[0];
+
+        $this->assertTrue($settings['Enable Klaviyo Extension']);
+        $this->assertSame('PUB123', $settings['Public Klaviyo API Key']);
+        $this->assertTrue($settings['Use Klaviyo Opt-In Settings']);
+        $this->assertSame(['sms', 'whatsapp'], $settings['SMS channels']);
+
+        // Sensitive values are never returned verbatim.
+        $this->assertSame('PRESENT', $settings['Private Klaviyo API Key']);
+        $this->assertSame('NULL', $settings['Webhook Secret']);
+    }
+
+    public function testGetPluginSettingsRedactsEverySensitiveSetting()
+    {
+        // Guard against fail-open redaction: drive getPluginSettings with a REAL
+        // ScopeSetting whose backing config returns a unique sentinel for every
+        // path, then assert no SENSITIVE_SETTINGS value reaches the output. A future
+        // sensitive field returned verbatim would surface its sentinel and fail here.
+        $sentinel = function ($path) {
+            return 'LEAKED::' . $path;
+        };
+
+        $scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
+        $scopeConfigMock->method('getValue')->willReturnCallback(
+            function ($path, $scope = null, $code = null) use ($sentinel) {
+                return $sentinel($path);
+            }
+        );
+
+        $contextMock = $this->createMock(Context::class);
+        $contextMock->method('getScopeConfig')->willReturn($scopeConfigMock);
+        $contextMock->method('getRequest')->willReturn($this->createMock(RequestInterface::class));
+
+        $stateMock = $this->createMock(State::class);
+        $stateMock->method('getAreaCode')
+            ->willReturn(\Magento\Framework\App\Area::AREA_ADMINHTML);
+
+        $storeMock = $this->createMock(StoreInterface::class);
+        $storeMock->method('getId')->willReturn(1);
+        $storeManagerMock = $this->createMock(StoreManagerInterface::class);
+        $storeManagerMock->method('getStore')->willReturn($storeMock);
+
+        $scopeSetting = new ScopeSetting(
+            $contextMock,
+            $stateMock,
+            $storeManagerMock,
+            $this->createMock(ModuleListInterface::class),
+            $this->createMock(WriterInterface::class)
+        );
+
+        $reclaim = new Reclaim(
+            $this->createMock(ObjectManagerInterface::class),
+            $this->getMockBuilder(QuoteFactory::class)
+                ->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ProductFactory::class)
+                ->disableOriginalConstructor()->getMock(),
+            $this->createMock(StockStateInterface::class),
+            $this->createMock(StockItemRepository::class),
+            $this->getMockBuilder(SubscriberCollectionFactory::class)
+                ->disableOriginalConstructor()->getMock(),
+            $scopeSetting,
+            $this->createMock(LoggerHelper::class),
+            $storeManagerMock
+        );
+
+        $serialized = json_encode($reclaim->getPluginSettings(1));
+
+        foreach (ScopeSetting::SENSITIVE_SETTINGS as $path) {
+            $this->assertStringNotContainsString(
+                $sentinel($path),
+                $serialized,
+                "Sensitive setting '$path' leaked its raw value in getPluginSettings output"
+            );
+        }
+    }
+
+    public function testGetPluginSettingsCallsEveryScopeSettingGetter()
+    {
+        // Guard against fail-open omissions: getPluginSettings() is a hand-written
+        // array literal, so a new ScopeSetting getter can be added without ever
+        // being wired in there -- the setting just silently never appears in the
+        // endpoint response, with nothing failing. Reflect over ScopeSetting's
+        // public setting getters and assert getPluginSettings() calls each one.
+        //
+        // Two getters are intentionally excluded because they aren't plain setting
+        // readers:
+        // - getVersion(): module version, not a plugin setting.
+        // - getOptInSetting(): derives an API endpoint fragment from
+        //   USING_KLAVIYO_LIST_OPT_IN, which is already exposed verbatim via
+        //   getUsingKlaviyoListOptIn().
+        $excludedGetters = ['getVersion', 'getOptInSetting'];
+
+        $reflection = new \ReflectionClass(ScopeSetting::class);
+        $getterNames = [];
+        foreach ($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+            if ($method->getDeclaringClass()->getName() !== ScopeSetting::class) {
+                continue;
+            }
+            if (!preg_match('/^(get|is)/', $method->getName())) {
+                continue;
+            }
+            if (in_array($method->getName(), $excludedGetters, true)) {
+                continue;
+            }
+
+            $params = $method->getParameters();
+            // Keep only plain setting getters: no args, or a single optional
+            // (defaulted) $storeId. This drops setters, and helpers like
+            // isMobileChannelEnabled($storeId, $channel) or
+            // getStoreIdKlaviyoAccountSetMap($storeIds) that require real
+            // arguments and aren't single-setting readers.
+            if (count($params) > 1) {
+                continue;
+            }
+            if (count($params) === 1 && !$params[0]->isDefaultValueAvailable()) {
+                continue;
+            }
+
+            $getterNames[] = $method->getName();
+        }
+
+        $this->assertNotEmpty($getterNames, 'Expected to find setting getters on ScopeSetting');
+
+        $scopeSettingMock = $this->getMockBuilder(ScopeSetting::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods($getterNames)
+            ->getMock();
+
+        foreach ($getterNames as $name) {
+            $scopeSettingMock->expects($this->atLeastOnce())->method($name)->willReturn(null);
+        }
+
+        $reclaim = new Reclaim(
+            $this->createMock(ObjectManagerInterface::class),
+            $this->getMockBuilder(QuoteFactory::class)
+                ->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ProductFactory::class)
+                ->disableOriginalConstructor()->getMock(),
+            $this->createMock(StockStateInterface::class),
+            $this->createMock(StockItemRepository::class),
+            $this->getMockBuilder(SubscriberCollectionFactory::class)
+                ->disableOriginalConstructor()->getMock(),
+            $scopeSettingMock,
+            $this->createMock(LoggerHelper::class),
+            $this->storeManagerMock
+        );
+
+        // PHPUnit verifies the "atLeastOnce" expectations above when the mock is
+        // torn down; a getter that getPluginSettings() never calls fails the test.
+        $reclaim->getPluginSettings(1);
+    }
+
+    public function testGetPluginSettingsThrowsNotFoundForInvalidStoreId()
+    {
+        // Mirrors the input-validation pattern used elsewhere (e.g.
+        // productVariantInventory()): an unresolvable store_id must surface as a
+        // clean NotFoundException, not the store manager's raw NoSuchEntityException
+        // (which would otherwise reach the webapi layer as an uncaught exception
+        // with a full stack trace).
+        $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
+        $this->storeManagerMock->method('getStore')
+            ->with(999)
+            ->willThrowException(new NoSuchEntityException(__('Requested store is not found')));
+
+        $reclaim = new Reclaim(
+            $this->createMock(ObjectManagerInterface::class),
+            $this->getMockBuilder(QuoteFactory::class)
+                ->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ProductFactory::class)
+                ->disableOriginalConstructor()->getMock(),
+            $this->createMock(StockStateInterface::class),
+            $this->createMock(StockItemRepository::class),
+            $this->getMockBuilder(SubscriberCollectionFactory::class)
+                ->disableOriginalConstructor()->getMock(),
+            $this->scopeSettingMock,
+            $this->createMock(LoggerHelper::class),
+            $this->storeManagerMock
+        );
+
+        $this->expectException(NotFoundException::class);
+        $reclaim->getPluginSettings(999);
     }
 }

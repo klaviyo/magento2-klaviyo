@@ -3,6 +3,7 @@
 namespace Klaviyo\Reclaim\Model;
 
 use Klaviyo\Reclaim\Api\ReclaimInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\ObjectManagerInterface;
 
@@ -48,6 +49,11 @@ class Reclaim implements ReclaimInterface
      */
     protected $_productFactory;
 
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
+    protected $_storeManager;
+
     const MAX_QUERY_DAYS = 10;
     const SUBSCRIBER_BATCH_SIZE = 500;
     public function __construct(
@@ -58,7 +64,8 @@ class Reclaim implements ReclaimInterface
         \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository,
         \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection,
         \Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting,
-        \Klaviyo\Reclaim\Helper\Logger $klaviyoLogger
+        \Klaviyo\Reclaim\Helper\Logger $klaviyoLogger,
+        \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
         $this->quoteFactory = $quoteFactory;
         $this->_productFactory = $productFactory;
@@ -68,6 +75,7 @@ class Reclaim implements ReclaimInterface
         $this->_subscriberCollection = $subscriberCollection;
         $this->_klaviyoLogger = $klaviyoLogger;
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
+        $this->_storeManager = $storeManager;
     }
 
     /**
@@ -446,5 +454,39 @@ class Reclaim implements ReclaimInterface
     {
         $stock = $this->_stockItemRepository->get($productId);
         return $stock->getManageStock();
+    }
+
+    public function getPluginSettings($store_id)
+    {
+        try {
+            $this->_storeManager->getStore($store_id);
+        } catch (NoSuchEntityException $e) {
+            throw new NotFoundException(__('A store with id ' . $store_id . ' was not found'));
+        }
+
+        $s = $this->_klaviyoScopeSetting;
+
+        return [[
+            'Enable Klaviyo Extension' => (bool) $s->isEnabled($store_id),
+            'Public Klaviyo API Key' => (string) $s->getPublicApiKey($store_id),
+            'Private Klaviyo API Key' => $s->getPrivateApiKey($store_id) ? 'PRESENT' : 'NULL',
+            'Custom Media URL' => (string) $s->getCustomMediaURL($store_id),
+            'Enable Klaviyo Logger' => (bool) $s->isLoggerEnabled($store_id),
+            'List to Sync Subscribers' => (string) $s->getNewsletter($store_id),
+            'Use Klaviyo Opt-In Settings' => $s->getUsingKlaviyoListOptIn($store_id),
+            'Subscribe email at checkout' => (bool) $s->getConsentAtCheckoutEmailIsActive($store_id),
+            'Email list to sync' => (string) $s->getConsentAtCheckoutEmailListId($store_id),
+            'Email opt-in checkbox text' => (string) $s->getConsentAtCheckoutEmailText($store_id),
+            'Sort Order (Email)' => (int) $s->getConsentAtCheckoutEmailSortOrder($store_id),
+            'Subscribe SMS at checkout' => (bool) $s->getMobileConsentIsActive($store_id),
+            'SMS channels' => $s->getMobileConsentChannels($store_id),
+            'SMS list to sync' => (string) $s->getMobileConsentListId($store_id),
+            'SMS opt-in label text' => (string) $s->getMobileConsentLabelText($store_id),
+            'SMS disclosure text' => (string) $s->getMobileConsentText($store_id),
+            'Sort Order (SMS)' => (int) $s->getMobileConsentSortOrder($store_id),
+            'Integration Name' => (string) $s->getKlaviyoOauthName($store_id),
+            'Webhook Secret' => $s->getWebhookSecret($store_id) ? 'PRESENT' : 'NULL',
+            'Use Product Delete Webhook' => (bool) $s->getProductDeleteBeforeSetting($store_id),
+        ]];
     }
 }

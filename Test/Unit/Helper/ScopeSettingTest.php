@@ -163,4 +163,80 @@ class ScopeSettingTest extends TestCase
         $this->optinToggle = true;
         $this->assertSame(ScopeSetting::API_SUBSCRIBE, $this->scopeSetting->getOptInSetting());
     }
+
+    public function testGetConsentAtCheckoutEmailSortOrderForwardsStoreId()
+    {
+        /**
+         * Regression guard: the email sort-order getter must scope by the
+         * requested store id. It previously dropped $storeId and returned the
+         * default-scope value, which gave support misleading checkout settings
+         * for multi-store setups.
+         */
+        $storeId = 42;
+
+        $scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
+        $scopeConfigMock->expects($this->once())
+            ->method('getValue')
+            ->with(
+                ScopeSetting::CONSENT_AT_CHECKOUT_EMAIL_SORT_ORDER,
+                \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                $storeId
+            )
+            ->willReturn(7);
+
+        $contextMock = $this->createMock(Context::class);
+        $contextMock->method('getScopeConfig')->willReturn($scopeConfigMock);
+        $contextMock->method('getRequest')->willReturn($this->createMock(RequestInterface::class));
+
+        $stateMock = $this->createMock(State::class);
+        $stateMock->method('getAreaCode')
+            ->willReturn(\Magento\Framework\App\Area::AREA_ADMINHTML);
+
+        $storeMock = $this->createMock(StoreInterface::class);
+        $storeMock->method('getId')->willReturn(1);
+        $storeManagerMock = $this->createMock(StoreManagerInterface::class);
+        $storeManagerMock->method('getStore')->willReturn($storeMock);
+
+        $scopeSetting = new ScopeSetting(
+            $contextMock,
+            $stateMock,
+            $storeManagerMock,
+            $this->createMock(ModuleListInterface::class),
+            $this->createMock(WriterInterface::class)
+        );
+
+        $this->assertSame(7, $scopeSetting->getConsentAtCheckoutEmailSortOrder($storeId));
+    }
+
+    public function testSensitiveSettingsCoversEveryEncryptedConfigField()
+    {
+        // ScopeSetting::SENSITIVE_SETTINGS must include every config field declared
+        // with the Encrypted backend model in config.xml. If a new encrypted field
+        // is added without classifying it here, this fails -- so getPluginSettings
+        // (and anything else relying on SENSITIVE_SETTINGS) can't silently leak it.
+        $dom = new \DOMDocument();
+        $dom->load(__DIR__ . '/../../../etc/config.xml');
+        $xpath = new \DOMXPath($dom);
+        $nodes = $xpath->query('//*[contains(@backend_model, "Encrypted")]');
+
+        $encryptedPaths = [];
+        foreach ($nodes as $node) {
+            $field = $node->nodeName;
+            $group = $node->parentNode->nodeName;
+            $section = $node->parentNode->parentNode->nodeName;
+            $encryptedPaths[] = "$section/$group/$field";
+        }
+
+        $this->assertNotEmpty(
+            $encryptedPaths,
+            'Expected to find Encrypted-backed fields in config.xml'
+        );
+        foreach ($encryptedPaths as $path) {
+            $this->assertContains(
+                $path,
+                ScopeSetting::SENSITIVE_SETTINGS,
+                "Encrypted config field '$path' is missing from ScopeSetting::SENSITIVE_SETTINGS"
+            );
+        }
+    }
 }

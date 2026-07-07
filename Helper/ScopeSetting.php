@@ -2,6 +2,19 @@
 
 namespace Klaviyo\Reclaim\Helper;
 
+/**
+ * Any new getter added here that exposes a plugin setting (public, named get... or
+ * is..., taking only an optional $storeId) must also be wired into
+ * Model\Reclaim::getPluginSettings() -- that method reads settings by calling
+ * specific getters one by one, so a setting left out of it is simply missing from
+ * the plugin-settings endpoint's response, with nothing failing.
+ * ReclaimTest::testGetPluginSettingsCallsEveryScopeSettingGetter enforces this by
+ * reflecting over these getters and asserting getPluginSettings() calls each one.
+ *
+ * If the new setting is also sensitive, it must additionally be added to
+ * SENSITIVE_SETTINGS below and redacted (not returned verbatim) in
+ * getPluginSettings().
+ */
 class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const MODULE_NAME = 'Klaviyo_Reclaim';
@@ -34,6 +47,23 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     const PRODUCT_DELETE_BEFORE = 'klaviyo_reclaim_webhook/klaviyo_webhooks/using_product_delete_before_webhook';
 
     const KLAVIYO_OAUTH_NAME = 'klaviyo_reclaim_oauth/klaviyo_oauth/integration_name';
+
+    // Magento-side API user password. Stored with the Encrypted backend model in
+    // config.xml; declared here so it is treated as sensitive even though no getter
+    // currently reads it.
+    const KLAVIYO_USER_PASSWORD = 'klaviyo_reclaim_user/klaviyo_user/password';
+
+    /**
+     * Config paths that hold secrets and must never be returned verbatim (e.g. by
+     * getPluginSettings). This MUST stay in sync with the fields declared with the
+     * Encrypted backend model in config.xml -- ScopeSettingTest enforces that, so a
+     * newly added encrypted field can't be silently exposed.
+     */
+    const SENSITIVE_SETTINGS = [
+        self::PRIVATE_API_KEY,
+        self::WEBHOOK_SECRET,
+        self::KLAVIYO_USER_PASSWORD,
+    ];
 
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
@@ -234,7 +264,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getConsentAtCheckoutEmailSortOrder($storeId = null)
     {
-        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_EMAIL_SORT_ORDER);
+        return $this->getScopeSetting(self::CONSENT_AT_CHECKOUT_EMAIL_SORT_ORDER, $storeId);
     }
 
     public function getMobileConsentIsActive($storeId = null)
@@ -301,5 +331,10 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
     public function getProductDeleteBeforeSetting($storeId = null)
     {
         return $this->getScopeSetting(self::PRODUCT_DELETE_BEFORE, $storeId);
+    }
+
+    public function getUsingKlaviyoListOptIn($storeId = null)
+    {
+        return (bool) $this->getScopeSetting(self::USING_KLAVIYO_LIST_OPT_IN, $storeId);
     }
 }

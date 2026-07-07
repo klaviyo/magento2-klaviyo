@@ -72,4 +72,10 @@
             <resource ref="Magento_Backend::admin"/>
         </resources>
     </route>
+    <route url="/V1/klaviyo/reclaim/plugin-settings" method="GET">
+        <service class="Klaviyo\Reclaim\Api\ReclaimInterface" method="getPluginSettings"/>
+        <resources>
+            <resource ref="Magento_Backend::admin"/>
+        </resources>
+    </route>
 </routes>
