@@ -22,6 +22,8 @@ use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\State;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
@@ -37,6 +39,11 @@ class ReclaimTest extends TestCase
      * @var ScopeSetting
      */
     protected $scopeSettingMock;
+
+    /**
+     * @var StoreManagerInterface
+     */
+    protected $storeManagerMock;
 
     /**
      * Path to our temporary test log file. Computed rather than a literal
@@ -84,6 +91,12 @@ class ReclaimTest extends TestCase
         $scopeSettingMock->method('isLoggerEnabled')->willReturn(true);
         $this->scopeSettingMock = $scopeSettingMock;
 
+        // Defaults to resolving any store id; individual tests override
+        // getStore() to throw for the invalid-store_id scenario.
+        $storeManagerMock = $this->createMock(StoreManagerInterface::class);
+        $storeManagerMock->method('getStore')->willReturn($this->createMock(StoreInterface::class));
+        $this->storeManagerMock = $storeManagerMock;
+
         /**
          * the logger and handler are linked and invoked using settings
          * found in etc/di.xml
@@ -118,7 +131,8 @@ class ReclaimTest extends TestCase
             $stockItemRepositoryMock,
             $subscriberCollectionMock,
             $scopeSettingMock,
-            $loggerHelperMock
+            $loggerHelperMock,
+            $storeManagerMock
         );
 
         /**
@@ -294,7 +308,8 @@ class ReclaimTest extends TestCase
             $this->getMockBuilder(SubscriberCollectionFactory::class)
                 ->disableOriginalConstructor()->getMock(),
             $scopeSetting,
-            $this->createMock(LoggerHelper::class)
+            $this->createMock(LoggerHelper::class),
+            $storeManagerMock
         );
 
         $serialized = json_encode($reclaim->getPluginSettings(1));
@@ -375,11 +390,43 @@ class ReclaimTest extends TestCase
             $this->getMockBuilder(SubscriberCollectionFactory::class)
                 ->disableOriginalConstructor()->getMock(),
             $scopeSettingMock,
-            $this->createMock(LoggerHelper::class)
+            $this->createMock(LoggerHelper::class),
+            $this->storeManagerMock
         );
 
         // PHPUnit verifies the "atLeastOnce" expectations above when the mock is
         // torn down; a getter that getPluginSettings() never calls fails the test.
         $reclaim->getPluginSettings(1);
+    }
+
+    public function testGetPluginSettingsThrowsNotFoundForInvalidStoreId()
+    {
+        // Mirrors the input-validation pattern used elsewhere (e.g.
+        // productVariantInventory()): an unresolvable store_id must surface as a
+        // clean NotFoundException, not the store manager's raw NoSuchEntityException
+        // (which would otherwise reach the webapi layer as an uncaught exception
+        // with a full stack trace).
+        $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
+        $this->storeManagerMock->method('getStore')
+            ->with(999)
+            ->willThrowException(new NoSuchEntityException(__('Requested store is not found')));
+
+        $reclaim = new Reclaim(
+            $this->createMock(ObjectManagerInterface::class),
+            $this->getMockBuilder(QuoteFactory::class)
+                ->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(ProductFactory::class)
+                ->disableOriginalConstructor()->getMock(),
+            $this->createMock(StockStateInterface::class),
+            $this->createMock(StockItemRepository::class),
+            $this->getMockBuilder(SubscriberCollectionFactory::class)
+                ->disableOriginalConstructor()->getMock(),
+            $this->scopeSettingMock,
+            $this->createMock(LoggerHelper::class),
+            $this->storeManagerMock
+        );
+
+        $this->expectException(NotFoundException::class);
+        $reclaim->getPluginSettings(999);
     }
 }

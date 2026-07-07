@@ -3,6 +3,7 @@
 namespace Klaviyo\Reclaim\Model;
 
 use Klaviyo\Reclaim\Api\ReclaimInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\ObjectManagerInterface;
 
@@ -48,6 +49,11 @@ class Reclaim implements ReclaimInterface
      */
     protected $_productFactory;
 
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
+    protected $_storeManager;
+
     const MAX_QUERY_DAYS = 10;
     const SUBSCRIBER_BATCH_SIZE = 500;
     public function __construct(
@@ -58,7 +64,8 @@ class Reclaim implements ReclaimInterface
         \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository,
         \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection,
         \Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting,
-        \Klaviyo\Reclaim\Helper\Logger $klaviyoLogger
+        \Klaviyo\Reclaim\Helper\Logger $klaviyoLogger,
+        \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
         $this->quoteFactory = $quoteFactory;
         $this->_productFactory = $productFactory;
@@ -68,6 +75,7 @@ class Reclaim implements ReclaimInterface
         $this->_subscriberCollection = $subscriberCollection;
         $this->_klaviyoLogger = $klaviyoLogger;
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;
+        $this->_storeManager = $storeManager;
     }
 
     /**
@@ -450,6 +458,12 @@ class Reclaim implements ReclaimInterface
 
     public function getPluginSettings($store_id)
     {
+        try {
+            $this->_storeManager->getStore($store_id);
+        } catch (NoSuchEntityException $e) {
+            throw new NotFoundException(__('A store with id ' . $store_id . ' was not found'));
+        }
+
         $s = $this->_klaviyoScopeSetting;
 
         return [[
