@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+#### Fixed
+- Fixed a PHP 8.5 deprecation (`array_key_exists()` called with a `null` key) in `ScopeSetting::getStoreIdKlaviyoAccountSetMap()` for stores with no Klaviyo Public API Key configured
+
 ### [5.0.1] - 2026-07-08
 
 #### Added

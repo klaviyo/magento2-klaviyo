@@ -239,4 +239,25 @@ class ScopeSettingTest extends TestCase
             );
         }
     }
+
+    public function testGetStoreIdKlaviyoAccountSetMapGroupsStoresWithNoApiKeyUnderEmptyString()
+    {
+        $scopeSetting = $this->getMockBuilder(ScopeSetting::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getPublicApiKey'])
+            ->getMock();
+        $scopeSetting->method('getPublicApiKey')
+            ->willReturnMap([
+                [1, null],
+                [2, SampleExtension::PUBLIC_API_KEY],
+                [3, null],
+            ]);
+
+        $result = $scopeSetting->getStoreIdKlaviyoAccountSetMap([1, 2, 3]);
+
+        $this->assertSame([
+            '' => [1, 3],
+            SampleExtension::PUBLIC_API_KEY => [2],
+        ], $result);
+    }
 }
