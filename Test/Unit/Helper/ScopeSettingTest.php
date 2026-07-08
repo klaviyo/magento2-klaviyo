@@ -250,7 +250,7 @@ class ScopeSettingTest extends TestCase
             ->willReturnMap([
                 [1, null],
                 [2, SampleExtension::PUBLIC_API_KEY],
-                [3, null],
+                [3, ''],
             ]);
 
         $result = $scopeSetting->getStoreIdKlaviyoAccountSetMap([1, 2, 3]);
