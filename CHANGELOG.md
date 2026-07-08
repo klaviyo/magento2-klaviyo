@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+### [5.0.1] - 2026-07-08
+
 #### Added
 - New `GET /V1/klaviyo/reclaim/plugin-settings` endpoint that returns the extension's configured plugin settings for a given store (passed as `store_id`), to speed up support troubleshooting. Sensitive values (Private Klaviyo API Key, Webhook Secret) are reported as `PRESENT`/`NULL` rather than exposed.
 
@@ -376,7 +378,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- END RELEASE NOTES -->
 <!-- BEGIN LINKS -->
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/5.0.0...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/5.0.1...HEAD
+[5.0.1]: https://github.com/klaviyo/magento2-klaviyo/compare/5.0.0...5.0.1
 [5.0.0]: https://github.com/klaviyo/magento2-klaviyo/compare/4.4.4...5.0.0
 [4.4.4]: https://github.com/klaviyo/magento2-klaviyo/compare/4.4.3...4.4.4
 [4.4.3]: https://github.com/klaviyo/magento2-klaviyo/compare/4.4.2...4.4.3
