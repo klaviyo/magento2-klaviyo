@@ -317,7 +317,7 @@ class ScopeSetting extends \Magento\Framework\App\Helper\AbstractHelper
 
         $storeMap = array();
         foreach ($storeIds as $storeId) {
-            $klaviyoAccount = $this->getPublicApiKey($storeId);
+            $klaviyoAccount = $this->getPublicApiKey($storeId) ?? '';
             if (!array_key_exists($klaviyoAccount, $storeMap)) {
                 $storeMap[$klaviyoAccount] = array($storeId);
             } else {
