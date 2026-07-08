@@ -7,8 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
-### [5.0.2] - 2026-07-08
-
 #### Fixed
 - Fixed a PHP 8.5 deprecation (`array_key_exists()` called with a `null` key) in `ScopeSetting::getStoreIdKlaviyoAccountSetMap()` for stores with no Klaviyo Public API Key configured
 
@@ -383,8 +381,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- END RELEASE NOTES -->
 <!-- BEGIN LINKS -->
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/5.0.2...HEAD
-[5.0.2]: https://github.com/klaviyo/magento2-klaviyo/compare/5.0.1...5.0.2
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/5.0.1...HEAD
 [5.0.1]: https://github.com/klaviyo/magento2-klaviyo/compare/5.0.0...5.0.1
 [5.0.0]: https://github.com/klaviyo/magento2-klaviyo/compare/4.4.4...5.0.0
 [4.4.4]: https://github.com/klaviyo/magento2-klaviyo/compare/4.4.3...4.4.4
