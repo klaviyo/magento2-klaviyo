@@ -414,7 +414,8 @@ class Reclaim implements ReclaimInterface
         foreach ($subscriberCollection as $subscriber) {
             $response[] = array(
                 'email' => $subscriber->getEmail(),
-                'subscribe_status' => $subscriber->getSubscriberStatus()
+                'subscribe_status' => $subscriber->getSubscriberStatus(),
+                'change_status_at' => $subscriber->getChangeStatusAt()
             );
         }
         return $response;

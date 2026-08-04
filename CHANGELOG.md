@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+### [5.1.1] - 2026-08-04
+
+#### Added
+- Include `change_status_at` on packaged newsletter subscriber payloads so historical consent sync can backdate list consent.
+
 ### [5.1.0] - 2026-07-08
 
 #### Added
@@ -379,7 +384,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- END RELEASE NOTES -->
 <!-- BEGIN LINKS -->
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/5.1.0...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/5.1.1...HEAD
+[5.1.1]: https://github.com/klaviyo/magento2-klaviyo/compare/5.1.0...5.1.1
 [5.1.0]: https://github.com/klaviyo/magento2-klaviyo/compare/5.0.0...5.1.0
 [5.0.0]: https://github.com/klaviyo/magento2-klaviyo/compare/4.4.4...5.0.0
 [4.4.4]: https://github.com/klaviyo/magento2-klaviyo/compare/4.4.3...4.4.4
