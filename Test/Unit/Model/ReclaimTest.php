@@ -429,4 +429,27 @@ class ReclaimTest extends TestCase
         $this->expectException(NotFoundException::class);
         $reclaim->getPluginSettings(999);
     }
+
+    public function testPackageSubscribersIncludesChangeStatusAt()
+    {
+        $subscriberMock = $this->getMockBuilder(\stdClass::class)
+            ->addMethods(['getEmail', 'getSubscriberStatus', 'getChangeStatusAt'])
+            ->getMock();
+        $subscriberMock->method('getEmail')->willReturn('subscriber@example.com');
+        $subscriberMock->method('getSubscriberStatus')->willReturn(1);
+        $subscriberMock->method('getChangeStatusAt')->willReturn('2024-06-15 12:34:56');
+
+        $expected = [
+            [
+                'email' => 'subscriber@example.com',
+                'subscribe_status' => 1,
+                'change_status_at' => '2024-06-15 12:34:56',
+            ],
+        ];
+
+        $this->assertSame(
+            $expected,
+            $this->reclaim->_packageSubscribers([$subscriberMock])
+        );
+    }
 }
