@@ -8,6 +8,7 @@ on:
 
 jobs:
   determine-if-deploy:
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     outputs:
       deploy: ${{ steps.tag_exists.outputs.exists  == 'false' }}
