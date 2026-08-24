@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+### [5.2.0] - 2026-08-24
+
 #### Changed
 - Updates OAuth callback url to support EU region accounts. This is a minimum requirement for any accounts in Klaviyo's EU region.
 
@@ -387,7 +389,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- END RELEASE NOTES -->
 <!-- BEGIN LINKS -->
-[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/5.1.1...HEAD
+[Unreleased]: https://github.com/klaviyo/magento2-klaviyo/compare/5.2.0...HEAD
+[5.2.0]: https://github.com/klaviyo/magento2-klaviyo/compare/5.1.1...5.2.0
 [5.1.1]: https://github.com/klaviyo/magento2-klaviyo/compare/5.1.0...5.1.1
 [5.1.0]: https://github.com/klaviyo/magento2-klaviyo/compare/5.0.0...5.1.0
 [5.0.0]: https://github.com/klaviyo/magento2-klaviyo/compare/4.4.4...5.0.0
