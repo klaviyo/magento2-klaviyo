@@ -65,7 +65,7 @@ class KlaviyoOAuthObserver implements ObserverInterface
             $integrationData = array(
                 'name' => $this->_klaviyoScopeSetting->getKlaviyoOauthName(),
                 'status' => '0',
-                'endpoint' => 'https://www.klaviyo.com/integration-oauth-one/magento-two/auth/confirm?c=' . $this->_klaviyoScopeSetting->getPublicApiKey(),
+                'endpoint' => 'https://a.klaviyo.com/integration-oauth-one/magento-two/auth/confirm?c=' . $this->_klaviyoScopeSetting->getPublicApiKey(),
                 'identity_link_url' => 'https://www.klaviyo.com/integration-oauth-one/magento-two/auth/handle',
                 'setup_type' => '0'
             );

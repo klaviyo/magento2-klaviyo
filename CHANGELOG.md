@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+#### Changed
+- Updates OAuth callback url to support EU region accounts. This is a minimum requirement for any accounts in Klaviyo's EU region.
+
 ### [5.1.1] - 2026-08-04
 
 #### Added
