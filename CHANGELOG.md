@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+#### Fixed
+- Added To Cart events now report $value as the cart's grand total after the add (in base currency, including tax and shipping), and AddedItemQuantity as the quantity added by that action rather than the cart line's total quantity.
+
 ### [5.2.0] - 2026-08-24
 
 #### Changed
