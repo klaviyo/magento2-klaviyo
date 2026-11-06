@@ -210,6 +210,58 @@ class MoveSmsConsentToMobileConsentTest extends TestCase
         );
     }
 
+    private function smsActiveRow(): array
+    {
+        return [
+            'scope' => 'default',
+            'scope_id' => '0',
+            'path' => 'klaviyo_reclaim_consent_at_checkout/sms_consent/is_active',
+            'value' => '1',
+        ];
+    }
+
+    public function test_apply_deletes_all_sms_consent_rows_from_core_config_data()
+    {
+        $connection = $this->buildConnection([$this->smsActiveRow()], false);
+        $connection->expects($this->once())
+            ->method('delete')
+            ->with(
+                'core_config_data',
+                ['path LIKE ?' => 'klaviyo_reclaim_consent_at_checkout/sms_consent/%']
+            );
+        $this->buildPatch($connection)->apply();
+    }
+
+    public function test_apply_deletes_sms_rows_only_after_all_inserts()
+    {
+        $connection = $this->buildConnection([$this->smsActiveRow()], false);
+        $calls = [];
+        $connection->method('insert')->willReturnCallback(function () use (&$calls) {
+            $calls[] = 'insert';
+        });
+        $connection->method('delete')->willReturnCallback(function () use (&$calls) {
+            $calls[] = 'delete';
+        });
+        $this->buildPatch($connection)->apply();
+
+        $this->assertSame(['insert', 'insert', 'insert', 'insert', 'delete'], $calls);
+    }
+
+    public function test_apply_deletes_sms_rows_even_when_all_mobile_rows_already_exist()
+    {
+        $connection = $this->buildConnection([$this->smsActiveRow()], true);
+        $connection->expects($this->never())->method('insert');
+        $connection->expects($this->once())->method('delete');
+        $this->buildPatch($connection)->apply();
+    }
+
+    public function test_apply_does_not_delete_when_no_sms_rows_exist()
+    {
+        $connection = $this->buildConnection([], false);
+        $connection->expects($this->never())->method('delete');
+        $this->buildPatch($connection)->apply();
+    }
+
     // A versioned patch is skipped once setup_version reaches its version (IES-848).
     public function test_patch_is_not_skippable_by_setup_version()
     {

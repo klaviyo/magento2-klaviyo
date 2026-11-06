@@ -44,12 +44,8 @@ class MoveSmsConsentToMobileConsent implements DataPatchInterface
             ->where('path LIKE ?', self::SMS_CONSENT_PREFIX . '%');
         $smsRows = $connection->fetchAll($select);
 
-        // Two-pass migration. Pass 1 copies every existing sms_consent row to
-        // its mobile_consent equivalent. Pass 2 backfills SMS defaults for
-        // active-SMS merchants who never customized label/disclosure copy.
-        // Pass 1 must complete before pass 2 so merchant customizations are
-        // never shadowed by a seed-default (which would happen if iteration
-        // hit /is_active before /label_text in config_id order).
+        // Copy, then seed SMS defaults, then delete the sms_consent rows. Copying
+        // first keeps merchant copy from being shadowed by a seeded default.
 
         foreach ($smsRows as $row) {
             $mobilePath = str_replace('sms_consent/', 'mobile_consent/', $row['path']);
@@ -75,6 +71,10 @@ class MoveSmsConsentToMobileConsent implements DataPatchInterface
                 $this->seedIfMissing($connection, $table, 'default', 0, self::MOBILE_LABEL_TEXT_PATH, self::SMS_LABEL_DEFAULT);
                 $this->seedIfMissing($connection, $table, 'default', 0, self::MOBILE_CONSENT_TEXT_PATH, self::SMS_CONSENT_DEFAULT);
             }
+        }
+
+        if ($smsRows) {
+            $connection->delete($table, ['path LIKE ?' => self::SMS_CONSENT_PREFIX . '%']);
         }
 
         $connection->endSetup();
