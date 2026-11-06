@@ -6,9 +6,8 @@ namespace Klaviyo\Reclaim\Setup\Patch\Data;
 
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
-use Magento\Framework\Setup\Patch\PatchVersionInterface;
 
-class MigrateSmsToMobileConsent implements DataPatchInterface, PatchVersionInterface
+class MoveSmsConsentToMobileConsent implements DataPatchInterface
 {
     private const SMS_CONSENT_PREFIX = 'klaviyo_reclaim_consent_at_checkout/sms_consent/';
     private const MOBILE_CHANNELS_PATH = 'klaviyo_reclaim_consent_at_checkout/mobile_consent/channels';
@@ -90,11 +89,6 @@ class MigrateSmsToMobileConsent implements DataPatchInterface, PatchVersionInter
     public static function getDependencies()
     {
         return [UpdateOldPrivateKeysToEncryptedVersions::class];
-    }
-
-    public static function getVersion()
-    {
-        return '5.0.0';
     }
 
     private function rowExists($connection, string $table, string $scope, int $scopeId, string $path): bool

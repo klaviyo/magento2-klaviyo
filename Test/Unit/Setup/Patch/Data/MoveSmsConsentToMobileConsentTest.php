@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Klaviyo\Reclaim\Test\Unit\Setup\Patch\Data;
 
-use Klaviyo\Reclaim\Setup\Patch\Data\MigrateSmsToMobileConsent;
+use Klaviyo\Reclaim\Setup\Patch\Data\MoveSmsConsentToMobileConsent;
 use Klaviyo\Reclaim\Test\Unit\Setup\Patch\Data\Stubs\SelectStub;
 use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
+use Magento\Framework\Setup\Patch\PatchVersionInterface;
 use PHPUnit\Framework\TestCase;
 
-class MigrateSmsToMobileConsentTest extends TestCase
+class MoveSmsConsentToMobileConsentTest extends TestCase
 {
     private function buildConnection(array $smsRows, bool $mobileRowExists): AdapterInterface
     {
@@ -22,12 +23,12 @@ class MigrateSmsToMobileConsentTest extends TestCase
         return $connection;
     }
 
-    private function buildPatch(AdapterInterface $connection): MigrateSmsToMobileConsent
+    private function buildPatch(AdapterInterface $connection): MoveSmsConsentToMobileConsent
     {
         $setup = $this->createMock(ModuleDataSetupInterface::class);
         $setup->method('getConnection')->willReturn($connection);
         $setup->method('getTable')->willReturn('core_config_data');
-        return new MigrateSmsToMobileConsent($setup);
+        return new MoveSmsConsentToMobileConsent($setup);
     }
 
     public function test_apply_writes_nothing_when_no_sms_rows_exist()
@@ -206,6 +207,15 @@ class MigrateSmsToMobileConsentTest extends TestCase
             'My Custom SMS Copy',
             $firstValueByPath['klaviyo_reclaim_consent_at_checkout/mobile_consent/label_text'] ?? null,
             'Custom merchant label_text must be copied before the SMS default backfill runs'
+        );
+    }
+
+    // A versioned patch is skipped once setup_version reaches its version (IES-848).
+    public function test_patch_is_not_skippable_by_setup_version()
+    {
+        $this->assertNotContains(
+            PatchVersionInterface::class,
+            class_implements(MoveSmsConsentToMobileConsent::class)
         );
     }
 }
