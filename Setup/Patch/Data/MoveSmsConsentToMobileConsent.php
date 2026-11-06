@@ -39,9 +39,13 @@ class MoveSmsConsentToMobileConsent implements DataPatchInterface
 
         $table = $this->moduleDataSetup->getTable('core_config_data');
 
+        // Escape LIKE wildcards so `_` in the prefix only matches a literal underscore.
+        $smsPattern = str_replace(['!', '%', '_'], ['!!', '!%', '!_'], self::SMS_CONSENT_PREFIX) . '%';
+        $smsCondition = "path LIKE ? ESCAPE '!'";
+
         $select = $connection->select()
             ->from($table)
-            ->where('path LIKE ?', self::SMS_CONSENT_PREFIX . '%');
+            ->where($smsCondition, $smsPattern);
         $smsRows = $connection->fetchAll($select);
 
         // Copy, then seed SMS defaults, then delete the sms_consent rows. Copying
@@ -74,7 +78,7 @@ class MoveSmsConsentToMobileConsent implements DataPatchInterface
         }
 
         if ($smsRows) {
-            $connection->delete($table, ['path LIKE ?' => self::SMS_CONSENT_PREFIX . '%']);
+            $connection->delete($table, [$smsCondition => $smsPattern]);
         }
 
         $connection->endSetup();

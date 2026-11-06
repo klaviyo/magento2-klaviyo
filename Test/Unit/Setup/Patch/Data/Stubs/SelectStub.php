@@ -10,12 +10,15 @@ namespace Klaviyo\Reclaim\Test\Unit\Setup\Patch\Data\Stubs;
  */
 class SelectStub
 {
+    public $wheres = [];
+
     public function from($table, $cols = '*')
     {
         return $this;
     }
     public function where($condition, $value = null)
     {
+        $this->wheres[] = [$condition, $value];
         return $this;
     }
 }

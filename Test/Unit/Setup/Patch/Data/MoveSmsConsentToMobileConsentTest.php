@@ -13,9 +13,14 @@ use PHPUnit\Framework\TestCase;
 
 class MoveSmsConsentToMobileConsentTest extends TestCase
 {
+    private const ESCAPED_SMS_PATTERN = 'klaviyo!_reclaim!_consent!_at!_checkout/sms!_consent/%';
+
+    /** @var SelectStub */
+    private $selectStub;
+
     private function buildConnection(array $smsRows, bool $mobileRowExists): AdapterInterface
     {
-        $selectStub = new SelectStub();
+        $selectStub = $this->selectStub = new SelectStub();
         $connection = $this->createMock(AdapterInterface::class);
         $connection->method('select')->willReturn($selectStub);
         $connection->method('fetchAll')->willReturn($smsRows);
@@ -227,9 +232,18 @@ class MoveSmsConsentToMobileConsentTest extends TestCase
             ->method('delete')
             ->with(
                 'core_config_data',
-                ['path LIKE ?' => 'klaviyo_reclaim_consent_at_checkout/sms_consent/%']
+                ["path LIKE ? ESCAPE '!'" => self::ESCAPED_SMS_PATTERN]
             );
         $this->buildPatch($connection)->apply();
+    }
+
+    // Unescaped, `_` would match any character and pull in unrelated paths.
+    public function test_apply_selects_sms_rows_with_escaped_like_pattern()
+    {
+        $connection = $this->buildConnection([], false);
+        $this->buildPatch($connection)->apply();
+
+        $this->assertSame([["path LIKE ? ESCAPE '!'", self::ESCAPED_SMS_PATTERN]], $this->selectStub->wheres);
     }
 
     public function test_apply_deletes_sms_rows_only_after_all_inserts()
