@@ -6,9 +6,8 @@ namespace Klaviyo\Reclaim\Setup\Patch\Data;
 
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
-use Magento\Framework\Setup\Patch\PatchVersionInterface;
 
-class MigrateSmsToMobileConsent implements DataPatchInterface, PatchVersionInterface
+class MoveSmsConsentToMobileConsent implements DataPatchInterface
 {
     private const SMS_CONSENT_PREFIX = 'klaviyo_reclaim_consent_at_checkout/sms_consent/';
     private const MOBILE_CHANNELS_PATH = 'klaviyo_reclaim_consent_at_checkout/mobile_consent/channels';
@@ -40,17 +39,17 @@ class MigrateSmsToMobileConsent implements DataPatchInterface, PatchVersionInter
 
         $table = $this->moduleDataSetup->getTable('core_config_data');
 
+        // Escape LIKE wildcards so `_` in the prefix only matches a literal underscore.
+        $smsPattern = str_replace(['!', '%', '_'], ['!!', '!%', '!_'], self::SMS_CONSENT_PREFIX) . '%';
+        $smsCondition = "path LIKE ? ESCAPE '!'";
+
         $select = $connection->select()
             ->from($table)
-            ->where('path LIKE ?', self::SMS_CONSENT_PREFIX . '%');
+            ->where($smsCondition, $smsPattern);
         $smsRows = $connection->fetchAll($select);
 
-        // Two-pass migration. Pass 1 copies every existing sms_consent row to
-        // its mobile_consent equivalent. Pass 2 backfills SMS defaults for
-        // active-SMS merchants who never customized label/disclosure copy.
-        // Pass 1 must complete before pass 2 so merchant customizations are
-        // never shadowed by a seed-default (which would happen if iteration
-        // hit /is_active before /label_text in config_id order).
+        // Copy, then seed SMS defaults, then delete the sms_consent rows. Copying
+        // first keeps merchant copy from being shadowed by a seeded default.
 
         foreach ($smsRows as $row) {
             $mobilePath = str_replace('sms_consent/', 'mobile_consent/', $row['path']);
@@ -78,6 +77,10 @@ class MigrateSmsToMobileConsent implements DataPatchInterface, PatchVersionInter
             }
         }
 
+        if ($smsRows) {
+            $connection->delete($table, [$smsCondition => $smsPattern]);
+        }
+
         $connection->endSetup();
         return $this;
     }
@@ -90,11 +93,6 @@ class MigrateSmsToMobileConsent implements DataPatchInterface, PatchVersionInter
     public static function getDependencies()
     {
         return [UpdateOldPrivateKeysToEncryptedVersions::class];
-    }
-
-    public static function getVersion()
-    {
-        return '5.0.0';
     }
 
     private function rowExists($connection, string $table, string $scope, int $scopeId, string $path): bool

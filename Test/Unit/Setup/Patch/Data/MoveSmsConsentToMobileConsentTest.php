@@ -4,17 +4,23 @@ declare(strict_types=1);
 
 namespace Klaviyo\Reclaim\Test\Unit\Setup\Patch\Data;
 
-use Klaviyo\Reclaim\Setup\Patch\Data\MigrateSmsToMobileConsent;
+use Klaviyo\Reclaim\Setup\Patch\Data\MoveSmsConsentToMobileConsent;
 use Klaviyo\Reclaim\Test\Unit\Setup\Patch\Data\Stubs\SelectStub;
 use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
+use Magento\Framework\Setup\Patch\PatchVersionInterface;
 use PHPUnit\Framework\TestCase;
 
-class MigrateSmsToMobileConsentTest extends TestCase
+class MoveSmsConsentToMobileConsentTest extends TestCase
 {
+    private const ESCAPED_SMS_PATTERN = 'klaviyo!_reclaim!_consent!_at!_checkout/sms!_consent/%';
+
+    /** @var SelectStub */
+    private $selectStub;
+
     private function buildConnection(array $smsRows, bool $mobileRowExists): AdapterInterface
     {
-        $selectStub = new SelectStub();
+        $selectStub = $this->selectStub = new SelectStub();
         $connection = $this->createMock(AdapterInterface::class);
         $connection->method('select')->willReturn($selectStub);
         $connection->method('fetchAll')->willReturn($smsRows);
@@ -22,12 +28,12 @@ class MigrateSmsToMobileConsentTest extends TestCase
         return $connection;
     }
 
-    private function buildPatch(AdapterInterface $connection): MigrateSmsToMobileConsent
+    private function buildPatch(AdapterInterface $connection): MoveSmsConsentToMobileConsent
     {
         $setup = $this->createMock(ModuleDataSetupInterface::class);
         $setup->method('getConnection')->willReturn($connection);
         $setup->method('getTable')->willReturn('core_config_data');
-        return new MigrateSmsToMobileConsent($setup);
+        return new MoveSmsConsentToMobileConsent($setup);
     }
 
     public function test_apply_writes_nothing_when_no_sms_rows_exist()
@@ -206,6 +212,76 @@ class MigrateSmsToMobileConsentTest extends TestCase
             'My Custom SMS Copy',
             $firstValueByPath['klaviyo_reclaim_consent_at_checkout/mobile_consent/label_text'] ?? null,
             'Custom merchant label_text must be copied before the SMS default backfill runs'
+        );
+    }
+
+    private function smsActiveRow(): array
+    {
+        return [
+            'scope' => 'default',
+            'scope_id' => '0',
+            'path' => 'klaviyo_reclaim_consent_at_checkout/sms_consent/is_active',
+            'value' => '1',
+        ];
+    }
+
+    public function test_apply_deletes_all_sms_consent_rows_from_core_config_data()
+    {
+        $connection = $this->buildConnection([$this->smsActiveRow()], false);
+        $connection->expects($this->once())
+            ->method('delete')
+            ->with(
+                'core_config_data',
+                ["path LIKE ? ESCAPE '!'" => self::ESCAPED_SMS_PATTERN]
+            );
+        $this->buildPatch($connection)->apply();
+    }
+
+    // Unescaped, `_` would match any character and pull in unrelated paths.
+    public function test_apply_selects_sms_rows_with_escaped_like_pattern()
+    {
+        $connection = $this->buildConnection([], false);
+        $this->buildPatch($connection)->apply();
+
+        $this->assertSame([["path LIKE ? ESCAPE '!'", self::ESCAPED_SMS_PATTERN]], $this->selectStub->wheres);
+    }
+
+    public function test_apply_deletes_sms_rows_only_after_all_inserts()
+    {
+        $connection = $this->buildConnection([$this->smsActiveRow()], false);
+        $calls = [];
+        $connection->method('insert')->willReturnCallback(function () use (&$calls) {
+            $calls[] = 'insert';
+        });
+        $connection->method('delete')->willReturnCallback(function () use (&$calls) {
+            $calls[] = 'delete';
+        });
+        $this->buildPatch($connection)->apply();
+
+        $this->assertSame(['insert', 'insert', 'insert', 'insert', 'delete'], $calls);
+    }
+
+    public function test_apply_deletes_sms_rows_even_when_all_mobile_rows_already_exist()
+    {
+        $connection = $this->buildConnection([$this->smsActiveRow()], true);
+        $connection->expects($this->never())->method('insert');
+        $connection->expects($this->once())->method('delete');
+        $this->buildPatch($connection)->apply();
+    }
+
+    public function test_apply_does_not_delete_when_no_sms_rows_exist()
+    {
+        $connection = $this->buildConnection([], false);
+        $connection->expects($this->never())->method('delete');
+        $this->buildPatch($connection)->apply();
+    }
+
+    // A versioned patch is skipped once setup_version reaches its version (IES-848).
+    public function test_patch_is_not_skippable_by_setup_version()
+    {
+        $this->assertNotContains(
+            PatchVersionInterface::class,
+            class_implements(MoveSmsConsentToMobileConsent::class)
         );
     }
 }

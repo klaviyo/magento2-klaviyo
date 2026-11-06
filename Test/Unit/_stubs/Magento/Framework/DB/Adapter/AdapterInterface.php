@@ -11,5 +11,6 @@ if (!interface_exists(\Magento\Framework\DB\Adapter\AdapterInterface::class, fal
         public function fetchAll($select);
         public function fetchOne($select);
         public function insert($table, array $data);
+        public function delete($table, $where = '');
     }
 }

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+#### Fixed
+- Fixed the SMS consent at checkout settings not carrying over when upgrading from 4.x. On upgrade, they are now moved to the Mobile consent group and the old sms_consent settings are removed. Stores already on 5.x that haven't set up the Mobile group get their previous SMS consent settings back, so the checkout checkbox reappears.
+
 ### [5.2.0] - 2026-08-24
 
 #### Changed
