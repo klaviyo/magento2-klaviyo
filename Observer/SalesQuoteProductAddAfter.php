@@ -122,7 +122,8 @@ class SalesQuoteProductAddAfter implements ObserverInterface
             'AddedItemImageUrlKey' => $this->getImageKeyPreferringVariant($fullyLoadedCartItem, $simpleProduct),
             'AddedItemImageUrl' => $this->getImageUrlPreferringVariant($fullyLoadedCartItem, $simpleProduct),
             'AddedItemPrice' => (float) $addedProduct->getFinalPrice(),
-            'AddedItemQuantity' => (int) $addedItem->getQty(),
+            // qty_to_add is the delta when Magento merges this add into an existing cart line
+            'AddedItemQuantity' => (int) ($addedItem->getQtyToAdd() ?: $addedItem->getQty()),
             'AddedItemProductID' => (int) $addedProduct->getId(),
             'AddedItemSimpleProductID' => (int) is_null($simpleProduct) ? null : $simpleProduct->getId(),
             'AddedItemProductName' => (string) $addedProduct->getName(),
@@ -184,8 +185,8 @@ class SalesQuoteProductAddAfter implements ObserverInterface
             $cartItemCategories = $this->uniqueArrayOfStrings($cartItemCategories, $itemCategories);
         }
 
+        // $value is set in SalesQuoteSaveAfter, once the post-add totals have been collected
         return [
-            '$value' => (float) $quote->getBaseGrandTotal() + $addedItem->getPrice(),
             'ItemNames' => (array) $cartItemNames,
             'Items' => (array) $items,
             'ItemCount' => (int) $cartQty,

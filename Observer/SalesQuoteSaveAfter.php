@@ -100,6 +100,8 @@ class SalesQuoteSaveAfter implements ObserverInterface
         $klAddedToCartPayload['QuoteId'] = isset($encodedCustomerId) ? "kx_identifier_$encodedCustomerId" : $quote->getId();
         // Setting StoreId in payload
         $klAddedToCartPayload['StoreId'] = $quote->getStoreId();
+        // Quote totals are collected before save, so this is the cart's grand total after the add
+        $klAddedToCartPayload['$value'] = (float) $quote->getBaseGrandTotal();
 
         // Setting external_catalog_id in payload - this connects the event to the right localized product in the klaviyo catalog.
         $klAddedToCartPayload['external_catalog_id'] = $this->_dataHelper->getExternalCatalogIdForEvent($quote->getStore()->getWebsiteId(), $quote->getStoreId());
