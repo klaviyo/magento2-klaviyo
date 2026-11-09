@@ -14,7 +14,7 @@ Follow docker-magento's one-step setup, which requires Magento Marketplace acces
 for p in 80 443 3306 5672 15672 6379 9200 9300 1080 8080; do lsof -nP -iTCP:$p -sTCP:LISTEN; done
 ```
 
-If another local stack needs those ports, either stop it or change the host side of the port mappings in docker-magento's `compose.yaml`. Only the host ports need to change. Magento's `app/etc/env.php` keeps the service hostnames and ports it uses inside the Docker network.
+If another local stack needs those ports, either stop it or change the host side of the port mappings in docker-magento's `compose.yaml`. Only the host ports need to change. Magento's `app/etc/env.php` keeps the service hostnames and ports it uses inside the Docker network. If you remap 80 or 443, add the new port to the `https://magento.test` URLs in this guide and to the store's base URLs (`web/secure/base_url`, `web/unsecure/base_url`).
 
 ### 2. Mount this repository as the module
 
@@ -81,10 +81,19 @@ After an add to cart, read the newest event and compare it with the cart:
 
 ```
 bin/mysql -e "SELECT payload FROM kl_events WHERE event = 'Added To Cart' ORDER BY id DESC LIMIT 1;"
+```
+
+For guests, the payload's `QuoteId` is the numeric `quote.entity_id`:
+
+```
 bin/mysql -e "SELECT base_grand_total, grand_total, quote_currency_code FROM quote WHERE entity_id = <QuoteId>;"
 ```
 
-For guests, the payload's `QuoteId` is the numeric `quote.entity_id`. For logged-in customers it's `kx_identifier_<base64 customer id>`.
+For logged-in customers, `QuoteId` is `kx_identifier_<base64 customer id>`. Decode the customer ID (`echo <base64 part> | base64 -d`) and look up that customer's active cart:
+
+```
+bin/mysql -e "SELECT entity_id, base_grand_total, grand_total, quote_currency_code FROM quote WHERE customer_id = <customer id> AND is_active = 1;"
+```
 
 ### Adding to the cart without a browser
 
@@ -103,7 +112,7 @@ Requests can be scripted, which keeps runs repeatable:
 Unit tests run from this repository, not from inside Magento:
 
 ```
-make composer-dev install
+COMPOSER=composer.dev.json composer install
 vendor/bin/phpunit
 ```
 
