@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### [Unreleased]
 
 #### Fixed
+- Newsletter subscribe and unsubscribe now use the subscriber's own store to pick the Klaviyo account and list, so unsubscribing from the admin no longer targets the list of the admin scope currently being viewed.
 - Added To Cart events now report $value as the cart's grand total after the add (in base currency, including tax and shipping), and AddedItemQuantity as the quantity added by that action rather than the cart line's total quantity.
 
 ### [5.2.0] - 2026-08-24
