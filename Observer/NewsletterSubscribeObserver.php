@@ -41,12 +41,12 @@ class NewsletterSubscribeObserver implements ObserverInterface
 
     public function execute(Observer $observer)
     {
-        if (!$this->scopeSetting->isEnabled()) {
+        /** @var Subscriber $subscriber */
+        $subscriber = $observer->getDataObject();
+        if (!$this->scopeSetting->isEnabled($subscriber ? $subscriber->getStoreId() : null)) {
             return;
         }
 
-        /** @var Subscriber $subscriber */
-        $subscriber = $observer->getDataObject();
         if ($subscriber && ($subscriber->isStatusChanged() || $subscriber->isObjectNew())) {
             $subscriptionStatus = $subscriber->getStatus();
             $customer = $this->getCustomer($subscriber);
@@ -55,13 +55,15 @@ class NewsletterSubscribeObserver implements ObserverInterface
                 $this->helper->subscribeEmailToKlaviyoList(
                     $customer ? $customer->getEmail() : $subscriber->getEmail(),
                     $customer ? $customer->getFirstname() : $subscriber->getFirstname(),
-                    $customer ? $customer->getLastname() : $subscriber->getLastname()
+                    $customer ? $customer->getLastname() : $subscriber->getLastname(),
+                    $subscriber->getStoreId()
                 );
             }
 
             if ($subscriber->getId() && $subscriptionStatus === Subscriber::STATUS_UNSUBSCRIBED) {
                 $this->helper->unsubscribeEmailFromKlaviyoList(
-                    $customer ? $customer->getEmail() : $subscriber->getEmail()
+                    $customer ? $customer->getEmail() : $subscriber->getEmail(),
+                    $subscriber->getStoreId()
                 );
             }
         }

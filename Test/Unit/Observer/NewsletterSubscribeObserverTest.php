@@ -10,6 +10,7 @@ use Klaviyo\Reclaim\Helper\Data;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Framework\Event\Observer;
+use Magento\Newsletter\Model\Subscriber;
 
 class NewsletterSubscribeObserverTest extends TestCase
 {
@@ -53,5 +54,88 @@ class NewsletterSubscribeObserverTest extends TestCase
         }
 
         $this->assertTrue($didNotFail);
+    }
+
+    public function testUnsubscribePassesSubscriberStoreId()
+    {
+        $dataMock = $this->createMock(Data::class);
+        $dataMock->expects($this->once())
+            ->method('unsubscribeEmailFromKlaviyoList')
+            ->with('guest@example.com', 7);
+
+        $this->buildObserver($dataMock)->execute(
+            $this->buildEvent(Subscriber::STATUS_UNSUBSCRIBED, 7)
+        );
+    }
+
+    public function testSubscribePassesSubscriberStoreId()
+    {
+        $dataMock = $this->createMock(Data::class);
+        $dataMock->expects($this->once())
+            ->method('subscribeEmailToKlaviyoList')
+            ->with('guest@example.com', 'Jane', 'Doe', 7);
+
+        $this->buildObserver($dataMock)->execute(
+            $this->buildEvent(Subscriber::STATUS_SUBSCRIBED, 7)
+        );
+    }
+
+    public function testEnabledFlagIsResolvedForSubscriberStore()
+    {
+        $dataMock = $this->createMock(Data::class);
+        $dataMock->expects($this->once())
+            ->method('unsubscribeEmailFromKlaviyoList')
+            ->with('guest@example.com', 7);
+
+        $this->buildObserver($dataMock, 7)->execute(
+            $this->buildEvent(Subscriber::STATUS_UNSUBSCRIBED, 7)
+        );
+    }
+
+    public function testDisabledForSubscriberStoreSkipsKlaviyo()
+    {
+        $dataMock = $this->createMock(Data::class);
+        $dataMock->expects($this->never())->method('unsubscribeEmailFromKlaviyoList');
+
+        $this->buildObserver($dataMock, 7)->execute(
+            $this->buildEvent(Subscriber::STATUS_UNSUBSCRIBED, 8)
+        );
+    }
+
+    private function buildObserver(Data $dataMock, ?int $enabledStoreId = null): NewsletterSubscribeObserver
+    {
+        $scopeSettingMock = $this->createMock(ScopeSetting::class);
+        if ($enabledStoreId === null) {
+            $scopeSettingMock->method('isEnabled')->willReturn(true);
+        } else {
+            $scopeSettingMock->method('isEnabled')->willReturnCallback(
+                function ($storeId = null) use ($enabledStoreId) {
+                    return $storeId === $enabledStoreId;
+                }
+            );
+        }
+
+        return new NewsletterSubscribeObserver(
+            $dataMock,
+            $scopeSettingMock,
+            $this->createMock(CustomerRepositoryInterface::class)
+        );
+    }
+
+    private function buildEvent(int $status, int $storeId): Observer
+    {
+        $subscriber = $this->createMock(Subscriber::class);
+        $subscriber->method('getId')->willReturn(11);
+        $subscriber->method('getStatus')->willReturn($status);
+        $subscriber->method('isStatusChanged')->willReturn(true);
+        $subscriber->method('getStoreId')->willReturn($storeId);
+        $subscriber->method('getEmail')->willReturn('guest@example.com');
+        $subscriber->method('getFirstname')->willReturn('Jane');
+        $subscriber->method('getLastname')->willReturn('Doe');
+
+        $observer = $this->createMock(Observer::class);
+        $observer->method('getDataObject')->willReturn($subscriber);
+
+        return $observer;
     }
 }

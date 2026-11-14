@@ -109,13 +109,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param string $email
      * @param string|null $firstName
      * @param string|null $lastName
-     * @param string|null $source
+     * @param int|null $storeId
      * @return array|false|null|string
      */
-    public function subscribeEmailToKlaviyoList($email, $firstName = null, $lastName = null)
+    public function subscribeEmailToKlaviyoList($email, $firstName = null, $lastName = null, $storeId = null)
     {
-        $listId = $this->_klaviyoScopeSetting->getNewsletter();
-        $optInSetting = $this->_klaviyoScopeSetting->getOptInSetting();
+        $listId = $this->_klaviyoScopeSetting->getNewsletter($storeId);
+        $optInSetting = $this->_klaviyoScopeSetting->getOptInSetting($storeId);
 
         $properties = [];
         $properties['email'] = $email;
@@ -126,7 +126,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $properties['last_name'] = $lastName;
         }
 
-        $api = $this->buildKlaviyoV3Api();
+        $api = $this->buildKlaviyoV3Api($storeId);
 
         try {
             if ($optInSetting == ScopeSetting::API_SUBSCRIBE) {
@@ -190,12 +190,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * @param string $email
+     * @param int|null $storeId
      * @return array|string|null
      */
-    public function unsubscribeEmailFromKlaviyoList($email)
+    public function unsubscribeEmailFromKlaviyoList($email, $storeId = null)
     {
-        $api = $this->buildKlaviyoV3Api();
-        $listId = $this->_klaviyoScopeSetting->getNewsletter();
+        $api = $this->buildKlaviyoV3Api($storeId);
+        $listId = $this->_klaviyoScopeSetting->getNewsletter($storeId);
         try {
             $response = $api->unsubscribeEmailFromKlaviyoList($email, $listId);
         } catch (\Exception $e) {
