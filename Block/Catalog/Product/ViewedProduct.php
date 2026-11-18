@@ -13,6 +13,7 @@ class ViewedProduct extends Template
 {
     protected $_klaviyoScopeSetting;
     protected $_registry;
+    protected $_dataHelper;
     protected $imageUrl = null;
     protected $categories = [];
     protected $price = 0;

@@ -54,6 +54,8 @@ class Reclaim implements ReclaimInterface
      */
     protected $_storeManager;
 
+    private $quoteResource;
+
     const MAX_QUERY_DAYS = 10;
     const SUBSCRIBER_BATCH_SIZE = 500;
     public function __construct(
@@ -65,9 +67,11 @@ class Reclaim implements ReclaimInterface
         \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection,
         \Klaviyo\Reclaim\Helper\ScopeSetting $klaviyoScopeSetting,
         \Klaviyo\Reclaim\Helper\Logger $klaviyoLogger,
-        \Magento\Store\Model\StoreManagerInterface $storeManager
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Quote\Model\ResourceModel\Quote $quoteResource
     ) {
         $this->quoteFactory = $quoteFactory;
+        $this->quoteResource = $quoteResource;
         $this->_productFactory = $productFactory;
         $this->_objectManager = $objectManager;
         $this->_stockItem = $stockItem;
@@ -238,7 +242,8 @@ class Reclaim implements ReclaimInterface
             throw new NotFoundException(__('quote id or item id not found'));
         }
 
-        $quote = $this->quoteFactory->create()->load($quote_id);
+        $quote = $this->quoteFactory->create();
+        $this->quoteResource->load($quote, $quote_id);
         if (!$quote) {
             throw new NotFoundException(__('quote not found'));
         }

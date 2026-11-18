@@ -43,9 +43,7 @@ class ShippingInformationManagementTest extends TestCase
             }
         };
 
-        $quote = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['setKlSmsConsent', 'setKlEmailConsent'])
-            ->getMock();
+        $quote = $this->createMock(ConsentQuote::class);
         $quote->expects($this->once())
             ->method('setKlSmsConsent')
             ->with('1');
@@ -55,7 +53,7 @@ class ShippingInformationManagementTest extends TestCase
 
         $plugin = $this->buildPlugin($quote);
         $plugin->beforeSaveAddressInformation(
-            new Subject(),
+            $this->createMock(Subject::class),
             1,
             $this->buildAddressInfo($extAttributes)
         );
@@ -74,9 +72,7 @@ class ShippingInformationManagementTest extends TestCase
             }
         };
 
-        $quote = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['setKlSmsConsent', 'setKlEmailConsent'])
-            ->getMock();
+        $quote = $this->createMock(ConsentQuote::class);
         $quote->expects($this->once())
             ->method('setKlSmsConsent')
             ->with(null);
@@ -86,7 +82,7 @@ class ShippingInformationManagementTest extends TestCase
 
         $plugin = $this->buildPlugin($quote);
         $plugin->beforeSaveAddressInformation(
-            new Subject(),
+            $this->createMock(Subject::class),
             1,
             $this->buildAddressInfo($extAttributes)
         );
@@ -105,7 +101,7 @@ class ShippingInformationManagementTest extends TestCase
         $repo->expects($this->never())->method('getActive');
 
         $plugin = new ShippingInformationManagement($repo);
-        $result = $plugin->beforeSaveAddressInformation(new Subject(), 1, $info);
+        $result = $plugin->beforeSaveAddressInformation($this->createMock(Subject::class), 1, $info);
         $this->assertNull($result);
     }
 }

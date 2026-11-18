@@ -10,6 +10,11 @@ if (!class_exists(\Magento\Framework\View\Element\Template::class, false)) {
     {
         protected $_storeManager;
 
+        protected function _toHtml()
+        {
+            return '';
+        }
+
         public function __construct(Template\Context $context, array $data = [])
         {
             $this->_storeManager = $context->getStoreManager();

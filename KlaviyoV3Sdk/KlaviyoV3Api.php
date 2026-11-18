@@ -3,6 +3,8 @@
 namespace Klaviyo\Reclaim\KlaviyoV3Sdk;
 
 use DateTime;
+use Exception;
+use Klaviyo\Reclaim\KlaviyoV3Sdk\Exception\KlaviyoException;
 use Klaviyo\Reclaim\Helper\ScopeSetting;
 use Klaviyo\Reclaim\KlaviyoV3Sdk\Exception\KlaviyoApiException;
 use Klaviyo\Reclaim\KlaviyoV3Sdk\Exception\KlaviyoAuthenticationException;
@@ -75,6 +77,8 @@ class KlaviyoV3Api
      */
     protected $private_key;
 
+    private $logger;
+
     /**
      * @var string
      */
@@ -98,6 +102,7 @@ class KlaviyoV3Api
         ScopeSetting $klaviyoScopeSetting,
         $logger = null
     ) {
+        $this->logger = $logger;
         $this->public_key = $public_key;
         $this->private_key = $private_key;
         $this->_klaviyoScopeSetting = $klaviyoScopeSetting;

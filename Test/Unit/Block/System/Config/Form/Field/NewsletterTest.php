@@ -4,7 +4,6 @@ namespace Klaviyo\Reclaim\Test\Unit\Block\System\Config\Form\Field;
 
 use PHPUnit\Framework\TestCase;
 use Klaviyo\Reclaim\Block\System\Config\Form\Field\Newsletter;
-use Magento\Backend\Block\Template\Context;
 
 class NewsletterTest extends TestCase
 {
@@ -15,11 +14,10 @@ class NewsletterTest extends TestCase
 
     protected function setUp(): void
     {
-        $contextMock = $this->createMock(Context::class);
-
-        $this->newsletter = new Newsletter(
-            $contextMock
-        );
+        $this->newsletter = $this->getMockBuilder(Newsletter::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods([])
+            ->getMock();
     }
 
     public function testNewsletterInstance()

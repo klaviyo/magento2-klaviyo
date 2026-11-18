@@ -33,7 +33,7 @@ if (!class_exists(\Magento\Framework\DataObject::class, false)) {
             return isset($this->_data[$offset]);
         }
 
-        public function offsetGet($offset)
+        public function offsetGet($offset): mixed
         {
             return $this->_data[$offset] ?? null;
         }

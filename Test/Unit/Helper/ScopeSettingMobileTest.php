@@ -22,11 +22,11 @@ class ScopeSettingMobileTest extends TestCase
 
         $scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
         $scopeConfigMock->method('getValue')
-            ->will($this->returnCallback(
+            ->willReturnCallback(
                 function ($path) use ($configValues) {
                     return $configValues[$path] ?? null;
                 }
-            ));
+            );
 
         $contextMock = $this->createMock(Context::class);
         $contextMock->method('getScopeConfig')->willReturn($scopeConfigMock);
