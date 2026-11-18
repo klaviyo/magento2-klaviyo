@@ -15,7 +15,7 @@ class LoggerTest extends TestCase
         $scope = $this->createMock(ScopeSetting::class);
         $scope->method('isLoggerEnabled')->willReturn(false);
         $logger = $this->createMock(KlaviyoLogger::class);
-        $logger->expects($this->never())->method('log');
+        $logger->expects($this->never())->method('info');
         $helper = new Logger($this->createMock(DirectoryList::class), $logger, $scope, '/tmp/klaviyo.log');
         $helper->log('message');
         $this->assertSame('/tmp/klaviyo.log', $helper->getPath());

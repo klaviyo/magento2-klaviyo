@@ -17,7 +17,7 @@ class CartTest extends TestCase
         $request = $this->createMock(RequestInterface::class);
         $request->method('getParams')->willReturn(['quote_id' => 'kx_identifier_' . base64_encode('7'), 'utm' => 'email']);
         $repository = $this->createMock(QuoteRepository::class);
-        $repository->method('getActiveForCustomer')->with('7')->willThrowException(new NoSuchEntityException(new \Magento\Framework\Phrase('Quote not found')));
+        $repository->expects($this->once())->method('getActiveForCustomer')->with('7')->willThrowException(new NoSuchEntityException(new \Magento\Framework\Phrase('Quote not found')));
         $redirect = $this->createMock(Redirect::class);
         $redirect->expects($this->once())->method('setPath')->with('checkout/cart', ['_query' => ['utm' => 'email']]);
         $factory = $this->createMock(RedirectFactory::class);

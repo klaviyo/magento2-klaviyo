@@ -7,7 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- BEGIN RELEASE NOTES -->
 ### [Unreleased]
 
+#### Added
+- GitHub Actions workflow that checks the module on Magento 2.4.7, 2.4.8 and 2.4.9 (PHP 8.2 to 8.5): Composer install, PHPCS, `setup:di:compile`, unit tests and PHPStan.
+
 #### Fixed
+- `KlaviyoV3Api` and `KlaviyoOAuthObserver` referenced nonexistent namespaced exception classes, so their error handlers never caught the intended exceptions.
+- `ViewedProduct` no longer creates `$_dataHelper` as a dynamic property (PHP 8.2+ deprecation).
+- `EventsTopic` and `Reclaim` load and save through resource models instead of the deprecated model `load()` and `save()` methods.
+- `Logger` forwards messages to an internal Monolog instance instead of extending `Monolog\Logger`.
+- Unit tests run on PHPUnit 9, 10 and 12.
 - Added To Cart events now report $value as the cart's grand total after the add (in base currency, including tax and shipping), and AddedItemQuantity as the quantity added by that action rather than the cart line's total quantity.
 
 ### [5.2.0] - 2026-08-24

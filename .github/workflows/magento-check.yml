@@ -109,7 +109,7 @@ jobs:
         with:
           name: magento-check-${{ matrix.magento }}-php${{ matrix.php }}
           path: ${{ steps.static.outputs.result-path }}
-          retention-days: 7
+          retention-days: 30
 
   result:
     name: Result
