@@ -40,11 +40,15 @@ class SalesQuoteProductAddAfterTest extends TestCase
             return new StubCartProduct(99, $sku, 0);
         });
 
+        $image = $this->createMock(Image::class);
+        $image->method('init')->willReturnSelf();
+        $image->method('getUrl')->willReturn('');
+
         $observer = new SalesQuoteProductAddAfter(
             $dataHelper,
             $this->createMock(CategoryFactory::class),
             $productRepository,
-            new Image(),
+            $image,
             $this->getMockBuilder(Logger::class)->disableOriginalConstructor()->getMock()
         );
         $observer->execute(new StubDataObserver(['items' => $addedItems]));

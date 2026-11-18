@@ -17,6 +17,11 @@ if (!class_exists(\Magento\Config\Block\System\Config\Form\Field::class, false))
             parent::__construct($context, $data);
         }
 
+        protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+        {
+            return $element->getElementHtml();
+        }
+
         public function render(\Magento\Framework\Data\Form\Element\AbstractElement $element)
         {
             return '';

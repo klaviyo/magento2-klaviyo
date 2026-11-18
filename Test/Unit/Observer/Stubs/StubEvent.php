@@ -5,7 +5,7 @@ namespace Klaviyo\Reclaim\Test\Unit\Observer\Stubs;
 /**
  * Stub event that holds order and quote.
  */
-class StubEvent extends \Magento\Framework\Event\Event
+class StubEvent extends \Magento\Framework\Event
 {
     private $order;
     private $quote;

@@ -7,6 +7,11 @@ require_once __DIR__ . '/../../../DataObject.php';
 if (!class_exists(\Magento\Framework\Data\Form\Element\AbstractElement::class, false)) {
     class AbstractElement extends \Magento\Framework\DataObject
     {
+        public function getElementHtml()
+        {
+            return '';
+        }
+
         public function getValues()
         {
             return [];

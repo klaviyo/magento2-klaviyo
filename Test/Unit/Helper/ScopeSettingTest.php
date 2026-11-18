@@ -43,7 +43,7 @@ class ScopeSettingTest extends TestCase
             ->willReturn(1);
         $scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
         $scopeConfigMock->method('getValue')
-            ->will($this->returnCallback(
+            ->willReturnCallback(
                 function ($path, $scope, $code) {
                     switch ($path) {
                         case ScopeSetting::ENABLE:
@@ -69,7 +69,7 @@ class ScopeSettingTest extends TestCase
                             break;
                     }
                 }
-            ));
+            );
 
         $contextMock = $this->createMock(Context::class);
         $contextMock->method('getScopeConfig')->willReturn($scopeConfigMock);
@@ -92,7 +92,7 @@ class ScopeSettingTest extends TestCase
                 ScopeSetting::PRIVATE_API_KEY,
                 self::NEW_API_KEY
             )
-            ->will($this->returnCallback(
+            ->willReturnCallback(
                 function ($path, $value, $scope, $code) {
                     switch ($path) {
                         case ScopeSetting::PRIVATE_API_KEY:
@@ -100,7 +100,7 @@ class ScopeSettingTest extends TestCase
                             break;
                     }
                 }
-            ));
+            );
 
         $this->scopeSetting = new ScopeSetting(
             $contextMock,

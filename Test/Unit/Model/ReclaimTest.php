@@ -132,7 +132,8 @@ class ReclaimTest extends TestCase
             $subscriberCollectionMock,
             $scopeSettingMock,
             $loggerHelperMock,
-            $storeManagerMock
+            $storeManagerMock,
+            $this->createMock(\Magento\Quote\Model\ResourceModel\Quote::class)
         );
 
         /**
@@ -175,10 +176,20 @@ class ReclaimTest extends TestCase
          * across versions, so compare case-insensitively rather than pinning
          * to one PHP version's exact wording.
          */
-        $expectedMessage = 'Unable to retrieve log file with error: file(' . self::testLogPath() . '): failed to open stream: No such file or directory';
         unlink(self::testLogPath());
-        $response = $this->reclaim->getLog();
-        $this->assertSame(strtolower($expectedMessage), strtolower($response['message']));
+        set_error_handler(static function ($severity, $message, $file, $line) {
+            throw new \ErrorException($message, 0, $severity, $file, $line);
+        });
+        try {
+            $response = $this->reclaim->getLog();
+        } finally {
+            restore_error_handler();
+        }
+        $this->assertStringContainsString('Unable to retrieve log file with error:', $response['message']);
+        $this->assertStringContainsString(
+            strtolower('file(' . self::testLogPath() . '): failed to open stream: No such file or directory'),
+            strtolower($response['message'])
+        );
 
         $testLogFile = fopen(self::testLogPath(), 'wb');
         fclose($testLogFile);
@@ -309,7 +320,8 @@ class ReclaimTest extends TestCase
                 ->disableOriginalConstructor()->getMock(),
             $scopeSetting,
             $this->createMock(LoggerHelper::class),
-            $storeManagerMock
+            $storeManagerMock,
+            $this->createMock(\Magento\Quote\Model\ResourceModel\Quote::class)
         );
 
         $serialized = json_encode($reclaim->getPluginSettings(1));
@@ -391,7 +403,8 @@ class ReclaimTest extends TestCase
                 ->disableOriginalConstructor()->getMock(),
             $scopeSettingMock,
             $this->createMock(LoggerHelper::class),
-            $this->storeManagerMock
+            $this->storeManagerMock,
+            $this->createMock(\Magento\Quote\Model\ResourceModel\Quote::class)
         );
 
         // PHPUnit verifies the "atLeastOnce" expectations above when the mock is
@@ -423,7 +436,8 @@ class ReclaimTest extends TestCase
                 ->disableOriginalConstructor()->getMock(),
             $this->scopeSettingMock,
             $this->createMock(LoggerHelper::class),
-            $this->storeManagerMock
+            $this->storeManagerMock,
+            $this->createMock(\Magento\Quote\Model\ResourceModel\Quote::class)
         );
 
         $this->expectException(NotFoundException::class);
@@ -432,9 +446,7 @@ class ReclaimTest extends TestCase
 
     public function testPackageSubscribersIncludesChangeStatusAt()
     {
-        $subscriberMock = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['getEmail', 'getSubscriberStatus', 'getChangeStatusAt'])
-            ->getMock();
+        $subscriberMock = $this->createMock(Subscriber::class);
         $subscriberMock->method('getEmail')->willReturn('subscriber@example.com');
         $subscriberMock->method('getSubscriberStatus')->willReturn(1);
         $subscriberMock->method('getChangeStatusAt')->willReturn('2024-06-15 12:34:56');

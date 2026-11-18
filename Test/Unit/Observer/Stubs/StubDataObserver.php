@@ -16,7 +16,7 @@ class StubDataObserver extends Observer
         $this->data = $data;
     }
 
-    public function getData($key = '')
+    public function getData($key = '', $index = null)
     {
         return $this->data[$key] ?? null;
     }

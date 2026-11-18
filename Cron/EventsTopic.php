@@ -7,6 +7,8 @@ use Klaviyo\Reclaim\Model\SyncsFactory;
 use Klaviyo\Reclaim\Model\Quote\QuoteIdMask;
 use Klaviyo\Reclaim\Model\ResourceModel\Events\CollectionFactory;
 use Magento\Catalog\Model\CategoryFactory;
+use Magento\Catalog\Model\ResourceModel\Category;
+use Klaviyo\Reclaim\Model\ResourceModel\Syncs;
 
 class EventsTopic
 {
@@ -49,6 +51,9 @@ class EventsTopic
      */
     protected $categoryMap = [];
 
+    private $categoryResource;
+    private $syncResource;
+
     /**
      * @param Logger $klaviyoLogger
      * @param CollectionFactory $eventsCollectionFactory
@@ -61,13 +66,17 @@ class EventsTopic
         CollectionFactory $eventsCollectionFactory,
         SyncsFactory $klSyncFactory,
         QuoteIdMask $quoteIdMaskResource,
-        CategoryFactory $categoryFactory
+        CategoryFactory $categoryFactory,
+        Category $categoryResource,
+        Syncs $syncResource
     ) {
         $this->_klaviyoLogger = $klaviyoLogger;
         $this->_eventsCollectionFactory = $eventsCollectionFactory;
         $this->_klSyncFactory = $klSyncFactory;
         $this->_quoteIdMaskResource = $quoteIdMaskResource;
         $this->_categoryFactory = $categoryFactory;
+        $this->categoryResource = $categoryResource;
+        $this->syncResource = $syncResource;
     }
 
     /**
@@ -120,7 +129,7 @@ class EventsTopic
                 'payload' => $event['payload']
             ]);
             try {
-                $sync->save();
+                $this->syncResource->save($sync);
                 array_push($idsMoved, $event['id']);
             } catch (\Exception $e) {
                 $this->_klaviyoLogger->log(sprintf("[moveRowsToSync] Unable to move row: %s", $e->getMessage()));
@@ -200,7 +209,8 @@ class EventsTopic
 
         foreach ($categoryIds as $categoryId) {
             if (!in_array($categoryId, $this->categoryMap)) {
-                $this->categoryMap[$categoryId] = $categoryFactory->load($categoryId)->getName();
+                $this->categoryResource->load($categoryFactory, $categoryId);
+                $this->categoryMap[$categoryId] = $categoryFactory->getName();
             }
         }
     }
