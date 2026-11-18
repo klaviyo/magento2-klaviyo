@@ -7,7 +7,7 @@ if (!class_exists(\Magento\Framework\Event\Observer::class, false)) {
     {
         public function getEvent()
         {
-            return new Event();
+            return new \Magento\Framework\Event();
         }
 
         public function getDataObject()
