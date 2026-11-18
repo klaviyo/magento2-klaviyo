@@ -1,8 +1,8 @@
 <?php
 
-namespace Magento\Framework\Event;
+namespace Magento\Framework;
 
-if (!class_exists(\Magento\Framework\Event\Event::class, false)) {
+if (!class_exists(\Magento\Framework\Event::class, false)) {
     class Event
     {
         public function getOrder()
